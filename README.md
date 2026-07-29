@@ -119,7 +119,7 @@ The skill cost for all newly added roles, the shop item prices for all newly add
 ## 😋Commands
 **The following commands are available to OP players:**
 
-Use /1 to apply configuration changes directly in-game without restarting the server.
+Use /brinswathe reload to apply configuration changes directly in-game without restarting the server.
 
 Use /setbrinspeed <player> <type> <value> to adjust stamina and run speed:
 
