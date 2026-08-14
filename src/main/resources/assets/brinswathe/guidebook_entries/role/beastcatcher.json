@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:beast_trapper",
+  "subtitle": "guidebook.role.title.brin:beast_trapper",
+  "keywords": ["guidebook.role.brin:beast_trapper"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:beast_trapper"
+  }]
+}

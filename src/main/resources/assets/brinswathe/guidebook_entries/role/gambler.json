@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:gambler",
+  "subtitle": "guidebook.role.title.brin:gambler",
+  "keywords": ["guidebook.role.brin:gambler"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:gambler"
+  }]
+}

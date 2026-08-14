@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:penitent",
+  "subtitle": "guidebook.role.title.brin:penitent",
+  "keywords": ["guidebook.role.brin:penitent"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:penitent"
+  }]
+}

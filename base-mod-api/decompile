@@ -1,0 +1,59 @@
+#!/bin/sh
+# AutoForge: 按需把前置 mod 的某个类/包反编译成源码。
+#
+#   用法:  ./base-mod-api/decompile <类或包的全限定名>
+#   例:    ./base-mod-api/decompile com.simibubi.create.content.kinetics.base.KineticBlockEntity
+#          ./base-mod-api/decompile com.simibubi.create.content.kinetics        # 整个包
+#
+# 产物出现在 ./base-mod-src/<斜杠路径>/*.java(只出源码,不含贴图/数据包等资源)。
+# 要读前置的资源文件(配方/模型 json 等),前置 jar 完整保留在构建目录,用:
+#   unzip -p ../basemod-<modid>.jar data/<modid>/recipes/xxx.json
+set -u
+
+if [ $# -lt 1 ]; then
+  echo "用法: $0 <类或包的全限定名>   例: $0 com.simibubi.create.content.kinetics" >&2
+  exit 2
+fi
+TARGET=$(printf '%s' "$1" | tr '.' '/')   # 点分转斜杠;包和类都行
+
+SELF_DIR=$(cd "$(dirname "$0")" && pwd)
+JAR_DIR=$(cd "$SELF_DIR/../.." && pwd)               # 前置 jar 在构建目录(base-mod-api 的上上级)
+SRC_DIR=$(cd "$SELF_DIR/.." && pwd)/base-mod-src     # = <mod_home>/base-mod-src
+
+if [ -n "${JAVA_HOME:-}" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+  JAVA="$JAVA_HOME/bin/java"
+else
+  JAVA=java
+fi
+VINEFLOWER="${VINEFLOWER_JAR:-/opt/vineflower/vineflower.jar}"
+if [ ! -f "$VINEFLOWER" ]; then
+  echo "反编译器不可用($VINEFLOWER);改用 ./base-mod-api/lookup 查签名" >&2
+  exit 1
+fi
+
+mkdir -p "$SRC_DIR"
+FOUND_JAR=0
+BEFORE=$(find "$SRC_DIR" -name '*.java' 2>/dev/null | wc -l)
+for JAR in "$JAR_DIR"/basemod-*.jar; do
+  [ -f "$JAR" ] || continue                          # glob 无匹配时原样返回通配符
+  FOUND_JAR=1
+  # --thread-count=2:Vineflower 默认开 32 线程,每个持有类图,2 核 pod 上会撑爆内存。
+  # --skip-extra-files=1:只出 .java(资源另走 unzip)。-Xmx:堆划死,撑爆的是它自己不是 pod。
+  "$JAVA" "-Xmx${VINEFLOWER_HEAP:-1g}" -jar "$VINEFLOWER" \
+    "--thread-count=${VINEFLOWER_THREADS:-2}" --skip-extra-files=1 --only="$TARGET" \
+    "$JAR" "$SRC_DIR" >/dev/null 2>&1
+done
+AFTER=$(find "$SRC_DIR" -name '*.java' 2>/dev/null | wc -l)
+
+if [ "$FOUND_JAR" -eq 0 ]; then
+  echo "没找到任何前置 mod 的 jar($JAR_DIR/basemod-*.jar)" >&2
+  exit 1
+fi
+if [ "$AFTER" -gt "$BEFORE" ] || find "$SRC_DIR" -path "*/$TARGET*" -name '*.java' 2>/dev/null | grep -q .; then
+  echo "反编译完成,源码在 base-mod-src/ 下:"
+  find "$SRC_DIR" -path "*/$TARGET*" -name '*.java' 2>/dev/null | sed "s#^$SRC_DIR/#  base-mod-src/#" | head -60
+else
+  echo "在前置 jar 里没找到可反编译的类/包: $1" >&2
+  echo "提示: 用全限定名(带包路径),类名区分大小写。不确定包路径时先 ./base-mod-api/classes <关键词> 搜真名,别猜。" >&2
+  exit 1
+fi

@@ -1,0 +1,106 @@
+plugins {
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+	id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = 'BrinsWathe'
+}
+
+repositories {
+	maven { url 'https://maven.ladysnake.org/releases' }
+	maven { url 'https://maven.wispforest.io/releases' }
+	maven { url 'https://maven.maxhenkel.de/repository/public' }
+}
+
+loom {
+	splitEnvironmentSourceSets()
+
+	mods {
+		"brinswathe" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	modCompileOnly "org.ladysnake.cardinal-components-api:cardinal-components-base:${project.cca_version}"
+	modCompileOnly "org.ladysnake.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
+	modCompileOnly "org.ladysnake.cardinal-components-api:cardinal-components-world:${project.cca_version}"
+	modCompileOnly "io.wispforest:endec:${project.endec_version}"
+	modCompileOnly "de.maxhenkel.voicechat:voicechat-api:2.6.20"
+	
+}
+
+processResources {
+	def version = project.version
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 21
+}
+
+java {
+	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+	def projectName = project.name
+	inputs.property "projectName", projectName
+
+	from("LICENSE") {
+		rename { "${it}_$projectName"}
+	}
+}
+
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			from components.java
+		}
+	}
+
+	repositories {
+	}
+}
+
+fabricApi {
+	configureDataGeneration {
+		modId = 'brinswathe'
+	}
+}
+
+repositories {
+    maven { url "${projectDir}/.oss-basemod-repo" }
+    maven { url 'https://api.modrinth.com/maven' }
+}
+dependencies {
+    modImplementation 'maven.modrinth:kinswathe:tr5nQegN'
+    modImplementation files("${projectDir}/libs/harpymodloader-1.2.3-h1.3.jar")
+    modImplementation 'maven.modrinth:starexpress:I2GQp61o'
+    modImplementation 'maven.modrinth:yacl:o3cDn8Vp'
+    modImplementation 'maven.modrinth:wathe:3Kw6IUoN'
+    modCompileOnly 'maven.modrinth:immersive-furniture:0.1.2+1.21.1'
+    modImplementation 'maven.modrinth:owo-lib:m3XmDd8j'
+    implementation fileTree(dir: 'base-mod-libs', include: ['*.jar'])
+    modImplementation fileTree(dir: 'base-mod-nested-mods', include: ['*.jar'])
+}

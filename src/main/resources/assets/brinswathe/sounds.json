@@ -1,0 +1,13 @@
+{
+  "cowboy_showdown": {
+    "sounds": [
+      {
+        "name": "brinswathe:cowboy_showdown",
+        "stream": true,
+        "preload": false,
+        "volume": 1.0,
+        "attenuation_distance": 0
+      }
+    ]
+  }
+}

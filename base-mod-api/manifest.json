@@ -1,0 +1,69 @@
+[
+  {
+    "modid": "kinswathe",
+    "maven_repo": "https://api.modrinth.com/maven",
+    "coordinate": "maven.modrinth:kinswathe:tr5nQegN",
+    "version": "1.6.4",
+    "gradle_config": "modImplementation"
+  },
+  {
+    "modid": "harpymodloader",
+    "maven_repo": "https://api.modrinth.com/maven",
+    "coordinate": "maven.modrinth:harpymodloader:nMW4YJds",
+    "version": "1.2.4-h1.3",
+    "gradle_config": "modImplementation"
+  },
+  {
+    "modid": "starexpress",
+    "maven_repo": "https://api.modrinth.com/maven",
+    "coordinate": "maven.modrinth:starexpress:I2GQp61o",
+    "version": "1.3.2",
+    "gradle_config": "modImplementation"
+  },
+  {
+    "modid": "yet_another_config_lib_v3",
+    "maven_repo": "https://api.modrinth.com/maven",
+    "coordinate": "maven.modrinth:yacl:o3cDn8Vp",
+    "version": "3.8.2+1.21.1-fabric",
+    "gradle_config": "modImplementation",
+    "auto": true,
+    "title": "YetAnotherConfigLib (YACL)",
+    "required_by": "HarpyModLoader",
+    "fallback_repo": "https://cursemaven.com",
+    "fallback_coordinate": "curse.maven:yacl-667299:7437855"
+  },
+  {
+    "modid": "fabric-api",
+    "maven_repo": "https://api.modrinth.com/maven",
+    "coordinate": "maven.modrinth:fabric-api:aUrTRV7H",
+    "version": "0.116.14+1.21.1",
+    "gradle_config": "modImplementation",
+    "auto": true,
+    "title": "Fabric API",
+    "required_by": "YetAnotherConfigLib (YACL)",
+    "fallback_repo": "https://cursemaven.com",
+    "fallback_coordinate": "curse.maven:fabric-api-306612:8443376"
+  },
+  {
+    "modid": "wathe",
+    "maven_repo": "https://api.modrinth.com/maven",
+    "coordinate": "maven.modrinth:wathe:3Kw6IUoN",
+    "version": "1.3.2-1.21.1",
+    "gradle_config": "modImplementation",
+    "auto": true,
+    "title": "Wathe: Murder Mystery",
+    "required_by": "HarpyModLoader"
+  },
+  {
+    "modid": "owo",
+    "maven_repo": "https://api.modrinth.com/maven",
+    "coordinate": "maven.modrinth:owo-lib:m3XmDd8j",
+    "version": "0.13.0-alpha.15+1.21",
+    "gradle_config": "modImplementation",
+    "auto": true,
+    "title": "oωo (owo-lib)",
+    "required_by": "Starry Express",
+    "fallback_repo": "https://cursemaven.com",
+    "fallback_coordinate": "curse.maven:owo-lib-532610:8009224"
+  }
+]

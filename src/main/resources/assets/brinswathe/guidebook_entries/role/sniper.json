@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:sniper",
+  "subtitle": "guidebook.role.title.brin:sniper",
+  "keywords": ["guidebook.role.brin:sniper"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:sniper"
+  }]
+}

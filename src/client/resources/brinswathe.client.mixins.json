@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "cn.autoforged.brinswathe.client.mixin",
+  "compatibilityLevel": "JAVA_21",
+    "client": ["AbilityHudMixin", "BrinInventoryScreenMixin", "BrinLanguageMixin", "PlayerSkinMixin", "BrinShopScreenMixin", "BrinStoreItemWidgetMixin", "BrinStoreRendererMixin", "BuriedCorpseInstinctMixin", "HideInstinctMixin", "InstinctToggleMixin", "TrapVisibilityMixin", "BombVisibilityMixin", "EntityRendererAccessor", "BuriedCorpseRenderMixin", "BoneharvestedCorpseRendererMixin", "IllusionistCloneRenderMixin", "IllusionistOwnerRenderMixin", "IllusionistHudMixin", "PuppetRenderMixin", "PuppetOwnerRenderMixin", "MorticianOwnerRenderMixin", "DisguisedNameTagMixin", "IllusionistRevolverTargetMixin", "IllusionistKnifeTargetMixin", "IllusionistBodyFreezeMixin", "SniperFovMixin", "StaminaRoleMixin", "WalkAnimationStateAccessor", "BrinCustomWinnerAnnouncementMixin", "BrinCustomWinnerTextMixin", "BrinCustomWinPlayerRendererMixin", "StarExpressAbilityKeyMixin", "ClientPlayerInteractionManagerTickMixin", "HeldItemRendererNullPlayerMixin", "ImmersiveFurnitureDataRaceMixin", "CowboyDuelLookLockMixin", "CowboyDuelistHideMixin", "CowboyDuelSpectatorIdentityMixin", "CowboyDuelHideRoleNameMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

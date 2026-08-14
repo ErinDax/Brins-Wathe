@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:nightmare",
+  "subtitle": "guidebook.role.title.brin:nightmare",
+  "keywords": ["guidebook.role.brin:nightmare"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:nightmare"
+  }]
+}

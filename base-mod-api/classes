@@ -1,0 +1,50 @@
+#!/bin/sh
+# AutoForge: 列/搜前置 mod jar 里**真实存在**的类(全限定名)。
+#
+#   ./base-mod-api/classes <关键词>   # 搜:列出类名(任意一段)含<关键词>的类,忽略大小写。找真实类名/包路径用它。
+#   ./base-mod-api/classes            # 浏览:列出所有包路径 + 每包类数,看整体结构。
+#
+# 什么时候用:**动前置相关代码(import / mixin @At / 类引用)之前**,不确定某个类的确切包路径,
+# 或 lookup/decompile 报"找不到"时 —— 先来这里查真名,**绝不要猜包路径**。
+# 例:  ./base-mod-api/classes BlueEntity     -> 查它真实的全限定名(再拿去 lookup/decompile)
+#      ./base-mod-api/classes capability      -> 看前置到底有没有 capability.* 包
+set -u
+
+SELF_DIR=$(cd "$(dirname "$0")" && pwd)
+JAR_DIR=$(cd "$SELF_DIR/../.." && pwd)
+KW="${1:-}"
+
+if ! ls "$JAR_DIR"/basemod-*.jar >/dev/null 2>&1; then
+  echo "没找到任何前置 mod 的 jar($JAR_DIR/basemod-*.jar)" >&2
+  exit 1
+fi
+
+# 收集所有前置 jar 的 .class → 全限定名;去内部类($)、module-info、package-info。
+# 注意:unzip -Z1 的 '*.class' 过滤**不跨目录**(只匹配顶层),故列全部再 grep '.class$'。
+ALL=$(for JAR in "$JAR_DIR"/basemod-*.jar; do
+  [ -f "$JAR" ] || continue
+  unzip -Z1 "$JAR" 2>/dev/null
+done | grep '\.class$' | sed 's#\.class$##; s#/#.#g' | grep -vE '[$]|module-info|package-info' | sort -u)
+
+if [ -z "$ALL" ]; then
+  echo "前置 jar 里没读到任何类(jar 可能是纯资源包)。" >&2
+  exit 1
+fi
+
+if [ -n "$KW" ]; then
+  # awk index(字面子串、忽略大小写):比 grep -iF 稳(某些环境 grep -F 会崩),且关键词里的
+  # . $ 等不会被当正则元字符。
+  RES=$(printf '%s\n' "$ALL" | awk -v k="$KW" 'index(tolower($0), tolower(k))')
+  if [ -z "$RES" ]; then
+    echo "没有类名含「$KW」的类。换个更短的关键词,或不带参数 ./base-mod-api/classes 看包结构。" >&2
+    echo "注意:这说明你要找的类**在前置里并不存在**,别硬 import / mixin 一个不存在的类。" >&2
+    exit 1
+  fi
+  printf '%s\n' "$RES"
+  exit 0
+fi
+
+# 无关键词:列包路径 + 每包类数(按类数降序),给结构总览。
+printf '%s\n' "$ALL" | sed 's#\.[^.]*$##' | sort | uniq -c | sort -rn | \
+  awk '{printf "%6d 类  %s\n", $1, $2}'
+echo "(以上是「包路径 + 类数」;要定位具体类用 ./base-mod-api/classes <关键词>)" >&2

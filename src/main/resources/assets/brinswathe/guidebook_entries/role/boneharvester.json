@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:boneharvester",
+  "subtitle": "guidebook.role.title.brin:boneharvester",
+  "keywords": ["guidebook.role.brin:boneharvester"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:boneharvester"
+  }]
+}

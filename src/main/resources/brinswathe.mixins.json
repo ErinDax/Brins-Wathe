@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "cn.autoforged.brinswathe.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["GameWorldKillerTeamCompatMixin", "BartenderShieldTimeoutMixin", "ExhaustedSprintMixin", "BrinTaskRewardMixin", "Fast2FastAbilityCooldownMixin", "PlayerMixin", "BrinShopMixin", "BrinShopEntryMixin", "BrinEconomyMixin", "BrinKillRewardMixin", "BrinRoleArgumentMixin", "BrinInitialBalanceMixin", "BrinForcedRoleQuotaMixin", "BrinForcedNeutralRoleMixin", "TrapperSurvivalExpertPairMixin", "BoneharvesterCleanerConflictMixin", "ChatRangeMixin", "BerserkerInvincibleMixin", "BerserkerRoundGuardMixin", "TrapperFangsEntityMixin", "TrapperRoundCleanupMixin", "BomberMineEntityMixin", "IllusionistCloneEntityMixin", "IllusionistCloneCollisionMixin", "IllusionistCloneHitboxMixin", "IllusionistClonePushMixin", "IllusionistModelDamageMixin", "IllusionistKillPlayerMixin", "IllusionistGunShootMixin", "IllusionistKnifeStabMixin", "PuppetDamageMixin", "PuppetKillPlayerMixin", "PuppetHitboxMixin", "PuppetCollisionMixin", "PuppetKnifeStabMixin", "MorticianDisguiseMixin", "ItemPickupMixin", "AvengerGunDropMixin", "KeyStackSizeMixin", "CompensatorReflectMixin", "CompensatorKillMixin", "BoneharvesterKillMixin", "PenitentKillTrackingMixin", "SniperKillTrackingMixin", "ZhangshiKillTrackingMixin", "ArchivistSealMixin", "ArchivistCleanerDissolveMixin", "ArchivistForgedCorpseMixin", "BrinCustomWinnerCheckMixin", "BrinCustomWinnerResetMixin", "CowboyDuelWinPauseMixin", "CowboyDuelGunMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

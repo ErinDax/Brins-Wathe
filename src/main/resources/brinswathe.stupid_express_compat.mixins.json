@@ -1,0 +1,9 @@
+{
+  "required": false,
+  "package": "cn.autoforged.brinswathe.mixin.compat.stupidexpress",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["StupidExpressNecromancerRevivalMixin", "StupidExpressThiefWinMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

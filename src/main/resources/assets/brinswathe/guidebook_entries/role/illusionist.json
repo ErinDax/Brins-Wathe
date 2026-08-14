@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:illusionist",
+  "subtitle": "guidebook.role.title.brin:illusionist",
+  "keywords": ["guidebook.role.brin:illusionist"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:illusionist"
+  }]
+}

@@ -1,0 +1,50 @@
+#!/bin/sh
+# AutoForge: 查前置 mod 里某个类的全部方法签名(含 private,含 JVM 方法描述符)。
+#
+#   用法:  ./base-mod-api/lookup <全限定类名>
+#   例:    ./base-mod-api/lookup xaero.hud.minimap.module.MinimapRenderer
+#
+# 输出里每个方法下的 `descriptor:` 就是它的 JVM 方法描述符。
+# 写 mixin 的 @At(target = "L包/路径/类;方法名描述符") 时**原样复制**,不要自己推算:
+# 把 Java 声明心算成描述符时数错一位,编译与 datagen 都不会报错,玩家一进游戏就崩。
+# `method = "..."` 里的方法名也必须在这份输出里逐字符出现过。
+set -u
+
+if [ $# -lt 1 ]; then
+  echo "用法: $0 <全限定类名>   例: $0 xaero.hud.minimap.module.MinimapRenderer" >&2
+  exit 2
+fi
+CLASS="$1"
+
+# 本脚本在 <mod_home>/base-mod-api/ 下,而前置 jar 下在 <mod_home> 的上一级(构建目录)
+SELF_DIR=$(cd "$(dirname "$0")" && pwd)
+JAR_DIR=$(cd "$SELF_DIR/../.." && pwd)
+
+if [ -n "${JAVA_HOME:-}" ] && [ -x "$JAVA_HOME/bin/javap" ]; then
+  JAVAP="$JAVA_HOME/bin/javap"
+else
+  JAVAP=javap
+fi
+
+FOUND_JAR=0
+for JAR in "$JAR_DIR"/basemod-*.jar; do
+  [ -f "$JAR" ] || continue      # glob 无匹配时会原样返回通配符本身
+  FOUND_JAR=1
+  # -p(全部成员)而非 -public:mixin 注入 private/protected 方法是常态,
+  # 只列 public 会让 AI 找不到方法、转而去猜描述符——正是本脚本要根除的行为。
+  if OUT=$("$JAVAP" -p -s -classpath "$JAR" "$CLASS" 2>/dev/null); then
+    printf '%s\n' "$OUT"
+    exit 0
+  fi
+done
+
+if [ "$FOUND_JAR" -eq 0 ]; then
+  echo "没找到任何前置 mod 的 jar($JAR_DIR/basemod-*.jar)" >&2
+  exit 1
+fi
+
+echo "在前置 mod 的 jar 里找不到类: $CLASS" >&2
+echo "提示: 类名要写全限定名(带包路径),区分大小写。" >&2
+echo "      不确定包路径 / 这里报找不到时,**别猜**——先 ./base-mod-api/classes <关键词> 搜真实类名" >&2
+echo "      (如 ./base-mod-api/classes $(echo "$CLASS" | sed 's#.*[.]##'));搜不到就说明这个类在前置里不存在,别硬用。" >&2
+exit 1

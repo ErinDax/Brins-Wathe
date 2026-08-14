@@ -1,0 +1,86 @@
+#!/bin/sh
+# AutoForge: 查前置 mod 在 data/ 里规定的**数据契约**。
+#
+#   用法:  ./base-mod-api/data                       # 列出所有前置 data/ 的目录概览
+#          ./base-mod-api/data <路径前缀>            # 列出该前缀下的文件
+#          ./base-mod-api/data <文件完整路径>        # 打印该文件内容
+#
+#   例:    ./base-mod-api/data
+#          ./base-mod-api/data trinkets/slots
+#          ./base-mod-api/data trinkets/slots/feet/aglet.json
+#
+# 为什么要查这里:前置对你的物品/方块的**硬性要求**常常只写在这些数据文件里
+# (要挂哪个 tag、要注册成什么类型、配方要什么格式)。这类要求在 API 签名里
+# 看不出来 —— 实现了接口、编译通过、游戏也不报错,但东西就是不工作。
+set -u
+
+SELF_DIR=$(cd "$(dirname "$0")" && pwd)
+JAR_DIR=$(cd "$SELF_DIR/../.." && pwd)      # 前置 jar 在构建目录(base-mod-api 的上上级)
+
+FOUND_JAR=0
+for JAR in "$JAR_DIR"/basemod-*.jar; do
+  [ -f "$JAR" ] || continue                 # glob 无匹配时原样返回通配符
+  FOUND_JAR=1
+done
+if [ "$FOUND_JAR" -eq 0 ]; then
+  echo "没找到任何前置 mod 的 jar($JAR_DIR/basemod-*.jar)" >&2
+  exit 1
+fi
+
+# 无参:给每个前置 jar 出一份 data/ 概览(按「命名空间/类型」聚合,只列前几条样例)
+if [ $# -lt 1 ]; then
+  for JAR in "$JAR_DIR"/basemod-*.jar; do
+    [ -f "$JAR" ] || continue
+    echo "=== $(basename "$JAR") 的 data/ ==="
+    LIST=$(unzip -Z1 "$JAR" 'data/*' 2>/dev/null | grep -v '/$')
+    if [ -z "$LIST" ]; then
+      echo "  (没有 data/ 目录 —— 这个前置不靠数据文件规定契约)"
+      continue
+    fi
+    # 聚合到 data/<命名空间>/<类型>/ 这一层,给出文件数与一条样例
+    printf '%s\n' "$LIST" | sed -n 's#^data/\([^/]*\)/\([^/]*\)/.*#\1/\2#p' | sort | uniq -c |
+      while read -r COUNT NS_TYPE; do
+        SAMPLE=$(printf '%s\n' "$LIST" | grep "^data/$NS_TYPE/" | head -1)
+        printf '  %-34s %4s 个文件   样例: %s\n' "$NS_TYPE" "$COUNT" "$SAMPLE"
+      done
+    echo ""
+  done
+  echo "看某一类:  ./base-mod-api/data <上面的路径>       例: ./base-mod-api/data trinkets/slots"
+  echo "看某个文件: ./base-mod-api/data data/<完整路径>    例: ./base-mod-api/data data/trinkets/slots/feet/aglet.json"
+  exit 0
+fi
+
+TARGET="$1"
+# 允许带或不带 data/ 前缀
+case "$TARGET" in
+  data/*) FULL="$TARGET" ;;
+  *)      FULL="data/$TARGET" ;;
+esac
+
+for JAR in "$JAR_DIR"/basemod-*.jar; do
+  [ -f "$JAR" ] || continue
+  # 完整文件路径 → 直接打印内容
+  if unzip -Z1 "$JAR" "$FULL" 2>/dev/null | grep -qx "$FULL"; then
+    echo "=== $FULL (来自 $(basename "$JAR")) ==="
+    unzip -p "$JAR" "$FULL"
+    exit 0
+  fi
+done
+
+# 不是完整文件 → 当成前缀列目录
+HIT=0
+for JAR in "$JAR_DIR"/basemod-*.jar; do
+  [ -f "$JAR" ] || continue
+  LIST=$(unzip -Z1 "$JAR" "$FULL/*" 2>/dev/null | grep -v '/$')
+  [ -n "$LIST" ] || continue
+  HIT=1
+  echo "=== $FULL/ (来自 $(basename "$JAR")) ==="
+  printf '%s\n' "$LIST" | head -80
+  TOTAL=$(printf '%s\n' "$LIST" | wc -l)
+  [ "$TOTAL" -gt 80 ] && echo "  ... 共 $TOTAL 个,只列了前 80 个"
+done
+[ "$HIT" -eq 1 ] && exit 0
+
+echo "前置 jar 的 data/ 里没有: $FULL" >&2
+echo "提示: 先跑 ./base-mod-api/data (无参) 看有哪些命名空间与类型。" >&2
+exit 1

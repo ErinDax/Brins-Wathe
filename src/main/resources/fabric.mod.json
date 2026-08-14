@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "brinswathe",
+  "version": "${version}",
+  "name": "Brin's Wathe",
+  "description": "Brin's Wathe - adds new roles and balance adjustments to the Wathe mod ecosystem",
+  "authors": [
+    "202037994@qq.com"
+  ],
+  "license": "CC0-1.0",
+	"icon": "assets/brinswathe/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "cn.autoforged.brinswathe.BrinsWathe"
+    ],
+    "cardinal-components": [
+      "cn.autoforged.brinswathe.BrinComponents"
+    ],
+    "client": [
+      "cn.autoforged.brinswathe.client.BrinsWatheClient"
+    ],
+    "fabric-datagen": [
+      "cn.autoforged.brinswathe.datagen.BrinsWatheDataGenerator"
+    ],
+    "voicechat": [
+      "cn.autoforged.brinswathe.voice.BrinVoiceChatPlugin"
+    ]
+  },
+  "custom": {
+    "cardinal-components": [
+      "brinswathe:stamina",
+      "brinswathe:puppeteer_control",
+      "brinswathe:stunt_double",
+      "brinswathe:medium",
+      "brinswathe:eavesdropper",
+      "brinswathe:watchman",
+      "brinswathe:trapper",
+      "brinswathe:nightmare",
+      "brinswathe:illusionist",
+      "brinswathe:berserker",
+      "brinswathe:archivist",
+      "brinswathe:boneharvester",
+      "brinswathe:compensator",
+      "brinswathe:gambler",
+      "brinswathe:penitent",
+      "brinswathe:sniper",
+      "brinswathe:zhangshi",
+      "brinswathe:bomb",
+      "brinswathe:mortician",
+      "brinswathe:avenger",
+      "brinswathe:stalker",
+      "brinswathe:cowboy",
+      "brinswathe:custom_winner"
+    ],
+    "autoforge:addon_depends": [
+      "kinswathe",
+      "harpymodloader",
+      "starexpress",
+      "noellesroles"
+    ]
+  },
+  "mixins": [
+    "brinswathe.mixins.json",
+    "brinswathe.stupid_express_compat.mixins.json",
+    {
+      "config": "brinswathe.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "voicechat": "*",
+    "kinswathe": "*",
+    "harpymodloader": "*",
+    "starexpress": "*",
+    "noellesroles": "*"
+  }
+}
