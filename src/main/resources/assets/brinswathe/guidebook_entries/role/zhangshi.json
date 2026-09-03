@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:zhangshi",
+  "subtitle": "guidebook.role.title.brin:zhangshi",
+  "keywords": ["guidebook.role.brin:zhangshi"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:zhangshi"
+  }]
+}

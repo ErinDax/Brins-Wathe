@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "cn.erindax.brinswathe.mixin",
+  "compatibilityLevel": "JAVA_21",
+    "mixins": ["BartenderShieldTimeoutMixin", "ExhaustedSprintMixin", "TaskRewardMixin", "Fast2FastAbilityCooldownMixin", "HackerAbilityRefreshMixin", "PlayerMixin", "PlayerPushTrackerMixin", "ShopMixin", "ShopEntryMixin", "EconomyMixin", "KillRewardMixin", "RoleArgumentMixin", "InitialBalanceMixin", "ModdedMurderGameModeInvoker", "VanillaRoleAssignmentMixin", "ForcedRefreshRoleMixin", "RoleModifierBlacklistMixin", "ForcedNeutralRoleMixin", "TrapperSurvivalExpertPairMixin", "BoneharvesterCleanerConflictMixin", "ChatRangeMixin", "SkipOfficialNearChatMixin", "BerserkerInvincibleMixin", "BerserkerRoundGuardMixin", "TrapperFangsEntityMixin", "TrapperRoundCleanupMixin", "BomberMineEntityMixin", "IllusionistCloneEntityMixin", "IllusionistCloneCollisionMixin", "IllusionistCloneHitboxMixin", "IllusionistClonePushMixin", "IllusionistModelDamageMixin", "IllusionistKillPlayerMixin", "IllusionistGunShootMixin", "IllusionistKnifeStabMixin", "PuppetDamageMixin", "PuppetKillPlayerMixin", "PuppetHitboxMixin", "PuppetCollisionMixin", "PuppetKnifeStabMixin", "MorticianDisguiseMixin", "ItemPickupMixin", "AvengerGunDropMixin", "KeyStackSizeMixin", "KeyLoreDoorMixin", "CompensatorReflectMixin", "CompensatorKillMixin", "BoneharvesterKillMixin", "PenitentKillTrackingMixin", "SniperKillTrackingMixin", "ZhangshiKillTrackingMixin", "ArchivistSealMixin", "ArchivistCleanerDissolveMixin", "ArchivistForgedCorpseMixin", "CustomWinnerCheckMixin", "CustomWinnerResetMixin", "CowboyDuelWinPauseMixin", "CowboyDuelGunMixin", "MuzzlerKillRewardMixin", "MuzzlerSilentMixin", "MuzzlerNotifySoundMixin", "MorphlingMixin", "ExecutionerMixin", "CancelChatCommands$MeCommandMixin", "CancelChatCommands$MsgCommandMixin", "CancelChatCommands$SayCommandMixin", "WatheCosmeticsSkinMixin", "TrainVoiceMixin", "ResurrectedDropMixin", "GuesserKillMixin", "PsychoArmourMixin", "KnifeSkinResolveMixin", "KnifeCycleMixin", "GameSettingsWeightsMixin", "WeightsEnabledMixin", "IcSupporterCommandMixin", "GunShootIcMixin", "GluttonMixin", "BottomlessMixin", "Fast2FastArmorMixin", "NullPoisonerGuardMixin", "NullSafeRoleMixin", "IcDeathMixin", "FakeKnifeSoundMixin", "KnifePrepareSoundMixin", "CorpseSpawnMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

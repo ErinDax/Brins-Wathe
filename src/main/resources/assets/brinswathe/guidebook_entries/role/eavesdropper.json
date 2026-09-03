@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:eavesdropper",
+  "subtitle": "guidebook.role.title.brin:eavesdropper",
+  "keywords": ["guidebook.role.brin:eavesdropper"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:eavesdropper"
+  }]
+}

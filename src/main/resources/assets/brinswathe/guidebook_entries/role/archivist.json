@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:archivist",
+  "subtitle": "guidebook.role.title.brin:archivist",
+  "keywords": ["guidebook.role.brin:archivist"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:archivist"
+  }]
+}

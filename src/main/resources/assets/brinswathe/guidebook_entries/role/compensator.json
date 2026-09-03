@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:compensator",
+  "subtitle": "guidebook.role.title.brin:compensator",
+  "keywords": ["guidebook.role.brin:compensator"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:compensator"
+  }]
+}

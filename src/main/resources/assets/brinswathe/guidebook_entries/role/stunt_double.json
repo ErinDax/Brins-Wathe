@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:stunt_double",
+  "subtitle": "guidebook.role.title.brin:stunt_double",
+  "keywords": ["guidebook.role.brin:stunt_double"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:stunt_double"
+  }]
+}

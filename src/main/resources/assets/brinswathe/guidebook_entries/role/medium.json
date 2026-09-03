@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:medium",
+  "subtitle": "guidebook.role.title.brin:medium",
+  "keywords": ["guidebook.role.brin:medium"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:medium"
+  }]
+}

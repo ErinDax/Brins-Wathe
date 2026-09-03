@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:cowboy",
+  "subtitle": "guidebook.role.title.brin:cowboy",
+  "keywords": ["guidebook.role.brin:cowboy"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:cowboy"
+  }]
+}

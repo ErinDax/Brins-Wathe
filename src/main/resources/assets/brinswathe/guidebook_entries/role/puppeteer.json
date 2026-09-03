@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:puppeteer",
+  "subtitle": "guidebook.role.title.brin:puppeteer",
+  "keywords": ["guidebook.role.brin:puppeteer"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:puppeteer"
+  }]
+}

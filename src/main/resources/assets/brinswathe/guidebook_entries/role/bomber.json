@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:bomber",
+  "subtitle": "guidebook.role.title.brin:bomber",
+  "keywords": ["guidebook.role.brin:bomber"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:bomber"
+  }]
+}

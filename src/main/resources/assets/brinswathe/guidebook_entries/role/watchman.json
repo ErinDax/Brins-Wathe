@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:watchman",
+  "subtitle": "guidebook.role.title.brin:watchman",
+  "keywords": ["guidebook.role.brin:watchman"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:watchman"
+  }]
+}
