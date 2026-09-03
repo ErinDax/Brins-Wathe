@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:avenger",
+  "subtitle": "guidebook.role.title.brin:avenger",
+  "keywords": ["guidebook.role.brin:avenger"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:avenger"
+  }]
+}

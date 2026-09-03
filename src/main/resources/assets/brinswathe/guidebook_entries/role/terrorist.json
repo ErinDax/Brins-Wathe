@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:terrorist",
+  "subtitle": "guidebook.role.title.brin:terrorist",
+  "keywords": ["guidebook.role.brin:terrorist"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:terrorist"
+  }]
+}

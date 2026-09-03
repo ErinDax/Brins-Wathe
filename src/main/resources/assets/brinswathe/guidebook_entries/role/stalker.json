@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:stalker",
+  "subtitle": "guidebook.role.title.brin:stalker",
+  "keywords": ["guidebook.role.brin:stalker"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:stalker"
+  }]
+}

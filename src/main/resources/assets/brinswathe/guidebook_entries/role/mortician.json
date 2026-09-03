@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:mortician",
+  "subtitle": "guidebook.role.title.brin:mortician",
+  "keywords": ["guidebook.role.brin:mortician"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:mortician"
+  }]
+}

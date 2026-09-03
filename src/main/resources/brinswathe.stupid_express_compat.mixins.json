@@ -1,0 +1,9 @@
+{
+  "required": false,
+  "package": "cn.erindax.brinswathe.mixin.compat.stupidexpress",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["StupidExpressNecromancerRevivalMixin", "StupidExpressThiefWinMixin", "StupidExpressThiefKeepAliveMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:berserker",
+  "subtitle": "guidebook.role.title.brin:berserker",
+  "keywords": ["guidebook.role.brin:berserker"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:berserker"
+  }]
+}

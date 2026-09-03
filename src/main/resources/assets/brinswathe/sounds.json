@@ -1,0 +1,26 @@
+{
+  "cowboy_showdown": {
+    "sounds": [
+      {
+        "name": "brinswathe:cowboy_showdown",
+        "stream": true,
+        "preload": false,
+        "volume": 1.0,
+        "attenuation_distance": 0
+      }
+    ]
+  },
+  "item.knife.prepare.puruisaissi": {
+    "sounds": [
+      {
+        "name": "wathe:item/knife_prepare_puruisaissi",
+        "attenuation_distance": 5
+      }
+    ]
+  },
+  "item.knife.prepare.maomochui": {
+    "sounds": [
+      "wathe:item/knife_prepare_maomochui"
+    ]
+  }
+}

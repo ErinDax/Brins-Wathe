@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "cn.erindax.brinswathe.client.mixin",
+  "compatibilityLevel": "JAVA_21",
+    "client": ["AbilityHudMixin", "BrinInventoryScreenMixin", "BrinInsaneReviveScreenMixin", "BrinMorphlingScreenMixin", "BrinMorphlingCapeMixin", "BrinLanguageMixin", "PlayerSkinMixin", "BrinShopScreenMixin", "BrinStoreItemWidgetMixin", "BrinStoreRendererMixin", "BuriedCorpseInstinctMixin", "HideInstinctMixin", "InvisibleInstinctMixin", "InstinctToggleMixin", "InstinctHudNameMixin", "TrapVisibilityMixin", "BombVisibilityMixin", "EntityRendererAccessor", "BuriedCorpseRenderMixin", "BoneharvestedCorpseRendererMixin", "IllusionistCloneRenderMixin", "IllusionistOwnerRenderMixin", "IllusionistHudMixin", "PuppetRenderMixin", "PuppetOwnerRenderMixin", "MorticianOwnerRenderMixin", "DisguisedNameTagMixin", "IllusionistRevolverTargetMixin", "IllusionistKnifeTargetMixin", "IllusionistBodyFreezeMixin", "SniperFovMixin", "StaminaRoleMixin", "WalkAnimationStateAccessor", "BrinCustomWinnerAnnouncementMixin", "BrinCustomWinnerTextMixin", "BrinCustomWinPlayerRendererMixin", "StarExpressAbilityKeyMixin", "NoelleAbilityKeyMixin", "ClientPlayerInteractionManagerTickMixin", "HeldItemRendererNullPlayerMixin", "ImmersiveFurnitureDataRaceMixin", "CowboyDuelLookLockMixin", "CowboyDuelistHideMixin", "CowboyDuelSpectatorIdentityMixin", "RpsKeyMixin", "VultureBodyOutlineMixin", "VultureBodyColorMixin", "BrinKinsCrosshairMixin", "BrinKnifeModelMixin", "BrinSwapHandsMixin", "BrinChatHudRenderMixin", "BrinChatHudAliveCheckMixin", "BrinCorpseGlowMixin", "BrinCorpseGlowColorMixin", "BrinFakeKnifeModelMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
