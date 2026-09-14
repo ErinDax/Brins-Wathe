@@ -1131,7 +1131,6 @@ public final class BrinConfig {
             case "berserker" -> item == ShopItem.PSYCHO_MODE;
             case "boneharvester", "illusionist", "mortician" ->
                 item == ShopItem.KNIFE || item == ShopItem.PSYCHO_MODE;
-            case "medium" -> item == ShopItem.REVOLVER;
             case "beast_trapper", "penitent", "puppeteer" -> item == ShopItem.KNIFE;
             case "sniper" -> item == ShopItem.REVOLVER;
             case "zhangshi" -> item == ShopItem.PSYCHO_MODE;
@@ -1159,7 +1158,7 @@ public final class BrinConfig {
         roles.put("civilian", civilianRole(0, 0, 350, true));
         roles.put("vigilante", civilianRole(200, 90, 350, false));
         roles.put("stunt_double", civilianRole(0, 30, 350, false).withSkillDuration(30));
-        roles.put("medium", civilianRole(200, 120, 500, true).withSkillDuration(8));
+        roles.put("medium", civilianRole(200, 120, 500, false).withSkillDuration(8));
         roles.put("eavesdropper", civilianRole(200, 200, 350, false).withSkillDuration(30));
         roles.put("watchman", civilianRole(250, 30, 350, false));
         roles.put("beast_trapper", role(75, 120, null, 100, 300, 300).withTrapLimit(1).withExtraTrapPrice(150).withTrapCatchReward(50));
@@ -1364,7 +1363,6 @@ public final class BrinConfig {
                 role.addProperty("skill_duration_seconds", settings.skill_duration_seconds);
             }
             case "medium" -> {
-                shopPrices.addProperty("revolver", settings.shop_prices.revolver);
                 role.addProperty("skill_cost", settings.skill_cost);
                 role.addProperty("skill_cooldown_seconds", settings.skill_cooldown_seconds);
                 role.addProperty("skill_duration_seconds", settings.skill_duration_seconds);

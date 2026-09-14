@@ -101,7 +101,7 @@ public final class BrinShopAccess {
         if (roleId == null) return null;
 
         List<ShopEntry> entries = switch (roleId) {
-            case "civilian", "medium", "eavesdropper", "watchman", "archivist" ->
+            case "civilian", "eavesdropper", "watchman", "archivist" ->
                 civilianRevolverShop(roleId);
             case "vigilante" -> List.of();
             case "nightmare" -> NightmareComponent.isNightmareHour(game, player)
@@ -173,7 +173,7 @@ public final class BrinShopAccess {
                     ShopEntry.Type.TOOL
                 ))
             ).toList();
-            case "avenger", "stalker", "terrorist", "cowboy" -> List.of();
+            case "avenger", "medium", "stalker", "terrorist", "cowboy" -> List.of();
             default -> null;
         };
         if (entries == null) return null;
