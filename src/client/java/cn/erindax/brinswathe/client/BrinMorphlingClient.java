@@ -6,7 +6,9 @@ import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import cn.erindax.brinswathe.network.BrinAbilityC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -28,18 +30,34 @@ public final class BrinMorphlingClient {
 
     public static List<UUID> deadTeammates(GameWorldComponent game, Player self) {
         List<UUID> targets = new ArrayList<>();
-        ClientPacketListener connection = Minecraft.getInstance().getConnection();
-        if (game == null || self == null || connection == null) return targets;
-        for (UUID teammateId : game.getAllKillerTeamPlayers()) {
-            if (teammateId.equals(self.getUUID())) continue;
-            if (connection.getPlayerInfo(teammateId) == null) continue;
-            Player teammate = self.level().getPlayerByUUID(teammateId);
-            if (teammate != null && GameFunctions.isPlayerAliveAndSurvival(teammate)) continue;
-            Role role = game.getRole(teammateId);
-            if (role == null || !role.canUseKiller()) continue;
-            targets.add(teammateId);
+        if (game == null || self == null) return targets;
+        Set<UUID> ids = new LinkedHashSet<>();
+        for (Player other : self.level().players()) {
+            if (isDeadKillerTeammate(game, self, other.getUUID(), other)) {
+                ids.add(other.getUUID());
+            }
         }
+        for (UUID teammateId : game.getAllKillerTeamPlayers()) {
+            Player other = self.level().getPlayerByUUID(teammateId);
+            if (isDeadKillerTeammate(game, self, teammateId, other)) {
+                ids.add(teammateId);
+            }
+        }
+        targets.addAll(ids);
         return targets;
+    }
+
+    private static boolean isDeadKillerTeammate(
+        GameWorldComponent game,
+        Player self,
+        UUID id,
+        Player other
+    ) {
+        if (id.equals(self.getUUID())) return false;
+        if (other != null && GameFunctions.isPlayerAliveAndSurvival(other)) return false;
+        Role role = game.getRole(id);
+        if (role != null) return role.canUseKiller();
+        return other != null;
     }
 
     @Nullable
