@@ -37,8 +37,8 @@ public final class BrinIcModifiers {
             BrinModifiers.GUESSER2,
             0x9E2B19,
             null,
-            null,
-            true,
+            new ArrayList<>(),
+            false,
             false
         ));
 
