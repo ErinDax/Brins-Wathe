@@ -25,9 +25,11 @@ public final class BrinConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 40;
+    private static final int CONFIG_VERSION = 41;
     private static final int ROLE_BALANCE_MIGRATION_VERSION = 39;
     private static final int AVENGER_INSTINCT_MIGRATION_VERSION = 40;
+    private static final int PUPPETEER_KNIFE_MIGRATION_VERSION = 41;
+    private static final int PREVIOUS_PUPPETEER_KNIFE_PRICE = 200;
     private static final int PREVIOUS_AVENGER_INSTINCT_SECONDS = 5;
     private static final int PREVIOUS_ARCHIVIST_SKILL_COST = 175;
     private static final int PREVIOUS_ARCHIVIST_SKILL_COOLDOWN_SECONDS = 120;
@@ -534,6 +536,11 @@ public final class BrinConfig {
                 roleId,
                 hasConfigurableShopPrice(roleId, ShopItem.KNIFE)
             );
+            if (sourceVersion < PUPPETEER_KNIFE_MIGRATION_VERSION
+                && "puppeteer".equals(roleId)
+                && knifePrice == PREVIOUS_PUPPETEER_KNIFE_PRICE) {
+                knifePrice = fallback.shop_prices.knife;
+            }
             int revolverPrice = configurableInt(
                 shopPrices,
                 "revolver",
@@ -1152,7 +1159,7 @@ public final class BrinConfig {
     }
     private static Data createDefaults() {
         LinkedHashMap<String, RoleSettings> roles = new LinkedHashMap<>();
-        roles.put("puppeteer", role(0, 200, null, 200, 300, 300)
+        roles.put("puppeteer", role(0, 200, null, 150, 300, 300)
             .withSkillDuration(60)
             .withPuppeteer(350, 60, 45));
         roles.put("civilian", civilianRole(0, 0, 350, true));

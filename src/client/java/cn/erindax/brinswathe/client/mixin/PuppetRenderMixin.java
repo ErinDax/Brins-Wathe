@@ -12,7 +12,8 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.resources.PlayerSkin;
-import net.minecraft.world.entity.WalkAnimationState;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -43,9 +44,6 @@ public abstract class PuppetRenderMixin {
         bodyRenderer.brinSetShadowRadius(0.5F);
 
         WalkAnimationStateAccessor carrierAnimation = (WalkAnimationStateAccessor) carrier.walkAnimation;
-        WalkAnimationState puppetAnimation = entity.walkAnimation;
-        WalkAnimationStateAccessor puppetAnimationAccessor = (WalkAnimationStateAccessor) puppetAnimation;
-
         float speedOld = carrierAnimation.brinGetSpeedOld();
         float speed = carrierAnimation.brinGetSpeed();
         float position = carrierAnimation.brinGetPosition();
@@ -57,25 +55,53 @@ public abstract class PuppetRenderMixin {
         float carrierHeadRotOld = carrier.yHeadRotO;
         float carrierXRot = carrier.getXRot();
         float carrierXRotOld = carrier.xRotO;
+        AbstractClientPlayer controller = BrinsWatheClient.puppetController(entity);
 
+        matrices.pushPose();
         try {
-            float puppetYaw = entity.getYRot();
-            carrierAnimation.brinSetSpeedOld(puppetAnimationAccessor.brinGetSpeedOld());
-            carrierAnimation.brinSetSpeed(puppetAnimationAccessor.brinGetSpeed());
-            carrierAnimation.brinSetPosition(puppetAnimationAccessor.brinGetPosition());
-            carrier.setYRot(puppetYaw);
-            carrier.yRotO = puppetYaw;
-            carrier.setYBodyRot(puppetYaw);
-            carrier.yBodyRotO = puppetYaw;
-            carrier.setYHeadRot(puppetYaw);
-            carrier.yHeadRotO = puppetYaw;
-            carrier.setXRot(entity.getXRot());
-            carrier.xRotO = entity.xRotO;
+            float renderYaw;
+            if (controller != null && PuppeteerControlComponent.isPuppet(entity)) {
+                Vec3 from = entity.getPosition(tickDelta);
+                Vec3 to = controller.getPosition(tickDelta);
+                matrices.translate(to.x - from.x, to.y - from.y, to.z - from.z);
+                if (carrier != controller) {
+                    WalkAnimationStateAccessor controllerAnimation =
+                        (WalkAnimationStateAccessor) controller.walkAnimation;
+                    carrierAnimation.brinSetSpeedOld(controllerAnimation.brinGetSpeedOld());
+                    carrierAnimation.brinSetSpeed(controllerAnimation.brinGetSpeed());
+                    carrierAnimation.brinSetPosition(controllerAnimation.brinGetPosition());
+                    carrier.setYRot(controller.getYRot());
+                    carrier.yRotO = controller.yRotO;
+                    carrier.setYBodyRot(controller.yBodyRot);
+                    carrier.yBodyRotO = controller.yBodyRotO;
+                    carrier.setYHeadRot(controller.getYHeadRot());
+                    carrier.yHeadRotO = controller.yHeadRotO;
+                    carrier.setXRot(controller.getXRot());
+                    carrier.xRotO = controller.xRotO;
+                }
+                renderYaw = Mth.rotLerp(tickDelta, carrier.yRotO, carrier.getYRot());
+            } else {
+                WalkAnimationStateAccessor puppetAnimation =
+                    (WalkAnimationStateAccessor) entity.walkAnimation;
+                carrierAnimation.brinSetSpeedOld(puppetAnimation.brinGetSpeedOld());
+                carrierAnimation.brinSetSpeed(puppetAnimation.brinGetSpeed());
+                carrierAnimation.brinSetPosition(puppetAnimation.brinGetPosition());
+                carrier.setYRot(entity.getYRot());
+                carrier.yRotO = entity.yRotO;
+                carrier.setYBodyRot(entity.yBodyRot);
+                carrier.yBodyRotO = entity.yBodyRotO;
+                carrier.setYHeadRot(entity.getYHeadRot());
+                carrier.yHeadRotO = entity.yHeadRotO;
+                carrier.setXRot(entity.getXRot());
+                carrier.xRotO = entity.xRotO;
+                renderYaw = Mth.rotLerp(tickDelta, entity.yRotO, entity.getYRot());
+            }
             BrinsWatheClient.beginPuppetModelRender(carrier, skin);
             EntityRenderer<? super AbstractClientPlayer> renderer = Minecraft.getInstance()
                 .getEntityRenderDispatcher().getRenderer(carrier);
-            renderer.render(carrier, puppetYaw, tickDelta, matrices, vertexConsumers, light);
+            renderer.render(carrier, renderYaw, tickDelta, matrices, vertexConsumers, light);
         } finally {
+            matrices.popPose();
             BrinsWatheClient.endPuppetModelRender();
             carrierAnimation.brinSetSpeedOld(speedOld);
             carrierAnimation.brinSetSpeed(speed);
