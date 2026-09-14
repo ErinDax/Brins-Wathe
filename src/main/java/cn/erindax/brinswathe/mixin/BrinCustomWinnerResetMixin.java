@@ -1,6 +1,5 @@
 package cn.erindax.brinswathe.mixin;
 
-import cn.erindax.brinswathe.BrinExecutioner;
 import cn.erindax.brinswathe.component.BrinCustomWinnerComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.level.ServerLevel;
@@ -14,6 +13,5 @@ public abstract class BrinCustomWinnerResetMixin {
     @Inject(method = "initializeGame", at = @At("HEAD"))
     private static void brinResetCustomWinner(ServerLevel serverLevel, CallbackInfo ci) {
         BrinCustomWinnerComponent.KEY.get(serverLevel).reset();
-        BrinExecutioner.resetRound();
     }
 }

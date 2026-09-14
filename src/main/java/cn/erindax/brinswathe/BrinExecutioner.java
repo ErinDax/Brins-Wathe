@@ -9,9 +9,7 @@ import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.util.AnnounceWelcomePayload;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.Util;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,19 +24,8 @@ import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 public final class BrinExecutioner {
     private static final int CONVERSION_BALANCE = 200;
     private static final int REVIVE_INVISIBILITY_TICKS = 600;
-    private static final Set<UUID> CONVERTED_THIS_ROUND = ConcurrentHashMap.newKeySet();
 
     private BrinExecutioner() {
-    }
-
-    public static void resetRound() {
-        CONVERTED_THIS_ROUND.clear();
-    }
-
-    public static boolean isInRound(GameWorldComponent game) {
-        if (!CONVERTED_THIS_ROUND.isEmpty()) return true;
-        Role role = BrinNoelleAccess.findRole(BrinNoelleAccess.EXECUTIONER_ID);
-        return role != null && !game.getAllWithRole(role).isEmpty();
     }
 
     public record KillFrame(Map<UUID, UUID> hiddenTargets, Vec3 deathPos) {
@@ -99,7 +86,6 @@ public final class BrinExecutioner {
         if (poison != null) poison.reset();
         game.sync();
         announce(executioner, game, newRole);
-        CONVERTED_THIS_ROUND.add(executioner.getUUID());
     }
 
     private static void revive(ServerPlayer executioner, Vec3 deathPos) {
