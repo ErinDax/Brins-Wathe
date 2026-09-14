@@ -460,6 +460,10 @@ public class BrinsWatheClient implements ClientModInitializer {
     public static KeyMapping getAbilityBind() {
         return KinsWatheInitializeClient.abilityBind;
     }
+    public static KeyMapping rpsBind() {
+        return rpsBind;
+    }
+
     public static KeyMapping shareAbilityBind(KeyMapping candidate) {
         KeyMapping shared = KinsWatheInitializeClient.abilityBind;
         if (shared == null) {
