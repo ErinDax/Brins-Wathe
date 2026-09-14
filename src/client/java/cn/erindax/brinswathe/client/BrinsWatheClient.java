@@ -784,6 +784,16 @@ public class BrinsWatheClient implements ClientModInitializer {
         return puppetModelRenderDepth > 0 && player == puppetSkinCarrier ? puppetSkinValue : null;
     }
     @Nullable
+    public static AbstractClientPlayer puppetController(PlayerBodyEntity entity) {
+        UUID puppeteerId = ((PuppetEntity) entity).brin$getPuppeteer();
+        if (puppeteerId != null
+            && entity.level().getPlayerByUUID(puppeteerId) instanceof AbstractClientPlayer puppeteer
+            && !puppeteer.isSpectator()) {
+            return puppeteer;
+        }
+        return null;
+    }
+    @Nullable
     public static AbstractClientPlayer puppetRenderCarrier(PlayerBodyEntity entity) {
         UUID skinId = entity.getPlayerUuid();
         if (skinId != null && entity.level().getPlayerByUUID(skinId) instanceof AbstractClientPlayer direct
