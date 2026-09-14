@@ -25,8 +25,10 @@ public final class BrinConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 39;
+    private static final int CONFIG_VERSION = 40;
     private static final int ROLE_BALANCE_MIGRATION_VERSION = 39;
+    private static final int AVENGER_INSTINCT_MIGRATION_VERSION = 40;
+    private static final int PREVIOUS_AVENGER_INSTINCT_SECONDS = 5;
     private static final int PREVIOUS_ARCHIVIST_SKILL_COST = 175;
     private static final int PREVIOUS_ARCHIVIST_SKILL_COOLDOWN_SECONDS = 120;
     private static final int PREVIOUS_COWBOY_SKILL_COST = 450;
@@ -383,7 +385,7 @@ public final class BrinConfig {
     }
     public static int avengerInstinctSeconds() {
         Integer seconds = settings("avenger").instinct_seconds;
-        return seconds == null ? 5 : seconds;
+        return seconds == null ? 6 : seconds;
     }
 
     public static String cowboyDuelAnnounceMessage() {
@@ -679,7 +681,7 @@ public final class BrinConfig {
                 , mineStunSeconds
                 , configurableOptionalIntOrDisabled(role, "particle_delay_seconds", fallback.particle_delay_seconds, roleId, "puppeteer".equals(roleId))
                 , configurableOptionalInt(role, "bomb_purchase_cooldown_seconds", fallback.bomb_purchase_cooldown_seconds, roleId, "bomber".equals(roleId))
-                , configurableOptionalInt(role, "instinct_seconds", fallback.instinct_seconds, roleId, "avenger".equals(roleId))
+                , migratedAvengerInstinct(role, fallback, roleId, sourceVersion)
                 , configurableOptionalInt(role, "glow_seconds", fallback.glow_seconds, roleId, "sniper".equals(roleId))
                 , configurableOptionalInt(role, "duel_timeout_seconds", fallback.duel_timeout_seconds, roleId, "cowboy".equals(roleId))
                 , configurableOptionalInt(role, "duel_countdown_seconds", fallback.duel_countdown_seconds, roleId, "cowboy".equals(roleId))
@@ -1062,6 +1064,27 @@ public final class BrinConfig {
         }
         return price;
     }
+    private static Integer migratedAvengerInstinct(
+        JsonObject role,
+        RoleSettings fallback,
+        String roleId,
+        int sourceVersion
+    ) {
+        Integer seconds = configurableOptionalInt(
+            role,
+            "instinct_seconds",
+            fallback.instinct_seconds,
+            roleId,
+            "avenger".equals(roleId)
+        );
+        if (sourceVersion < AVENGER_INSTINCT_MIGRATION_VERSION
+            && "avenger".equals(roleId)
+            && seconds != null
+            && seconds == PREVIOUS_AVENGER_INSTINCT_SECONDS) {
+            return fallback.instinct_seconds;
+        }
+        return seconds;
+    }
     private static Integer migratedPenitentStartingShield(
         JsonObject role,
         RoleSettings fallback,
@@ -1150,7 +1173,7 @@ public final class BrinConfig {
         roles.put("archivist", civilianRole(125, 30, 350, false));
         roles.put("avenger", civilianRole(0, 0, 350, false)
             .withSkillDuration(20)
-            .withAvengerInstinct(5));
+            .withAvengerInstinct(6));
         roles.put("stalker", civilianRole(0, 90, 350, false));
         roles.put("cowboy", civilianRole(500, 0, 350, false)
             .withCowboy(90, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0,

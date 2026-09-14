@@ -2,7 +2,6 @@ package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.BrinRoles;
 import cn.erindax.brinswathe.BrinShopAccess;
-import cn.erindax.brinswathe.component.AvengerComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.index.WatheItems;
 import java.util.ArrayList;
@@ -54,13 +53,6 @@ public abstract class ItemPickupMixin {
         if (gameWorld.isRole(player, BrinRoles.WATCHMAN)
             && BrinShopAccess.isSurvivalExpertExcludedItem(getItem())) {
             ci.cancel();
-        }
-
-        if (gameWorld.isRole(player, BrinRoles.AVENGER) && BrinShopAccess.isFirearm(getItem())) {
-            AvengerComponent avenger = AvengerComponent.KEY.get(player);
-            if (avenger == null || !avenger.hasGunWindow()) {
-                ci.cancel();
-            }
         }
     }
 
