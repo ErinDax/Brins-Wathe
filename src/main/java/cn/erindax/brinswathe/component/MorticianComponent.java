@@ -43,17 +43,35 @@ public class MorticianComponent implements AutoSyncedComponent, ServerTickingCom
     public UUID disguiseBodyId;
     @Nullable
     private Vec3 disguiseAnchor;
+    private int ambushTicks;
+    private boolean ambushKnifeRefund;
     public MorticianComponent(Player player) {
         this.player = player;
     }
     public boolean isDisguised() {
         return this.disguiseBodyId != null;
     }
+    public boolean markAmbushKnifeKill() {
+        if (this.ambushTicks <= 0) return false;
+        this.ambushTicks = 0;
+        this.ambushKnifeRefund = true;
+        return true;
+    }
+    public boolean consumeAmbushKnifeRefund() {
+        if (!this.ambushKnifeRefund) return false;
+        this.ambushKnifeRefund = false;
+        return true;
+    }
     @Override
     public void serverTick() {
 
         if (CowboyDuel.isActive()) return;
-        if (!(this.player instanceof ServerPlayer serverPlayer) || !this.isDisguised()) return;
+        if (!(this.player instanceof ServerPlayer serverPlayer)) return;
+        if (this.ambushTicks > 0) {
+            this.ambushTicks--;
+            if (this.ambushTicks == 0) this.ambushKnifeRefund = false;
+        }
+        if (!this.isDisguised()) return;
         if (!GameFunctions.isPlayerAliveAndSurvival(serverPlayer)) {
             this.endDisguise(serverPlayer, DisguiseEnd.OWNER_LOST);
             return;
@@ -109,6 +127,10 @@ public class MorticianComponent implements AutoSyncedComponent, ServerTickingCom
             if (ability != null) {
                 ability.setAbilityCooldown(BrinConfig.skillCooldownSeconds("mortician"));
             }
+            if (reason != DisguiseEnd.OWNER_LOST) {
+                this.ambushTicks = Math.max(0, BrinConfig.skillDurationSeconds("mortician")) * 20;
+                this.ambushKnifeRefund = false;
+            }
             serverPlayer.playNotifySound(SoundEvents.WOOL_BREAK, SoundSource.PLAYERS, 0.8F, 1.2F);
         }
         this.sync();
@@ -134,6 +156,8 @@ public class MorticianComponent implements AutoSyncedComponent, ServerTickingCom
         return ((MorticianDisguiseBody) body).brin$isMorticianDisguise();
     }
     public void reset() {
+        this.ambushTicks = 0;
+        this.ambushKnifeRefund = false;
         if (this.player instanceof ServerPlayer serverPlayer && this.isDisguised()) {
             this.endDisguise(serverPlayer, DisguiseEnd.RESET);
             return;
@@ -148,6 +172,7 @@ public class MorticianComponent implements AutoSyncedComponent, ServerTickingCom
     @Override
     public void readFromNbt(@NotNull CompoundTag tag, HolderLookup.Provider registryAccess) {
         this.disguiseBodyId = tag.hasUUID("disguiseBodyId") ? tag.getUUID("disguiseBodyId") : null;
+        this.ambushTicks = tag.getInt("ambushTicks");
         this.disguiseAnchor = tag.contains("disguiseAnchorX")
             ? new Vec3(
                 tag.getDouble("disguiseAnchorX"),
@@ -159,6 +184,7 @@ public class MorticianComponent implements AutoSyncedComponent, ServerTickingCom
     @Override
     public void writeToNbt(@NotNull CompoundTag tag, HolderLookup.Provider registryAccess) {
         if (this.disguiseBodyId != null) tag.putUUID("disguiseBodyId", this.disguiseBodyId);
+        tag.putInt("ambushTicks", this.ambushTicks);
         if (this.disguiseAnchor != null) {
             tag.putDouble("disguiseAnchorX", this.disguiseAnchor.x);
             tag.putDouble("disguiseAnchorY", this.disguiseAnchor.y);

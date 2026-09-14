@@ -1129,7 +1129,7 @@ public final class BrinConfig {
     }
     private static boolean hasConfigurableSkillDuration(String roleId) {
         return switch (roleId) {
-            case "avenger", "illusionist", "medium", "puppeteer", "stunt_double", "zhangshi" -> true;
+            case "avenger", "illusionist", "medium", "mortician", "puppeteer", "stunt_double", "zhangshi" -> true;
             default -> false;
         };
     }
@@ -1192,7 +1192,7 @@ public final class BrinConfig {
         roles.put("terrorist", role(0, 0, 0, 100, 300, 300)
             .withTerroristExplosion(5, 4)
             .withRevolverShopEnabled(false));
-        roles.put("mortician", role(0, 100, null, 100, 300, 300));
+        roles.put("mortician", role(0, 100, null, 100, 300, 300).withSkillDuration(5));
         roles.put("zhangshi", role(0, 90, null, 100, 300, 300)
             .withSkillDuration(10)
             .withXuezi(150, 200, 1)
@@ -1378,6 +1378,7 @@ public final class BrinConfig {
                 shopPrices.addProperty("knife", settings.shop_prices.knife);
                 shopPrices.addProperty("psycho_mode", settings.shop_prices.psycho_mode);
                 role.addProperty("skill_cooldown_seconds", settings.skill_cooldown_seconds);
+                role.addProperty("skill_duration_seconds", settings.skill_duration_seconds);
             }
             case "nightmare" -> {
                 role.addProperty("forced_sleep_task_cooldown_seconds", settings.forced_sleep_task_cooldown_seconds);
