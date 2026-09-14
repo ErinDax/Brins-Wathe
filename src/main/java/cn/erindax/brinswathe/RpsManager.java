@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,7 +101,7 @@ public final class RpsManager {
         int cooldown = inviteCooldowns.getOrDefault(challenger.getUUID(), 0);
         if (cooldown > 0) return;
         ServerPlayer target = challenger.server.getPlayerList().getPlayer(targetId);
-        if (target == null || target.level() != challenger.level() || !isPlayable(target)) {
+        if (target == null || target.level() != challenger.level() || !canPlayTogether(challenger, target)) {
             challenger.displayClientMessage(Component.translatable("message.brinswathe.rps.no_target"), true);
             return;
         }
@@ -129,8 +130,9 @@ public final class RpsManager {
         if (invite == null) return;
         ServerPlayer challenger = target.server.getPlayerList().getPlayer(invite.challengerId);
         dropInvite(invite);
-        if (challenger == null || !isPlayable(challenger) || !isPlayable(target)) {
+        if (challenger == null || !canPlayTogether(challenger, target)) {
             send(target, RpsStateS2CPacket.clear());
+            if (challenger != null) send(challenger, RpsStateS2CPacket.clear());
             return;
         }
         Match match = new Match(
@@ -194,7 +196,7 @@ public final class RpsManager {
             invite.ticksLeft--;
             ServerPlayer challenger = server.getPlayerList().getPlayer(invite.challengerId);
             ServerPlayer target = server.getPlayerList().getPlayer(invite.targetId);
-            if (invite.ticksLeft <= 0 || !isPlayable(challenger) || !isPlayable(target)) {
+            if (invite.ticksLeft <= 0 || !canPlayTogether(challenger, target)) {
                 iterator.remove();
                 invitesByChallenger.remove(invite.challengerId);
                 if (challenger != null) {
@@ -230,7 +232,7 @@ public final class RpsManager {
             ServerPlayer b = server.getPlayerList().getPlayer(match.playerB);
             hold(a, match.anchorA);
             hold(b, match.anchorB);
-            if (match.pickTicksLeft <= 0 || !isPlayable(a) || !isPlayable(b)) {
+            if (match.pickTicksLeft <= 0 || a == null || b == null) {
                 finish(server, match);
                 if (a != null) a.displayClientMessage(Component.translatable("message.brinswathe.rps.expired"), true);
                 if (b != null) b.displayClientMessage(Component.translatable("message.brinswathe.rps.expired"), true);
@@ -356,8 +358,18 @@ public final class RpsManager {
             || matches.containsKey(id);
     }
 
+    public static boolean canPlay(@Nullable Player player) {
+        return player != null
+            && (GameFunctions.isPlayerAliveAndSurvival(player) || player.isSpectator());
+    }
+    public static boolean canPlayTogether(@Nullable Player left, @Nullable Player right) {
+        if (!canPlay(left) || !canPlay(right)) return false;
+        boolean leftAlive = GameFunctions.isPlayerAliveAndSurvival(left);
+        boolean rightAlive = GameFunctions.isPlayerAliveAndSurvival(right);
+        return leftAlive == rightAlive;
+    }
     private static boolean isPlayable(@Nullable ServerPlayer player) {
-        return player != null && GameFunctions.isPlayerAliveAndSurvival(player);
+        return canPlay(player);
     }
     private static String name(@Nullable ServerPlayer player) {
         return player == null ? "?" : player.getGameProfile().getName();
