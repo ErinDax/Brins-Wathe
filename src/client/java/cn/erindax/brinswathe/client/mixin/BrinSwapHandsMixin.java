@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
+import cn.erindax.brinswathe.client.BrinsWatheClient;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -47,6 +48,7 @@ public abstract class BrinSwapHandsMixin {
         Object self = this;
         return self == client.options.keySwapOffhand
             || self == client.options.keyChat
-            || self == client.options.keyCommand;
+            || self == client.options.keyCommand
+            || self == BrinsWatheClient.rpsBind();
     }
 }
