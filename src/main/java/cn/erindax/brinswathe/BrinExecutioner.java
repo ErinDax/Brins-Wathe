@@ -8,10 +8,14 @@ import dev.doctor4t.wathe.client.gui.RoleAnnouncementTexts;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.util.AnnounceWelcomePayload;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.Util;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -24,16 +28,20 @@ import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 public final class BrinExecutioner {
     private static final int CONVERSION_BALANCE = 200;
     private static final int REVIVE_INVISIBILITY_TICKS = 600;
+    private static final ResourceLocation MODDED_BACKFIRE =
+        ResourceLocation.fromNamespaceAndPath("noellesroles", "modded_backfire");
+    private static final Set<UUID> CONVERTING = ConcurrentHashMap.newKeySet();
 
     private BrinExecutioner() {
     }
 
-    public record KillFrame(Map<UUID, UUID> hiddenTargets, Vec3 deathPos) {
+    public record KillFrame(Map<UUID, UUID> hiddenTargets, Vec3 deathPos, Set<UUID> aliveBeforeKill) {
     }
 
     public static KillFrame beginKill(Player victim) {
         Map<UUID, UUID> hidden = new HashMap<>();
-        KillFrame frame = new KillFrame(hidden, victim.position());
+        Set<UUID> aliveBeforeKill = new HashSet<>();
+        KillFrame frame = new KillFrame(hidden, victim.position(), aliveBeforeKill);
         if (victim.level().isClientSide || !GameFunctions.isPlayerAliveAndSurvival(victim)) return frame;
 
         GameWorldComponent game = GameWorldComponent.KEY.get(victim.level());
@@ -42,16 +50,35 @@ public final class BrinExecutioner {
         for (UUID executionerId : game.getAllWithRole(role)) {
             Player executioner = victim.level().getPlayerByUUID(executionerId);
             if (executioner == null) continue;
+            if (GameFunctions.isPlayerAliveAndSurvival(executioner)) {
+                aliveBeforeKill.add(executionerId);
+            }
             UUID target = BrinNoelleAccess.executionerTarget(executioner);
             if (target == null || !target.equals(victim.getUUID())) continue;
             hidden.put(executionerId, target);
+            CONVERTING.add(executionerId);
             BrinNoelleAccess.setExecutionerTarget(executioner, Util.NIL_UUID);
         }
         return frame;
     }
 
+    public static boolean allowDeath(Player victim, ResourceLocation deathReason) {
+        if (victim == null || deathReason == null) return true;
+        if (!MODDED_BACKFIRE.equals(deathReason)) return true;
+        return !CONVERTING.contains(victim.getUUID());
+    }
+
     public static void endKill(Player victim, Player killer, KillFrame frame) {
-        if (frame == null || frame.hiddenTargets().isEmpty()) return;
+        if (frame == null) return;
+        try {
+            endKillInner(victim, killer, frame);
+        } finally {
+            CONVERTING.removeAll(frame.hiddenTargets().keySet());
+        }
+    }
+
+    private static void endKillInner(Player victim, Player killer, KillFrame frame) {
+        if (frame.hiddenTargets().isEmpty()) return;
         GameWorldComponent game = GameWorldComponent.KEY.get(victim.level());
         boolean died = !GameFunctions.isPlayerAliveAndSurvival(victim);
 
@@ -61,7 +88,7 @@ public final class BrinExecutioner {
             BrinNoelleAccess.setExecutionerTarget(executioner, entry.getValue());
             if (!died || !(executioner instanceof ServerPlayer serverExecutioner)) continue;
             if (!isValidKill(game, serverExecutioner, killer)) continue;
-            convert(serverExecutioner, frame.deathPos(), game);
+            convert(serverExecutioner, frame.deathPos(), game, frame.aliveBeforeKill().contains(entry.getKey()));
         }
     }
 
@@ -71,10 +98,13 @@ public final class BrinExecutioner {
         return game.isInnocent(killer);
     }
 
-    private static void convert(ServerPlayer executioner, Vec3 deathPos, GameWorldComponent game) {
+    private static void convert(ServerPlayer executioner, Vec3 deathPos, GameWorldComponent game, boolean wasAlive) {
+        boolean shouldRevive = !wasAlive && (executioner.isSpectator() || executioner.isCreative());
         BrinNoelleAccess.setExecutionerWon(executioner, true);
-        if (executioner.isSpectator() || executioner.isCreative()) {
+        if (shouldRevive) {
             revive(executioner, deathPos);
+        } else if (wasAlive && !GameFunctions.isPlayerAliveAndSurvival(executioner)) {
+            executioner.setGameMode(GameType.ADVENTURE);
         }
 
         Role newRole = CompensatorPassive.drawRole(true);

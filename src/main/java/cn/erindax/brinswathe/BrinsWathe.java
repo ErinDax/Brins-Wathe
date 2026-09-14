@@ -227,6 +227,7 @@ public class BrinsWathe implements ModInitializer {
 	AllowPlayerDeath.EVENT.register((victim, attacker, deathReason) -> {
 		refreshJesterPsychoArmour(victim, deathReason);
 		if (CowboyDuel.isActive()) return true;
+		if (!BrinExecutioner.allowDeath(victim, deathReason)) return false;
 		if (StuntDoubleDeathTransfer.tryTransfer(victim, attacker, deathReason)) return false;
 		GameWorldComponent gameWorld = GameWorldComponent.KEY.get(victim.level());
 			if (gameWorld.isRole(victim, BrinRoles.NIGHTMARE) && attacker != null) {
