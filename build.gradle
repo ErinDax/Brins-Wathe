@@ -1,6 +1,5 @@
 plugins {
 	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
-	id 'maven-publish'
 }
 
 version = project.mod_version
@@ -12,8 +11,8 @@ base {
 
 repositories {
 	maven { url 'https://maven.ladysnake.org/releases' }
-	maven { url 'https://maven.wispforest.io/releases' }
 	maven { url 'https://maven.maxhenkel.de/repository/public' }
+	maven { url 'https://api.modrinth.com/maven' }
 }
 
 loom {
@@ -25,22 +24,25 @@ loom {
 			sourceSet sourceSets.client
 		}
 	}
-
 }
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
 	modCompileOnly "org.ladysnake.cardinal-components-api:cardinal-components-base:${project.cca_version}"
 	modCompileOnly "org.ladysnake.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
 	modCompileOnly "org.ladysnake.cardinal-components-api:cardinal-components-world:${project.cca_version}"
-	modCompileOnly "io.wispforest:endec:${project.endec_version}"
 	modCompileOnly "de.maxhenkel.voicechat:voicechat-api:2.6.20"
-	
+	modCompileOnly "maven.modrinth:immersive-furniture:0.1.2+1.21.1"
+
+	modImplementation "maven.modrinth:wathe:1.3.2-1.21.1"
+	modImplementation "maven.modrinth:kinswathe:1.6.3"
+	modImplementation "maven.modrinth:harpymodloader:1.2.4-h1.3"
+	modImplementation "maven.modrinth:starexpress:1.3.2"
+	modImplementation "maven.modrinth:yacl:3.8.2+1.21.1-fabric"
 }
 
 processResources {
@@ -57,41 +59,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
-	withSourcesJar()
-
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
-}
-
-jar {
-	def projectName = project.name
-	inputs.property "projectName", projectName
-
-	from("LICENSE") {
-		rename { "${it}_$projectName"}
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
 	}
-}
-
-publishing {
-	publications {
-		create("mavenJava", MavenPublication) {
-			from components.java
-		}
-	}
-
-	repositories {
-	}
-}
-
-repositories {
-    maven { url 'https://api.modrinth.com/maven' }
-}
-dependencies {
-    modImplementation 'maven.modrinth:kinswathe:YrxalQWa'
-    modImplementation 'maven.modrinth:harpymodloader:nMW4YJds'
-    modImplementation 'maven.modrinth:starexpress:I2GQp61o'
-    modImplementation 'maven.modrinth:yacl:o3cDn8Vp'
-    modImplementation 'maven.modrinth:wathe:3Kw6IUoN'
-    modCompileOnly 'maven.modrinth:immersive-furniture:0.1.2+1.21.1'
-    modImplementation 'maven.modrinth:owo-lib:m3XmDd8j'
 }
