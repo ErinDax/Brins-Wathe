@@ -43,8 +43,7 @@ public abstract class ItemPickupMixin {
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.level());
         if (gameWorld.isRole(player, ModRoles.BERSERKER)
-            || gameWorld.isRole(player, ModRoles.NIGHTMARE)
-            || gameWorld.isRole(player, ModRoles.MEDIUM)) {
+            || gameWorld.isRole(player, ModRoles.NIGHTMARE)) {
             if (getItem().is(WatheItems.REVOLVER)) {
                 ci.cancel();
             }
