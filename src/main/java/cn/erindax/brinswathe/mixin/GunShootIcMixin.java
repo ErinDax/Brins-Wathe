@@ -1,6 +1,5 @@
 package cn.erindax.brinswathe.mixin;
 
-import cn.erindax.brinswathe.Executioner;
 import cn.erindax.brinswathe.ModModifiers;
 import cn.erindax.brinswathe.NoelleAccess;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -36,9 +35,6 @@ public abstract class GunShootIcMixin {
             return false;
         }
         if (NoelleAccess.isRole(game, target, NoelleAccess.MIMIC_ID)) {
-            return false;
-        }
-        if (Executioner.isInRound(game)) {
             return false;
         }
         return original.call(game, target);
