@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
+import cn.erindax.brinswathe.BrinMorphlingAccess;
 import cn.erindax.brinswathe.BrinNoelleAccess;
 import cn.erindax.brinswathe.BrinRoles;
 import cn.erindax.brinswathe.client.BrinsWatheClient;
@@ -14,6 +15,7 @@ import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
 import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 
+import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -72,6 +74,12 @@ public abstract class AbilityHudMixin {
             && !BrinRoles.ignoresOpeningSafeTime(gameWorld, player)
             && brinAbilityCooldownTicks(player, gameWorld, ability) <= 0;
         Font font = Minecraft.getInstance().font;
+        int morphTicks = BrinMorphlingAccess.morphTicks(player);
+        if (morphTicks > 0) {
+            renderMorphlingDurationHud(context, font, morphTicks);
+            if (hideReadyHud) brinRenderBlindnessOverlay(context, tickCounter);
+            return;
+        }
         if (gameWorld.isRole(player, StarryExpressRoles.MUZZLER)) {
             renderMuzzlerAbilityHud(context, font, player);
             if (hideReadyHud) brinRenderBlindnessOverlay(context, tickCounter);
@@ -428,6 +436,17 @@ public abstract class AbilityHudMixin {
         int y = context.guiHeight() - font.lineHeight - 2;
         context.drawString(font, line, context.guiWidth() - font.width(line) - 2, y, color);
     }
+    private void renderMorphlingDurationHud(GuiGraphics context, Font font, int morphTicks) {
+        Component line = Component.translatable(
+            "tip.brinswathe.morphling.duration",
+            (morphTicks + 19) / 20
+        );
+        Role morphling = BrinNoelleAccess.findRole(BrinNoelleAccess.MORPHLING_ID);
+        int color = morphling == null ? 0xFFFFFF : morphling.color();
+        int y = context.guiHeight() - font.lineHeight - 2;
+        context.drawString(font, line, context.guiWidth() - font.width(line) - 2, y, color);
+    }
+
     private void renderMuzzlerAbilityHud(GuiGraphics context, Font font, LocalPlayer player) {
         MuzzlerAbilityComponent muzzler = MuzzlerAbilityComponent.KEY.get(player);
         AbilityComponent starryAbility = AbilityComponent.KEY.get(player);
