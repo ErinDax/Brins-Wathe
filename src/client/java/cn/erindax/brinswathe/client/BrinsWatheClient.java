@@ -153,10 +153,24 @@ public class BrinsWatheClient implements ClientModInitializer {
                         }
                     }
                 }
+            } else if (stack.getItem() instanceof RevolverItem) {
+                CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+                if (data != null) {
+                    var nbt = data.copyTag();
+                    if (nbt.contains("wathe_skin")) {
+                        String skin = nbt.getString("wathe_skin");
+                        String resolved = KnifeSkins.resolveGunSkinName(skin);
+                        if (KnifeSkins.shouldBrinRenderGun(resolved)) {
+                            lines.add(Component.translatable("tip.skin")
+                                .append(Component.literal(KnifeSkins.tooltipGunName(resolved))));
+                        }
+                    }
+                }
             }
         });
 
         KnifeSkinClient.init();
+        SkinUploadClient.init();
         InstinctClient.init();
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
             if (overlay || !EventLogScreen.isEventLog(message)) return true;
@@ -213,18 +227,19 @@ public class BrinsWatheClient implements ClientModInitializer {
                 if (player == null) return;
                 boolean applied = false;
                 for (ItemStack stack : player.getInventory().items) {
-                    if (brinApplyOfficialSkin(player, stack, payload.itemName(), payload.skinName())) {
+                    if (brinApplySkin(player, stack, payload.itemName(), payload.skinName())) {
                         applied = true;
                     }
                 }
                 for (ItemStack stack : player.getInventory().offhand) {
-                    if (brinApplyOfficialSkin(player, stack, payload.itemName(), payload.skinName())) {
+                    if (brinApplySkin(player, stack, payload.itemName(), payload.skinName())) {
                         applied = true;
                     }
                 }
                 if (!applied && "knife".equalsIgnoreCase(payload.itemName())) {
                     WatheCosmetics.setSkin(player, new ItemStack(WatheItems.KNIFE), payload.skinName());
                 }
+                KnifeSkinClient.refreshHeldItems();
             }));
         ClientPlayNetworking.registerGlobalReceiver(IcNightVisionS2CPacket.TYPE, (payload, context) ->
             context.client().execute(() -> {
@@ -447,17 +462,10 @@ public class BrinsWatheClient implements ClientModInitializer {
     public static int getBlindFlashRemaining() {
         return blindFlashRemaining;
     }
-    private static boolean brinApplyOfficialSkin(LocalPlayer player, ItemStack stack, String itemName, String skinName) {
-        if (stack.isEmpty()) return false;
-        if ("knife".equalsIgnoreCase(itemName) && stack.is(WatheItems.KNIFE)) {
-            WatheCosmetics.setSkin(player, stack, skinName);
-            return true;
-        }
-        if ("gun".equalsIgnoreCase(itemName) && stack.getItem() instanceof RevolverItem) {
-            WatheCosmetics.setSkin(player, stack, skinName);
-            return true;
-        }
-        return false;
+    private static boolean brinApplySkin(LocalPlayer player, ItemStack stack, String itemName, String skinName) {
+        if (!KnifeSkins.applySkin(stack, itemName, skinName)) return false;
+        WatheCosmetics.setSkin(player, stack, skinName);
+        return true;
     }
     @Nullable
     public static KeyMapping getAbilityBind() {

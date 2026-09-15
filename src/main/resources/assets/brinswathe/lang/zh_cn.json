@@ -258,5 +258,12 @@
   "command.starexpress.allergic.not_allergic": "%s 不是过敏患者",
   "command.starexpress.allergic.updated": "已将 %s 的过敏类型改为 %s",
   "hud.allergic.type.food": "食物",
-  "hud.allergic.type.drink": "饮料"
+  "hud.allergic.type.drink": "饮料",
+  "message.brinswathe.skin.denied": "只有皮肤编辑白名单中的玩家可以上传或更改皮肤",
+  "message.brinswathe.skin.upload_failed": "上传失败：贴图必须是 PNG，音效必须是 OGG，且各不超过 512KB",
+  "message.brinswathe.skin.uploaded": "已上传并同步 %s 皮肤：%s",
+  "message.brinswathe.skin.cancelled": "已取消皮肤上传",
+  "message.brinswathe.skin.pick_texture": "请选择一张 PNG 贴图",
+  "message.brinswathe.skin.pick_sound": "请选择一个 OGG 音效，或取消以不上传音效",
+  "message.brinswathe.skin.invalid_type": "无效物品类型（可用: knife / gun）"
 }

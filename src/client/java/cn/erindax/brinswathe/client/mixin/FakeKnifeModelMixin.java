@@ -24,6 +24,9 @@ public abstract class FakeKnifeModelMixin {
                 KnifeSkinClient.modelId(name, true)
             );
         }
+        for (String name : KnifeSkins.extraGunModelSkinNames()) {
+            pluginContext.addModels(KnifeSkinClient.gunModelId(name));
+        }
         ModelResourceLocation fakeKnifeModelId = new ModelResourceLocation(
             ResourceLocation.fromNamespaceAndPath("noellesroles", "fake_knife"),
             "inventory"

@@ -258,5 +258,12 @@
   "command.starexpress.allergic.not_allergic": "%s is not allergic",
   "command.starexpress.allergic.updated": "Updated %s allergy type to %s",
   "hud.allergic.type.food": "food",
-  "hud.allergic.type.drink": "drink"
+  "hud.allergic.type.drink": "drink",
+  "message.brinswathe.skin.denied": "Only skin editors can upload or change skins",
+  "message.brinswathe.skin.upload_failed": "Upload failed: texture must be PNG, sound must be OGG, and each must be at most 512KB",
+  "message.brinswathe.skin.uploaded": "Uploaded and synced %s skin: %s",
+  "message.brinswathe.skin.cancelled": "Skin upload cancelled",
+  "message.brinswathe.skin.pick_texture": "Choose a PNG texture",
+  "message.brinswathe.skin.pick_sound": "Choose an OGG sound, or cancel to skip sound",
+  "message.brinswathe.skin.invalid_type": "Invalid item type (use knife / gun)"
 }

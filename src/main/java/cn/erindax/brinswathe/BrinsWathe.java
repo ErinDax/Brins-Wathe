@@ -1,11 +1,6 @@
 package cn.erindax.brinswathe;
 
-import cn.erindax.brinswathe.command.SetBrinSpeedCommand;
-import cn.erindax.brinswathe.command.ConfigCommand;
-import cn.erindax.brinswathe.command.IcCommands;
-import cn.erindax.brinswathe.command.ForceRefreshRoleCommand;
-import cn.erindax.brinswathe.command.RoleModifierBlacklistCommand;
-import cn.erindax.brinswathe.command.SetRoleCountCommand;
+import cn.erindax.brinswathe.command.ConfigCommands;
 import cn.erindax.brinswathe.component.ArchivistComponent;
 import cn.erindax.brinswathe.component.BerserkerComponent;
 import cn.erindax.brinswathe.component.BombComponent;
@@ -39,6 +34,9 @@ import cn.erindax.brinswathe.network.InstinctSnapshotS2CPacket;
 import cn.erindax.brinswathe.network.KnifeSkinApplyS2CPacket;
 import cn.erindax.brinswathe.network.KnifeSkinListS2CPacket;
 import cn.erindax.brinswathe.network.ResourceReloadS2CPacket;
+import cn.erindax.brinswathe.network.SkinSoundS2CPacket;
+import cn.erindax.brinswathe.network.SkinUploadC2SPacket;
+import cn.erindax.brinswathe.network.SkinUploadPromptS2CPacket;
 import cn.erindax.brinswathe.network.CowboyShowdownMusicS2CPacket;
 import cn.erindax.brinswathe.network.CowboyDuelHideS2CPacket;
 import cn.erindax.brinswathe.network.CowboyDuelIdentityS2CPacket;
@@ -149,6 +147,9 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(InstinctSnapshotS2CPacket.TYPE, InstinctSnapshotS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(KnifeSkinListS2CPacket.TYPE, KnifeSkinListS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(KnifeSkinApplyS2CPacket.TYPE, KnifeSkinApplyS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(SkinUploadC2SPacket.TYPE, SkinUploadC2SPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(SkinUploadPromptS2CPacket.TYPE, SkinUploadPromptS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(SkinSoundS2CPacket.TYPE, SkinSoundS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(IcNightVisionS2CPacket.TYPE, IcNightVisionS2CPacket.STREAM_CODEC);
 		registerPackets();
 		registerConfigSync();
@@ -691,6 +692,38 @@ public class BrinsWathe implements ModInitializer {
 			InstinctC2SPacket.TYPE,
 			(payload, context) -> InstinctSnapshots.setEnabled(context.player().getUUID(), payload.enabled())
 		);
+		ServerPlayNetworking.registerGlobalReceiver(
+			SkinUploadC2SPacket.TYPE,
+			(payload, context) -> {
+				ServerPlayer player = context.player();
+				if (!SkinEditors.canEdit(player)) {
+					player.sendSystemMessage(Component.translatable("message.brinswathe.skin.denied"));
+					return;
+				}
+				byte[] sound = payload.sound() == null ? new byte[0] : payload.sound();
+				if (payload.texture() == null || payload.texture().length + sound.length > 900_000) {
+					player.sendSystemMessage(Component.translatable("message.brinswathe.skin.upload_failed"));
+					return;
+				}
+				String accepted = KnifeSkins.acceptUpload(
+					payload.kind(),
+					payload.name(),
+					payload.tooltipName(),
+					payload.texture(),
+					sound
+				);
+				if (accepted == null) {
+					player.sendSystemMessage(Component.translatable("message.brinswathe.skin.upload_failed"));
+					return;
+				}
+				KnifeSkins.syncToAll(player.server);
+				player.sendSystemMessage(Component.translatable(
+					"message.brinswathe.skin.uploaded",
+					SkinEditors.normalizeType(payload.kind()),
+					accepted
+				));
+			}
+		);
 	}
 	private void handlePuppeteerCraft(ServerPlayer player, GameWorldComponent gameWorld,
 	                                  AbilityC2SPacket payload) {
@@ -1196,12 +1229,7 @@ public class BrinsWathe implements ModInitializer {
 
     private void registerCommands() {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-			ConfigCommand.register(dispatcher);
-			SetBrinSpeedCommand.register(dispatcher);
-			SetRoleCountCommand.register(dispatcher);
-			ForceRefreshRoleCommand.register(dispatcher);
-			RoleModifierBlacklistCommand.register(dispatcher);
-			IcCommands.register(dispatcher);
+			ConfigCommands.register(dispatcher);
 		});
 	}
 

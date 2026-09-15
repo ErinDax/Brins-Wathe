@@ -27,6 +27,7 @@ public abstract class FakeKnifeSoundMixin {
     ) {
         ItemStack stack = user.getUseItem();
         if (stack.isEmpty()) stack = user.getMainHandItem();
+        if (ModSounds.playDynamicKnifePrepare(user, stack, volume, pitch)) return;
         original.call(user, ModSounds.knifePrepare(stack), ModSounds.knifePrepareVolume(stack), pitch);
     }
 }

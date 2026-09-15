@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.KnifeSkins;
+import dev.doctor4t.wathe.item.RevolverItem;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -18,7 +19,9 @@ public interface WatheCosmeticsSkinMixin {
         var nbt = data.copyTag();
         if (nbt.contains("wathe_skin")) {
             String raw = nbt.getString("wathe_skin");
-            String resolved = KnifeSkins.resolveKnifeSkinName(raw);
+            String resolved = stack.getItem() instanceof RevolverItem
+                ? KnifeSkins.resolveGunSkinName(raw)
+                : KnifeSkins.resolveKnifeSkinName(raw);
             cir.setReturnValue(resolved == null || resolved.isBlank() ? raw : resolved);
         }
     }

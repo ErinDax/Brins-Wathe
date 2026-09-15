@@ -15,15 +15,20 @@ public record KnifeSkinListS2CPacket(List<SkinEntry> skins) implements CustomPac
     public static final StreamCodec<RegistryFriendlyByteBuf, KnifeSkinListS2CPacket> STREAM_CODEC =
         StreamCodec.of(KnifeSkinListS2CPacket::write, KnifeSkinListS2CPacket::read);
 
-    public record SkinEntry(String name, String tooltipName, byte[] texture) {
+    public record SkinEntry(String type, String name, String tooltipName, byte[] texture, byte[] sound) {
+        public SkinEntry(String name, String tooltipName, byte[] texture) {
+            this("knife", name, tooltipName, texture, new byte[0]);
+        }
     }
 
     private static void write(RegistryFriendlyByteBuf buf, KnifeSkinListS2CPacket packet) {
         buf.writeVarInt(packet.skins.size());
         for (SkinEntry entry : packet.skins) {
+            buf.writeUtf(entry.type);
             buf.writeUtf(entry.name);
             buf.writeUtf(entry.tooltipName);
             buf.writeByteArray(entry.texture);
+            buf.writeByteArray(entry.sound);
         }
     }
 
@@ -31,7 +36,13 @@ public record KnifeSkinListS2CPacket(List<SkinEntry> skins) implements CustomPac
         int size = buf.readVarInt();
         List<SkinEntry> skins = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            skins.add(new SkinEntry(buf.readUtf(), buf.readUtf(), buf.readByteArray()));
+            skins.add(new SkinEntry(
+                buf.readUtf(),
+                buf.readUtf(),
+                buf.readUtf(),
+                buf.readByteArray(),
+                buf.readByteArray()
+            ));
         }
         return new KnifeSkinListS2CPacket(skins);
     }
