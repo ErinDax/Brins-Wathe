@@ -12,17 +12,17 @@ import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.VoicechatServerStartedEvent;
 import de.maxhenkel.voicechat.api.events.VoicechatServerStoppedEvent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
+import dev.doctor4t.wathe.compat.TrainVoicePlugin;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public final class BrinVoiceChatPlugin implements VoicechatPlugin {
     private static volatile VoicechatServerApi serverApi;
     private static final String TRAIN_GROUP_NAME = "Train Spectators";
-    private static final UUID TRAIN_GROUP_ID = UUID.randomUUID();
-    private static volatile Group trainGroup;
 
     @Override
     public String getPluginId() {
@@ -39,25 +39,24 @@ public final class BrinVoiceChatPlugin implements VoicechatPlugin {
     @Override
     public void registerEvents(EventRegistration registration) {
         registration.registerEvent(VoicechatServerStartedEvent.class, event -> serverApi = event.getVoicechat());
-        registration.registerEvent(VoicechatServerStoppedEvent.class, event -> serverApi = null);
+        registration.registerEvent(VoicechatServerStoppedEvent.class, event -> {
+            serverApi = null;
+            TrainVoicePlugin.GROUP = null;
+        });
     }
 
     public static boolean addPlayer(UUID playerId) {
         if (serverApi == null) return false;
         VoicechatConnection connection = serverApi.getConnectionOf(playerId);
         if (connection == null) return false;
-        if (trainGroup == null) {
-            trainGroup = serverApi.groupBuilder()
-                .setHidden(true)
-                .setId(TRAIN_GROUP_ID)
-                .setName(TRAIN_GROUP_NAME)
-                .setPersistent(true)
-                .setType(Group.Type.OPEN)
-                .build();
+        Group group = canonicalTrainGroup();
+        if (group == null) {
+            TrainVoicePlugin.addPlayer(playerId);
+            group = canonicalTrainGroup();
         }
-        if (trainGroup == null) return false;
-        connection.setGroup(trainGroup);
-        return isInTrainChannel(playerId);
+        if (group == null) return false;
+        connection.setGroup(group);
+        return isInCanonicalTrainGroup(connection);
     }
 
     public static void resetPlayer(UUID playerId) {
@@ -80,10 +79,7 @@ public final class BrinVoiceChatPlugin implements VoicechatPlugin {
 
     public static boolean isInTrainChannel(UUID playerId) {
         if (serverApi == null) return false;
-        VoicechatConnection connection = serverApi.getConnectionOf(playerId);
-        return connection != null && connection.isInGroup()
-            && connection.getGroup() != null
-            && TRAIN_GROUP_NAME.equals(connection.getGroup().getName());
+        return isInCanonicalTrainGroup(serverApi.getConnectionOf(playerId));
     }
 
     public static boolean isInSameTemporaryChannel(ServerPlayer first, ServerPlayer second) {
@@ -157,6 +153,7 @@ public final class BrinVoiceChatPlugin implements VoicechatPlugin {
             if (isInTrainChannel(player.getUUID())) continue;
             addPlayer(player.getUUID());
         }
+        removeDuplicateTrainGroups(server);
     }
 
     public static void endTemporaryChannel(ServerPlayer player) {
@@ -190,11 +187,74 @@ public final class BrinVoiceChatPlugin implements VoicechatPlugin {
         }
     }
 
+    private static Group canonicalTrainGroup() {
+        if (serverApi == null) return null;
+        UUID cachedId = groupId(TrainVoicePlugin.GROUP);
+        if (cachedId != null) {
+            Group live = liveGroup(cachedId);
+            if (live != null) return live;
+            TrainVoicePlugin.GROUP = null;
+        }
+        Group byId = liveGroup(TrainVoicePlugin.GROUP_ID);
+        if (byId != null) {
+            TrainVoicePlugin.GROUP = byId;
+            return byId;
+        }
+        return null;
+    }
+
+    private static boolean isInCanonicalTrainGroup(VoicechatConnection connection) {
+        if (connection == null || !connection.isInGroup()) return false;
+        UUID keepId = groupId(canonicalTrainGroup());
+        UUID currentId = groupId(connection.getGroup());
+        return keepId != null && keepId.equals(currentId);
+    }
+
+    private static void removeDuplicateTrainGroups(MinecraftServer server) {
+        Group keep = canonicalTrainGroup();
+        UUID keepId = groupId(keep);
+        if (keepId == null) return;
+        for (Group group : new ArrayList<>(serverApi.getGroups())) {
+            UUID id = groupId(group);
+            if (id == null || keepId.equals(id) || !TRAIN_GROUP_NAME.equals(groupName(group))) continue;
+            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                VoicechatConnection connection = serverApi.getConnectionOf(player.getUUID());
+                if (connection == null || !id.equals(groupId(connection.getGroup()))) continue;
+                connection.setGroup(keep);
+            }
+            serverApi.removeGroup(id);
+        }
+    }
+
+    private static Group liveGroup(UUID id) {
+        if (serverApi == null || id == null) return null;
+        Group group = serverApi.getGroup(id);
+        return groupId(group) == null ? null : group;
+    }
+
+    private static UUID groupId(Group group) {
+        if (group == null) return null;
+        try {
+            return group.getId();
+        } catch (RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    private static String groupName(Group group) {
+        if (group == null) return null;
+        try {
+            return group.getName();
+        } catch (RuntimeException ignored) {
+            return null;
+        }
+    }
+
     private static void leaveGroup(ServerPlayer player, UUID channelId) {
         if (serverApi == null) return;
         VoicechatConnection connection = serverApi.getConnectionOf(player.getUUID());
-        if (connection != null && connection.isInGroup()
-            && channelId.equals(connection.getGroup().getId())) {
+        UUID currentId = connection == null ? null : groupId(connection.getGroup());
+        if (channelId.equals(currentId)) {
             connection.setGroup(null);
         }
     }
