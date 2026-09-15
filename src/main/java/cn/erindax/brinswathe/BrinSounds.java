@@ -5,7 +5,9 @@ import dev.doctor4t.wathe.index.WatheSounds;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public final class BrinSounds {
@@ -17,6 +19,15 @@ public final class BrinSounds {
     }
 
     public static void init() {
+    }
+
+    public static boolean playDynamicKnifePrepare(Player user, ItemStack stack, float volume, float pitch) {
+        String skin = BrinKnifeSkins.resolveKnifeSkinName(WatheCosmetics.getSkin(stack));
+        if (!BrinKnifeSkins.hasSound("knife", skin)) return false;
+        if (user instanceof ServerPlayer serverPlayer) {
+            BrinKnifeSkins.broadcastSound(serverPlayer, "knife", skin, volume, pitch);
+        }
+        return true;
     }
 
     public static SoundEvent knifePrepare(ItemStack stack) {

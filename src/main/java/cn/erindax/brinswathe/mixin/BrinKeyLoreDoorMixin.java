@@ -19,9 +19,8 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(SmallDoorBlock.class)
 public abstract class BrinKeyLoreDoorMixin {
     @WrapOperation(
-        method = {"useWithoutItem", "onUse"},
-        at = @At(value = "INVOKE", target = "Ljava/util/List;getFirst()Ljava/lang/Object;"),
-        require = 0
+        method = "useWithoutItem",
+        at = @At(value = "INVOKE", target = "Ljava/util/List;getFirst()Ljava/lang/Object;")
     )
     private Object brinMatchAnyKeyLore(
         List<?> lines,

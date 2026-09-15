@@ -1,11 +1,6 @@
 package cn.erindax.brinswathe;
 
-import cn.erindax.brinswathe.command.SetBrinSpeedCommand;
-import cn.erindax.brinswathe.command.BrinConfigCommand;
-import cn.erindax.brinswathe.command.BrinIcCommands;
-import cn.erindax.brinswathe.command.ForceRefreshRoleCommand;
-import cn.erindax.brinswathe.command.RoleModifierBlacklistCommand;
-import cn.erindax.brinswathe.command.SetRoleCountCommand;
+import cn.erindax.brinswathe.command.BrinConfigCommands;
 import cn.erindax.brinswathe.component.ArchivistComponent;
 import cn.erindax.brinswathe.component.BerserkerComponent;
 import cn.erindax.brinswathe.component.BombComponent;
@@ -39,6 +34,9 @@ import cn.erindax.brinswathe.network.BrinInstinctSnapshotS2CPacket;
 import cn.erindax.brinswathe.network.BrinKnifeSkinApplyS2CPacket;
 import cn.erindax.brinswathe.network.BrinKnifeSkinListS2CPacket;
 import cn.erindax.brinswathe.network.BrinResourceReloadS2CPacket;
+import cn.erindax.brinswathe.network.BrinSkinSoundS2CPacket;
+import cn.erindax.brinswathe.network.BrinSkinUploadC2SPacket;
+import cn.erindax.brinswathe.network.BrinSkinUploadPromptS2CPacket;
 import cn.erindax.brinswathe.network.CowboyShowdownMusicS2CPacket;
 import cn.erindax.brinswathe.network.CowboyDuelHideS2CPacket;
 import cn.erindax.brinswathe.network.CowboyDuelIdentityS2CPacket;
@@ -149,6 +147,9 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(BrinInstinctSnapshotS2CPacket.TYPE, BrinInstinctSnapshotS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinKnifeSkinListS2CPacket.TYPE, BrinKnifeSkinListS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinKnifeSkinApplyS2CPacket.TYPE, BrinKnifeSkinApplyS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(BrinSkinUploadC2SPacket.TYPE, BrinSkinUploadC2SPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(BrinSkinUploadPromptS2CPacket.TYPE, BrinSkinUploadPromptS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(BrinSkinSoundS2CPacket.TYPE, BrinSkinSoundS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinIcNightVisionS2CPacket.TYPE, BrinIcNightVisionS2CPacket.STREAM_CODEC);
 		registerPackets();
 		registerConfigSync();
@@ -691,6 +692,38 @@ public class BrinsWathe implements ModInitializer {
 			BrinInstinctC2SPacket.TYPE,
 			(payload, context) -> BrinInstinctSnapshots.setEnabled(context.player().getUUID(), payload.enabled())
 		);
+		ServerPlayNetworking.registerGlobalReceiver(
+			BrinSkinUploadC2SPacket.TYPE,
+			(payload, context) -> {
+				ServerPlayer player = context.player();
+				if (!BrinSkinEditors.canEdit(player)) {
+					player.sendSystemMessage(Component.translatable("message.brinswathe.skin.denied"));
+					return;
+				}
+				byte[] sound = payload.sound() == null ? new byte[0] : payload.sound();
+				if (payload.texture() == null || payload.texture().length + sound.length > 900_000) {
+					player.sendSystemMessage(Component.translatable("message.brinswathe.skin.upload_failed"));
+					return;
+				}
+				String accepted = BrinKnifeSkins.acceptUpload(
+					payload.kind(),
+					payload.name(),
+					payload.tooltipName(),
+					payload.texture(),
+					sound
+				);
+				if (accepted == null) {
+					player.sendSystemMessage(Component.translatable("message.brinswathe.skin.upload_failed"));
+					return;
+				}
+				BrinKnifeSkins.syncToAll(player.server);
+				player.sendSystemMessage(Component.translatable(
+					"message.brinswathe.skin.uploaded",
+					BrinSkinEditors.normalizeType(payload.kind()),
+					accepted
+				));
+			}
+		);
 	}
 	private void handlePuppeteerCraft(ServerPlayer player, GameWorldComponent gameWorld,
 	                                  BrinAbilityC2SPacket payload) {
@@ -1196,12 +1229,7 @@ public class BrinsWathe implements ModInitializer {
 
     private void registerCommands() {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-			BrinConfigCommand.register(dispatcher);
-			SetBrinSpeedCommand.register(dispatcher);
-			SetRoleCountCommand.register(dispatcher);
-			ForceRefreshRoleCommand.register(dispatcher);
-			RoleModifierBlacklistCommand.register(dispatcher);
-			BrinIcCommands.register(dispatcher);
+			BrinConfigCommands.register(dispatcher);
 		});
 	}
 
