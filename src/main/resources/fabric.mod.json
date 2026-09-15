@@ -55,7 +55,7 @@
   },
   "mixins": [
     "brinswathe.mixins.json",
-    "brinswathe.stupid_express_compat.mixins.json",
+    "brinswathe.stupidexpress.mixins.json",
     {
       "config": "brinswathe.client.mixins.json",
       "environment": "client"

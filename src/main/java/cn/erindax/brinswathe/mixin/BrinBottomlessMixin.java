@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FoodPlatterBlock.class)
 public abstract class BrinBottomlessMixin {
-    @Inject(method = {"useWithoutItem", "onUse"}, at = @At("HEAD"), cancellable = true, require = 0)
+    @Inject(method = "useWithoutItem", at = @At("HEAD"), cancellable = true)
     private void brinBottomlessTakeAgain(
         BlockState state,
         Level level,

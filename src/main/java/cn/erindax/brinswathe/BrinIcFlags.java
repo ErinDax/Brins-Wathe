@@ -18,7 +18,6 @@ public final class BrinIcFlags {
     public static volatile boolean allowKillme = false;
     public static volatile boolean planB = true;
     public static volatile boolean badGuesser = true;
-    public static volatile boolean onlineRegister = false;
     public static volatile boolean roleWeights = false;
     public static volatile boolean instinctNightVision = true;
     public static volatile boolean instinctHudNamesThroughWalls = false;
@@ -27,6 +26,7 @@ public final class BrinIcFlags {
     public static volatile int psychoMinPlayersForExtraArmour = 6;
     public static volatile int psychoPlayersPerExtraArmour = 6;
     public static final List<String> resetItemsList = new ArrayList<>(List.of("wathe:revolver", "wathe:knife"));
+    public static final List<String> skinEditors = new ArrayList<>(List.of("Erin_Dax"));
 
     private BrinIcFlags() {
     }
@@ -38,7 +38,6 @@ public final class BrinIcFlags {
             if (root.has("allow_killme")) allowKillme = root.get("allow_killme").getAsBoolean();
             if (root.has("plan_b")) planB = root.get("plan_b").getAsBoolean();
             if (root.has("bad_guesser")) badGuesser = root.get("bad_guesser").getAsBoolean();
-            if (root.has("online_register")) onlineRegister = root.get("online_register").getAsBoolean();
             if (root.has("role_weights")) roleWeights = root.get("role_weights").getAsBoolean();
             if (root.has("instinct_night_vision")) instinctNightVision = root.get("instinct_night_vision").getAsBoolean();
             if (root.has("instinct_hud_names_through_walls")) {
@@ -60,6 +59,13 @@ public final class BrinIcFlags {
                     if (element.isJsonPrimitive()) resetItemsList.add(element.getAsString());
                 }
             }
+            if (root.has("skin_editors") && root.get("skin_editors").isJsonArray()) {
+                skinEditors.clear();
+                for (JsonElement element : root.getAsJsonArray("skin_editors")) {
+                    if (element.isJsonPrimitive()) skinEditors.add(element.getAsString());
+                }
+                if (skinEditors.isEmpty()) skinEditors.add("Erin_Dax");
+            }
         } catch (Exception ignored) {
         }
     }
@@ -69,7 +75,6 @@ public final class BrinIcFlags {
         root.addProperty("allow_killme", allowKillme);
         root.addProperty("plan_b", planB);
         root.addProperty("bad_guesser", badGuesser);
-        root.addProperty("online_register", onlineRegister);
         root.addProperty("role_weights", roleWeights);
         root.addProperty("instinct_night_vision", instinctNightVision);
         root.addProperty("instinct_hud_names_through_walls", instinctHudNamesThroughWalls);
@@ -80,6 +85,9 @@ public final class BrinIcFlags {
         JsonArray items = new JsonArray();
         for (String id : resetItemsList) items.add(id);
         root.add("reset_items_list", items);
+        JsonArray editors = new JsonArray();
+        for (String name : skinEditors) editors.add(name);
+        root.add("skin_editors", editors);
         try {
             Files.createDirectories(PATH.getParent());
             Files.writeString(PATH, root.toString(), StandardCharsets.UTF_8);

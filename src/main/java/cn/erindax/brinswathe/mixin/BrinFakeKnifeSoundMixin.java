@@ -27,6 +27,7 @@ public abstract class BrinFakeKnifeSoundMixin {
     ) {
         ItemStack stack = user.getUseItem();
         if (stack.isEmpty()) stack = user.getMainHandItem();
+        if (BrinSounds.playDynamicKnifePrepare(user, stack, volume, pitch)) return;
         original.call(user, BrinSounds.knifePrepare(stack), BrinSounds.knifePrepareVolume(stack), pitch);
     }
 }
