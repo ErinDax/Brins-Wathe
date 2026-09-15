@@ -3,6 +3,7 @@
   "tip.brinswathe.medium_no_chat": "You cannot use chat as a Medium. Use voice to speak with the dead.",
   "screen.brinswathe.event_log": "Match Event Log",
   "tip.brinswathe.muzzler.duration": "Silence remaining: %ss",
+  "tip.brinswathe.morphling.duration": "Morph remaining: %ss",
   "tip.brinswathe.conductor.buy_armor": "%s: spend 200 gold for one armor layer",
   "tip.brinswathe.conductor.not_enough_money": "Armor costs 200 gold",
   "tip.brinswathe.conductor.with_armor": "Armor %s · %s",

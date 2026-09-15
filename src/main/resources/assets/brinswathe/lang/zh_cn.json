@@ -3,6 +3,7 @@
   "tip.brinswathe.medium_no_chat": "灵媒无法使用聊天栏，请使用语音与死者交流。",
   "screen.brinswathe.event_log": "游戏事件日志",
   "tip.brinswathe.muzzler.duration": "消音剩余 %s 秒",
+  "tip.brinswathe.morphling.duration": "变身剩余 %s 秒",
   "tip.brinswathe.conductor.buy_armor": "%s：花费 200 金币购买一层护甲",
   "tip.brinswathe.conductor.not_enough_money": "购买护甲需要 200 金币",
   "tip.brinswathe.conductor.with_armor": "护甲 %s · %s",
