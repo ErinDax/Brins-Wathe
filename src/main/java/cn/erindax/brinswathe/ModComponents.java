@@ -6,6 +6,7 @@ import cn.erindax.brinswathe.component.BerserkerComponent;
 import cn.erindax.brinswathe.component.BombComponent;
 import cn.erindax.brinswathe.component.BoneharvesterComponent;
 import cn.erindax.brinswathe.component.ModCustomWinnerComponent;
+import cn.erindax.brinswathe.component.RoundRecapComponent;
 import cn.erindax.brinswathe.component.CompensatorComponent;
 import cn.erindax.brinswathe.component.CowboyComponent;
 import cn.erindax.brinswathe.component.EavesdropperComponent;
@@ -112,5 +113,6 @@ public class ModComponents implements EntityComponentInitializer, WorldComponent
     @Override
     public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
         registry.register(ModCustomWinnerComponent.KEY, ModCustomWinnerComponent::new);
+        registry.register(RoundRecapComponent.KEY, RoundRecapComponent::new);
     }
 }
