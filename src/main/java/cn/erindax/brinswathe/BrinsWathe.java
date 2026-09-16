@@ -6,6 +6,7 @@ import cn.erindax.brinswathe.component.BerserkerComponent;
 import cn.erindax.brinswathe.component.BombComponent;
 import cn.erindax.brinswathe.component.BoneharvesterComponent;
 import cn.erindax.brinswathe.component.BrinCustomWinnerComponent;
+import cn.erindax.brinswathe.component.BrinRoundRecapComponent;
 import cn.erindax.brinswathe.component.CowboyComponent;
 import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.EavesdropperComponent;
@@ -173,8 +174,10 @@ public class BrinsWathe implements ModInitializer {
 			if (world.getServer() != null) {
 				RpsManager.abortAll(world.getServer());
 			}
+			ArrayList<ServerPlayer> recapPlayers = new ArrayList<>();
 			for (var player : world.players()) {
 				if (!(player instanceof ServerPlayer serverPlayer)) continue;
+				recapPlayers.add(serverPlayer);
 				String roleId = BrinRoles.getRoleId(gameWorld, serverPlayer);
 				if (roleId != null) {
 					Integer balance = BrinConfig.initialBalance(roleId);
@@ -196,6 +199,8 @@ public class BrinsWathe implements ModInitializer {
 				}
 			}
 			BrinIcRoundStart.apply(world, gameWorld);
+			BrinRoundRecapComponent recap = BrinRoundRecapComponent.KEY.get(world);
+			if (recap != null) recap.snapshotIdentities(recapPlayers);
 		});
 		GameEvents.ON_GAME_START.register(gameMode -> BrinItemCooldowns.schedule());
 		ResetPlayerEvent.EVENT.register(player -> {
@@ -241,6 +246,7 @@ public class BrinsWathe implements ModInitializer {
 				if (nightmare != null && nightmare.consumeShield()) {
 					victim.level().playSound(null, victim.blockPosition(), SoundEvents.SHIELD_BLOCK,
 						SoundSource.PLAYERS, 1.0F, 1.0F);
+					BrinRoundRecapComponent.onShieldBroken(victim, attacker, deathReason);
 					return false;
 				}
 			}
@@ -250,6 +256,7 @@ public class BrinsWathe implements ModInitializer {
 				if (penitent != null && penitent.consumeShield()) {
 					victim.level().playSound(null, victim.blockPosition(), SoundEvents.SHIELD_BLOCK,
 						SoundSource.PLAYERS, 1.0F, 1.0F);
+					BrinRoundRecapComponent.onShieldBroken(victim, attacker, deathReason);
 					return false;
 				}
 			}
@@ -259,6 +266,7 @@ public class BrinsWathe implements ModInitializer {
 				if (boneharvester != null && boneharvester.consumeShield()) {
 					victim.level().playSound(null, victim.blockPosition(), SoundEvents.SHIELD_BLOCK,
 						SoundSource.PLAYERS, 1.0F, 1.0F);
+					BrinRoundRecapComponent.onShieldBroken(victim, attacker, deathReason);
 					return false;
 				}
 			}
@@ -269,6 +277,7 @@ public class BrinsWathe implements ModInitializer {
                 if (zhangshi != null && zhangshi.consumeShield()) {
                     victim.level().playSound(null, victim.blockPosition(), SoundEvents.SHIELD_BLOCK,
                         SoundSource.PLAYERS, 1.0F, 1.0F);
+					BrinRoundRecapComponent.onShieldBroken(victim, attacker, deathReason);
                     return false;
                 }
             }

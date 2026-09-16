@@ -50,7 +50,8 @@
       "brinswathe:cowboy",
       "brinswathe:muzzler_ability",
       "brinswathe:resurrected",
-      "brinswathe:custom_winner"
+      "brinswathe:custom_winner",
+      "brinswathe:round_recap"
     ]
   },
   "mixins": [

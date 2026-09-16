@@ -6,6 +6,7 @@ import cn.erindax.brinswathe.component.BerserkerComponent;
 import cn.erindax.brinswathe.component.BombComponent;
 import cn.erindax.brinswathe.component.BoneharvesterComponent;
 import cn.erindax.brinswathe.component.BrinCustomWinnerComponent;
+import cn.erindax.brinswathe.component.BrinRoundRecapComponent;
 import cn.erindax.brinswathe.component.CompensatorComponent;
 import cn.erindax.brinswathe.component.CowboyComponent;
 import cn.erindax.brinswathe.component.EavesdropperComponent;
@@ -112,5 +113,6 @@ public class BrinComponents implements EntityComponentInitializer, WorldComponen
     @Override
     public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
         registry.register(BrinCustomWinnerComponent.KEY, BrinCustomWinnerComponent::new);
+        registry.register(BrinRoundRecapComponent.KEY, BrinRoundRecapComponent::new);
     }
 }

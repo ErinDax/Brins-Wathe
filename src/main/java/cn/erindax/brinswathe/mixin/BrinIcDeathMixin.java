@@ -2,6 +2,7 @@ package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.BrinNoelleAccess;
 import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.component.BrinRoundRecapComponent;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.doctor4t.wathe.api.Role;
@@ -56,8 +57,9 @@ public abstract class BrinIcDeathMixin {
         boolean allowed = original.call(invoker, victim, killer, deathReason);
         if (pierce && !allowed) {
             BrinNoelleAccess.setBartenderArmor(victim, armor);
-        } else if (!pierce && killer != null && armor > BrinNoelleAccess.bartenderArmor(victim)) {
-            brinAddGold(killer, 50);
+        } else if (armor > BrinNoelleAccess.bartenderArmor(victim)) {
+            if (!pierce && killer != null) brinAddGold(killer, 50);
+            BrinRoundRecapComponent.onShieldBroken(victim, killer, deathReason);
         }
         return allowed;
     }
