@@ -36,25 +36,19 @@ public abstract class RoundRecapHudMixin {
     ) {
         if (player == null || row == null) return;
         RoundRecapComponent recap = RoundRecapComponent.KEY.get(player.level());
-        String name = row.player().getName();
         String roleId = "";
         if (recap != null) {
             RoundRecapComponent.Identity identity = recap.identityOf(row.player().getId());
-            if (identity != null) {
-                if (!identity.name().isEmpty()) name = identity.name();
-                roleId = identity.roleId();
-            }
+            if (identity != null) roleId = identity.roleId();
         }
         MutableComponent role = roleId.isEmpty() ? null : RoleLabels.of(roleId);
+        if (role == null) return;
         PoseStack pose = graphics.pose();
         pose.pushPose();
         pose.translate(8.0F, 8.0F, 0.0F);
         pose.scale(0.28F, 0.28F, 1.0F);
         int center = 14;
-        graphics.drawString(font, name, center - font.width(name) / 2, 0, 0xFFFFFF, true);
-        if (role != null) {
-            graphics.drawString(font, role, center - font.width(role) / 2, 10, 0xFFFFFF, true);
-        }
+        graphics.drawString(font, role, center - font.width(role) / 2, 0, 0xFFFFFF, true);
         pose.popPose();
     }
 }
