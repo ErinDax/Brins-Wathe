@@ -12,6 +12,7 @@ import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.NightmareComponent;
 import cn.erindax.brinswathe.component.PenitentComponent;
+import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
@@ -443,6 +444,7 @@ public abstract class HideInstinctMixin {
             && WatheClient.isInstinctEnabled()
             && !body.isInvisible()
             && !IllusionistComponent.isIllusionModel(body)
+            && !PuppeteerControlComponent.isPuppetModel(body)
             && !BrinNoelleAccess.isRole(gameWorld, localPlayer, BrinNoelleAccess.VULTURE_ID)) {
             cir.setReturnValue(BODY_OUTLINE);
         }

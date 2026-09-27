@@ -2,6 +2,7 @@ package cn.erindax.brinswathe.client.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import cn.erindax.brinswathe.component.IllusionistComponent;
+import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
@@ -26,7 +27,9 @@ public abstract class InvisibleInstinctMixin {
         if (localPlayer == null) return color;
         if (GameFunctions.isPlayerSpectatingOrCreative(localPlayer)) return color;
         if (target instanceof PlayerBodyEntity body) {
-            if (body.isInvisible() || IllusionistComponent.isIllusionModel(body)) return -1;
+            if (body.isInvisible()
+                || IllusionistComponent.isIllusionModel(body)
+                || PuppeteerControlComponent.isPuppetModel(body)) return -1;
             return color;
         }
         if (!(target instanceof Player targetPlayer) || targetPlayer == localPlayer) return color;

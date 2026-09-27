@@ -2,6 +2,7 @@ package cn.erindax.brinswathe.client;
 
 import cn.erindax.brinswathe.BrinRoles;
 import cn.erindax.brinswathe.component.IllusionistComponent;
+import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
@@ -24,6 +25,8 @@ public final class BrinCorpseGlow {
         if (viewer == null || client.level == null) return false;
         GameWorldComponent game = GameWorldComponent.KEY.get(client.level);
         if (!game.isRole(viewer, WatheRoles.VIGILANTE) && !game.isRole(viewer, BrinRoles.ARCHIVIST)) return false;
-        return !body.isInvisible() && !IllusionistComponent.isIllusionModel(body);
+        return !body.isInvisible()
+            && !IllusionistComponent.isIllusionModel(body)
+            && !PuppeteerControlComponent.isPuppetModel(body);
     }
 }
