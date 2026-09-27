@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.client.mixin;
 
 import cn.erindax.brinswathe.component.IllusionistComponent;
+import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import net.fabricmc.api.EnvType;
@@ -20,7 +21,9 @@ public abstract class BuriedCorpseInstinctMixin {
         CallbackInfoReturnable<Integer> cir
     ) {
         if (target instanceof PlayerBodyEntity body
-            && (body.isInvisible() || IllusionistComponent.isIllusionModel(body))) {
+            && (body.isInvisible()
+                || IllusionistComponent.isIllusionModel(body)
+                || PuppeteerControlComponent.isPuppetModel(body))) {
             cir.setReturnValue(-1);
         }
     }
