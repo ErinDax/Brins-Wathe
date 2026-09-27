@@ -236,11 +236,13 @@ public class BrinsWathe implements ModInitializer {
 		if (!BrinExecutioner.allowDeath(victim, deathReason)) return false;
 		if (StuntDoubleDeathTransfer.tryTransfer(victim, attacker, deathReason)) return false;
 		GameWorldComponent gameWorld = GameWorldComponent.KEY.get(victim.level());
+		boolean shieldPierced = PuppeteerControlComponent.isSelfDestructKill(attacker, deathReason);
 			if (gameWorld.isRole(victim, BrinRoles.NIGHTMARE) && attacker != null) {
 				NightmareComponent nightmare = NightmareComponent.KEY.get(victim);
 				if (nightmare != null && nightmare.isMarked(attacker.getUUID())) return false;
 			}
 			if (gameWorld.isRole(victim, BrinRoles.NIGHTMARE)
+				&& !shieldPierced
 				&& !GameConstants.DeathReasons.FELL_OUT_OF_TRAIN.equals(deathReason)) {
 				NightmareComponent nightmare = NightmareComponent.KEY.get(victim);
 				if (nightmare != null && nightmare.consumeShield()) {
@@ -251,6 +253,7 @@ public class BrinsWathe implements ModInitializer {
 				}
 			}
 			if (gameWorld.isRole(victim, BrinRoles.PENITENT)
+				&& !shieldPierced
 				&& !GameConstants.DeathReasons.FELL_OUT_OF_TRAIN.equals(deathReason)) {
 				PenitentComponent penitent = PenitentComponent.KEY.get(victim);
 				if (penitent != null && penitent.consumeShield()) {
@@ -261,6 +264,7 @@ public class BrinsWathe implements ModInitializer {
 				}
 			}
 			if (gameWorld.isRole(victim, BrinRoles.BONEHARVESTER)
+				&& !shieldPierced
 				&& !GameConstants.DeathReasons.FELL_OUT_OF_TRAIN.equals(deathReason)) {
 				BoneharvesterComponent boneharvester = BoneharvesterComponent.KEY.get(victim);
 				if (boneharvester != null && boneharvester.consumeShield()) {
@@ -271,6 +275,7 @@ public class BrinsWathe implements ModInitializer {
 				}
 			}
             if (gameWorld.isRole(victim, BrinRoles.ZHANGSHI)
+                && !shieldPierced
                 && !GameConstants.DeathReasons.FELL_OUT_OF_TRAIN.equals(deathReason)
                 && !GameConstants.DeathReasons.POISON.equals(deathReason)) {
                 ZhangshiComponent zhangshi = ZhangshiComponent.KEY.get(victim);

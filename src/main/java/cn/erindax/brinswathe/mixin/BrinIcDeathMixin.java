@@ -1,8 +1,10 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.BrinNoelleAccess;
+import cn.erindax.brinswathe.BrinShieldPierce;
 import cn.erindax.brinswathe.CowboyDuel;
 import cn.erindax.brinswathe.component.BrinRoundRecapComponent;
+import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.doctor4t.wathe.api.Role;
@@ -43,9 +45,11 @@ public abstract class BrinIcDeathMixin {
         }
 
         GameWorldComponent game = GameWorldComponent.KEY.get(victim.level());
+        boolean selfDestruct = PuppeteerControlComponent.isSelfDestructKill(killer, deathReason);
         int armor = BrinNoelleAccess.bartenderArmor(victim);
-        boolean pierce = armor > 0 && brinPiercesShield(deathReason);
+        boolean pierce = armor > 0 && (selfDestruct || brinPiercesShield(deathReason));
         if (pierce) BrinNoelleAccess.setBartenderArmor(victim, 0);
+        BrinShieldPierce stripped = selfDestruct ? BrinShieldPierce.strip(victim) : null;
 
         if (killer != null && game.isRole(victim, WatheRoles.KILLER)) {
             Role killerRole = game.getRole(killer);
@@ -55,6 +59,10 @@ public abstract class BrinIcDeathMixin {
         }
 
         boolean allowed = original.call(invoker, victim, killer, deathReason);
+        if (stripped != null) {
+            if (allowed) stripped.commit();
+            else stripped.restore();
+        }
         if (pierce && !allowed) {
             BrinNoelleAccess.setBartenderArmor(victim, armor);
         } else if (armor > BrinNoelleAccess.bartenderArmor(victim)) {
