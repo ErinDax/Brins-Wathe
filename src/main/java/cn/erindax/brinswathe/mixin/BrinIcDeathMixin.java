@@ -47,7 +47,9 @@ public abstract class BrinIcDeathMixin {
         GameWorldComponent game = GameWorldComponent.KEY.get(victim.level());
         boolean selfDestruct = PuppeteerControlComponent.isSelfDestructKill(killer, deathReason);
         int armor = BrinNoelleAccess.bartenderArmor(victim);
-        boolean pierce = armor > 0 && (selfDestruct || brinPiercesShield(deathReason));
+        boolean pierce = armor > 0 && (selfDestruct
+            || brinPiercesShield(deathReason)
+            || brinPiercesConductorArmor(game, victim, deathReason));
         if (pierce) BrinNoelleAccess.setBartenderArmor(victim, 0);
         BrinShieldPierce stripped = selfDestruct ? BrinShieldPierce.strip(victim) : null;
 
@@ -75,6 +77,12 @@ public abstract class BrinIcDeathMixin {
     @Unique
     private static boolean brinPiercesShield(ResourceLocation deathReason) {
         return GameConstants.DeathReasons.BAT.equals(deathReason) || IGNITED.equals(deathReason);
+    }
+
+    @Unique
+    private static boolean brinPiercesConductorArmor(GameWorldComponent game, Player victim, ResourceLocation deathReason) {
+        return GameConstants.DeathReasons.GUN.equals(deathReason)
+            && BrinNoelleAccess.isRole(game, victim, BrinNoelleAccess.CONDUCTOR_ID);
     }
 
     @Unique
