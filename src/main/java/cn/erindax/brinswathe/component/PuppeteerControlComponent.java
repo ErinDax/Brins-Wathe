@@ -61,6 +61,8 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
     private static final double SUMMON_OFFSET = 1.0D;
     private static final int SELF_DESTRUCT_GRACE_TICKS = 20;
     private static final String PUPPET_GEAR_NBT = "BrinPuppetGear";
+    @Nullable
+    private static ServerPlayer detonatingOwner;
 
     private enum ControlEnd {
         RETURNED,
@@ -418,10 +420,21 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
             bounds,
             target -> target != owner && GameFunctions.isPlayerAliveAndSurvival(target)
         ));
-        for (ServerPlayer victim : victims) {
-            if (!GameFunctions.isPlayerAliveAndSurvival(victim)) continue;
-            GameFunctions.killPlayer(victim, true, owner, GameConstants.DeathReasons.GRENADE);
+        ServerPlayer previousOwner = detonatingOwner;
+        detonatingOwner = owner;
+        try {
+            for (ServerPlayer victim : victims) {
+                if (!GameFunctions.isPlayerAliveAndSurvival(victim)) continue;
+                GameFunctions.killPlayer(victim, true, owner, GameConstants.DeathReasons.GRENADE);
+            }
+        } finally {
+            detonatingOwner = previousOwner;
         }
+    }
+    public static boolean isSelfDestructKill(@Nullable Player killer, @Nullable ResourceLocation deathReason) {
+        return detonatingOwner != null
+            && killer == detonatingOwner
+            && GameConstants.DeathReasons.GRENADE.equals(deathReason);
     }
     private static AABB selfDestructBounds(Vec3 center) {
         BlockPos origin = BlockPos.containing(center);

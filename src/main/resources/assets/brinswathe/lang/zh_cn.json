@@ -95,7 +95,7 @@
   "announcement.role.brinswathe.penitent": "赎罪者",
   "guidebook.role.brin:puppeteer": "傀儡师",
   "guidebook.role.title.brin:puppeteer": "杀手阵营",
-  "guidebook.role.description.brin:puppeteer": "傀儡师对准尸体按下技能键可以将尸体制成傀儡\n\n打开背包界面会显示已制成的傀儡，点击傀儡图标立刻开始操控傀儡，操控期间本体无法移动\n\n傀儡自带一把刀与一个撬棍\n\n傀儡持续时间为60秒，第45秒时傀儡会露出破绽\n\n傀儡在非自我回收的情况下报废都会导致本体获得10秒高亮，如果傀儡被击杀还会额外获得15秒缓慢\n\n已经使用的傀儡会直接消失，不会留下尸体\n\n当傀儡师在商店购买自爆之后，操控的傀儡死亡会产生一次以自己为中心的3x3x3爆炸\n\n本体死亡傀儡将立刻消失",
+  "guidebook.role.description.brin:puppeteer": "傀儡师对准尸体按下技能键可以将尸体制成傀儡\n\n打开背包界面会显示已制成的傀儡，点击傀儡图标立刻开始操控傀儡，操控期间本体无法移动\n\n傀儡自带一把刀与一个撬棍\n\n傀儡持续时间为60秒，第45秒时傀儡会露出破绽\n\n傀儡在非自我回收的情况下报废都会导致本体获得10秒高亮，如果傀儡被击杀还会额外获得15秒缓慢\n\n已经使用的傀儡会直接消失，不会留下尸体\n\n当傀儡师在商店购买自爆之后，操控的傀儡死亡会产生一次以自己为中心的3x3x3爆炸，爆炸无视护盾\n\n本体死亡傀儡将立刻消失",
   "guidebook.role.brin:stunt_double": "替身演员",
   "guidebook.role.title.brin:stunt_double": "平民阵营",
   "guidebook.role.description.brin:stunt_double": "你可以在背包界面选择一名玩家进行替身\n\n在你替身该玩家期间，若该玩家受到致命伤，则你代替该玩家死亡",
