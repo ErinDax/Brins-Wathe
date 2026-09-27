@@ -45,7 +45,7 @@ public abstract class BrinRoundRecapHudMixin {
         if (role == null) return;
         PoseStack pose = graphics.pose();
         pose.pushPose();
-        pose.translate(8.0F, 8.0F, 0.0F);
+        pose.translate(8.0F, 9.0F, 0.0F);
         pose.scale(0.28F, 0.28F, 1.0F);
         int center = 14;
         graphics.drawString(font, role, center - font.width(role) / 2, 0, 0xFFFFFF, true);
