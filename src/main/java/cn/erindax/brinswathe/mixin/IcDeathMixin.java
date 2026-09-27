@@ -47,7 +47,9 @@ public abstract class IcDeathMixin {
         GameWorldComponent game = GameWorldComponent.KEY.get(victim.level());
         boolean selfDestruct = PuppeteerControlComponent.isSelfDestructKill(killer, deathReason);
         int armor = NoelleAccess.bartenderArmor(victim);
-        boolean pierce = armor > 0 && (selfDestruct || brinPiercesShield(deathReason));
+        boolean pierce = armor > 0 && (selfDestruct
+            || brinPiercesShield(deathReason)
+            || brinPiercesConductorArmor(game, victim, deathReason));
         if (pierce) NoelleAccess.setBartenderArmor(victim, 0);
         ShieldPierce stripped = selfDestruct ? ShieldPierce.strip(victim) : null;
 
@@ -75,6 +77,12 @@ public abstract class IcDeathMixin {
     @Unique
     private static boolean brinPiercesShield(ResourceLocation deathReason) {
         return GameConstants.DeathReasons.BAT.equals(deathReason) || IGNITED.equals(deathReason);
+    }
+
+    @Unique
+    private static boolean brinPiercesConductorArmor(GameWorldComponent game, Player victim, ResourceLocation deathReason) {
+        return GameConstants.DeathReasons.GUN.equals(deathReason)
+            && NoelleAccess.isRole(game, victim, NoelleAccess.CONDUCTOR_ID);
     }
 
     @Unique
