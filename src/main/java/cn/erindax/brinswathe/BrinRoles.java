@@ -23,10 +23,8 @@ import cn.erindax.brinswathe.component.TrapperComponent;
 import cn.erindax.brinswathe.component.WatchmanComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
-import dev.doctor4t.wathe.api.GameMode;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.Role.MoodType;
-import dev.doctor4t.wathe.api.WatheGameModes;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -483,16 +481,12 @@ public class BrinRoles {
         SniperComponent component = SniperComponent.KEY.get(player);
         if (component != null) {
             component.reset();
-            component.startCooldown(openingCooldownSeconds(player));
+            component.startCooldown(openingCooldownSeconds());
         }
         giveSniperRevolver(player);
     }
-    private static int openingCooldownSeconds(Player player) {
-        KinsWatheConfig config = KinsWatheConfig.HANDLER.instance();
-        if (!config.EnableStartSafeTime) return 0;
-        GameMode gameMode = GameWorldComponent.KEY.get(player.level()).getGameMode();
-        if (gameMode == WatheGameModes.DISCOVERY || gameMode == WatheGameModes.LOOSE_ENDS) return 0;
-        return Math.max(0, config.StartingCooldown);
+    private static int openingCooldownSeconds() {
+        return Math.max(0, KinsWatheConfig.HANDLER.instance().StartingCooldown);
     }
     private static void giveSniperRevolver(Player player) {
         if (player.level().isClientSide) return;
