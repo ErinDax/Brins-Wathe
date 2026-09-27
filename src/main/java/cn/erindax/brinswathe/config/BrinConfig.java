@@ -25,10 +25,11 @@ public final class BrinConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 41;
+    private static final int CONFIG_VERSION = 42;
     private static final int ROLE_BALANCE_MIGRATION_VERSION = 39;
     private static final int AVENGER_INSTINCT_MIGRATION_VERSION = 40;
     private static final int PUPPETEER_KNIFE_MIGRATION_VERSION = 41;
+    private static final int TRAPPER_SKILL_COST_MIGRATION_VERSION = 42;
     private static final int PREVIOUS_PUPPETEER_KNIFE_PRICE = 200;
     private static final int PREVIOUS_AVENGER_INSTINCT_SECONDS = 5;
     private static final int PREVIOUS_ARCHIVIST_SKILL_COST = 175;
@@ -38,7 +39,8 @@ public final class BrinConfig {
     private static final int PREVIOUS_STALKER_SKILL_COOLDOWN_SECONDS = 150;
     private static final int PREVIOUS_WATCHMAN_SKILL_COOLDOWN_SECONDS = 200;
     private static final int PREVIOUS_WATCHMAN_SKILL_COST = 300;
-    private static final int PREVIOUS_TRAPPER_SKILL_COST = 125;
+    private static final int LEGACY_TRAPPER_SKILL_COST = 125;
+    private static final int PREVIOUS_TRAPPER_SKILL_COST = 75;
     private static final int PREVIOUS_BOMB_PRICE = 100;
     private static final int PREVIOUS_MORTICIAN_SKILL_COOLDOWN_SECONDS = 120;
     private static final int PREVIOUS_PENITENT_STARTING_SHIELD_LAYERS = 1;
@@ -522,12 +524,17 @@ public final class BrinConfig {
                 if ("watchman".equals(roleId) && skillCost == PREVIOUS_WATCHMAN_SKILL_COST) {
                     skillCost = fallback.skill_cost;
                 }
-                if ("beast_trapper".equals(roleId) && skillCost == PREVIOUS_TRAPPER_SKILL_COST) {
+                if ("beast_trapper".equals(roleId) && skillCost == LEGACY_TRAPPER_SKILL_COST) {
                     skillCost = fallback.skill_cost;
                 }
                 if ("mortician".equals(roleId) && skillCooldown == PREVIOUS_MORTICIAN_SKILL_COOLDOWN_SECONDS) {
                     skillCooldown = fallback.skill_cooldown_seconds;
                 }
+            }
+            if (sourceVersion < TRAPPER_SKILL_COST_MIGRATION_VERSION
+                && "beast_trapper".equals(roleId)
+                && skillCost == PREVIOUS_TRAPPER_SKILL_COST) {
+                skillCost = fallback.skill_cost;
             }
             int knifePrice = configurableInt(
                 shopPrices,
@@ -1168,7 +1175,7 @@ public final class BrinConfig {
         roles.put("medium", civilianRole(200, 120, 500, false).withSkillDuration(8));
         roles.put("eavesdropper", civilianRole(200, 200, 350, false).withSkillDuration(30));
         roles.put("watchman", civilianRole(250, 30, 350, false));
-        roles.put("beast_trapper", role(75, 120, null, 100, 300, 300).withTrapLimit(1).withExtraTrapPrice(150).withTrapCatchReward(50));
+        roles.put("beast_trapper", role(25, 120, null, 100, 300, 300).withTrapLimit(1).withExtraTrapPrice(150).withTrapCatchReward(50));
         roles.put("nightmare", role(0, 60, 0, 100, 300, 300).withForcedSleepTaskCooldown(200));
         roles.put("illusionist", role(0, 120, null, 100, 300, 300).withSkillDuration(10));
         roles.put("sniper", role(0, 100000, null, 150, 225, 300)

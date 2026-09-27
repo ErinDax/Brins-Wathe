@@ -37,6 +37,10 @@ public class TrapperComponent implements AutoSyncedComponent, ServerTickingCompo
 
     public static final int TRAP_STUN_TICKS = Integer.MAX_VALUE;
 
+    public static boolean isTrapStun(int stunTicks) {
+        return stunTicks > TRAP_STUN_TICKS / 2;
+    }
+
     private final Player player;
     private final Set<UUID> activeTrapEntityIds = new LinkedHashSet<>();
     private final Set<UUID> bonusTrapEntityIds = new HashSet<>();
