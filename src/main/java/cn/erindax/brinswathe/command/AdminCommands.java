@@ -3,6 +3,7 @@ package cn.erindax.brinswathe.command;
 import cn.erindax.brinswathe.HarpyRoles;
 import cn.erindax.brinswathe.IcFlags;
 import cn.erindax.brinswathe.NoelleAccess;
+import cn.erindax.brinswathe.RoleRotation;
 import cn.erindax.brinswathe.RoleWeights;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.config.ModConfig;
@@ -487,13 +488,10 @@ public final class AdminCommands {
     }
 
     private static int clearRoleRounds(CommandSourceStack source) {
+        RoleRotation.clear();
         Object rounds = roleRoundsMap();
-        if (!(rounds instanceof Map<?, ?> map)) {
-            source.sendFailure(Component.literal("官包 Harpy 没有 roleRounds，无法清空"));
-            return 0;
-        }
-        map.clear();
-        source.sendSuccess(() -> Component.literal("已清空角色轮次权重记录"), true);
+        if (rounds instanceof Map<?, ?> map) map.clear();
+        source.sendSuccess(() -> Component.literal("已清空角色轮次权重和防连任记录"), true);
         return 1;
     }
 
