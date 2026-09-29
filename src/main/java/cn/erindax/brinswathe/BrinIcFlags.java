@@ -31,7 +31,7 @@ public final class BrinIcFlags {
     public static final int MUSIC_BOX_MAX_KILOBYTES = 32768;
     public static volatile boolean roleRepeatGuard = true;
     public static volatile float roleRepeatStrength = 1.0F;
-    public static volatile float roleRepeatDecay = 0.5F;
+    public static volatile float roleRepeatDecay = 0.0F;
     public static volatile int roleRepeatMaxStreak = 3;
     public static final float ROLE_REPEAT_MAX_STRENGTH = 5.0F;
     public static final float ROLE_REPEAT_MAX_DECAY = 0.9F;
@@ -93,7 +93,7 @@ public final class BrinIcFlags {
     public static void normalize() {
         musicBoxMaxKilobytes = clampMusicBoxKilobytes(musicBoxMaxKilobytes);
         roleRepeatStrength = clampFloat(roleRepeatStrength, ROLE_REPEAT_MAX_STRENGTH, 1.0F);
-        roleRepeatDecay = clampFloat(roleRepeatDecay, ROLE_REPEAT_MAX_DECAY, 0.5F);
+        roleRepeatDecay = clampFloat(roleRepeatDecay, ROLE_REPEAT_MAX_DECAY, 0.0F);
         roleRepeatMaxStreak = Math.max(0, Math.min(ROLE_REPEAT_MAX_STREAK_LIMIT, roleRepeatMaxStreak));
     }
 
