@@ -6,7 +6,9 @@ import cn.erindax.brinswathe.BrinNoelleAccess;
 import cn.erindax.brinswathe.BrinRoleWeights;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
+import cn.erindax.brinswathe.musicbox.BrinMusicBox;
 import cn.erindax.brinswathe.network.BrinIcNightVisionS2CPacket;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
@@ -23,6 +25,7 @@ import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +34,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -65,6 +69,44 @@ public final class BrinAdminCommands {
         attachFlags(root);
         attachRoles(root);
         attachPlayers(root);
+        attachMusicBox(root);
+    }
+
+    private static void attachMusicBox(LiteralArgumentBuilder<CommandSourceStack> root) {
+        root
+            .then(Commands.literal("musicbox")
+                .requires(source -> source.hasPermission(2))
+                .then(Commands.literal("clear")
+                    .then(Commands.argument("player", GameProfileArgument.gameProfile())
+                        .executes(context -> clearMusic(
+                            context.getSource(),
+                            GameProfileArgument.getGameProfiles(context, "player")
+                        ))))
+                .then(Commands.literal("stop")
+                    .executes(context -> stopMusic(context.getSource()))));
+    }
+
+    private static int clearMusic(CommandSourceStack source, Collection<GameProfile> profiles) {
+        List<String> cleared = new ArrayList<>();
+        for (GameProfile profile : profiles) {
+            if (BrinMusicBox.adminClear(source.getServer(), profile.getId())) cleared.add(profile.getName());
+        }
+        if (cleared.isEmpty()) {
+            source.sendFailure(Component.literal("该玩家没有上传过音乐盒音乐"));
+            return 0;
+        }
+        String names = String.join(", ", cleared);
+        source.sendSuccess(() -> Component.literal("已清除音乐盒音乐: " + names), true);
+        return cleared.size();
+    }
+
+    private static int stopMusic(CommandSourceStack source) {
+        if (!BrinMusicBox.stopBroadcast(source.getServer())) {
+            source.sendFailure(Component.literal("当前没有正在播放的结算音乐"));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.literal("已停止结算音乐"), true);
+        return 1;
     }
 
     private static void attachFlags(LiteralArgumentBuilder<CommandSourceStack> root) {

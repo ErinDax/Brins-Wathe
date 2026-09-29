@@ -43,6 +43,9 @@ dependencies {
 	modImplementation "maven.modrinth:harpymodloader:${project.harpymodloader_version}"
 	modImplementation "maven.modrinth:starexpress:${project.starexpress_version}"
 	modImplementation "maven.modrinth:yacl:${project.yacl_version}"
+
+	implementation "javazoom:jlayer:${project.jlayer_version}"
+	include "javazoom:jlayer:${project.jlayer_version}"
 }
 
 processResources {

@@ -4,17 +4,6 @@ import cn.erindax.brinswathe.BrinKnifeSkins;
 import cn.erindax.brinswathe.network.BrinSkinSoundS2CPacket;
 import cn.erindax.brinswathe.network.BrinSkinUploadC2SPacket;
 import cn.erindax.brinswathe.network.BrinSkinUploadPromptS2CPacket;
-import java.awt.EventQueue;
-import java.awt.Frame;
-import java.awt.Window;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Locale;
-import java.util.concurrent.atomic.AtomicReference;
-import javax.swing.JFileChooser;
-import javax.swing.UIManager;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -55,9 +44,8 @@ public final class BrinSkinUploadClient {
     private static void pickAndSend(String type, String name, String tooltip) {
         try {
             Thread.sleep(300);
-            System.setProperty("java.awt.headless", "false");
             tell("message.brinswathe.skin.pick_texture");
-            byte[] texture = pickFile("png");
+            byte[] texture = BrinFilePicker.pickBytes("png");
             if (texture == null) {
                 tell("message.brinswathe.skin.cancelled");
                 return;
@@ -67,7 +55,7 @@ public final class BrinSkinUploadClient {
                 return;
             }
             tell("message.brinswathe.skin.pick_sound");
-            byte[] sound = pickFile("ogg");
+            byte[] sound = BrinFilePicker.pickBytes("ogg");
             if (sound != null && (!BrinKnifeSkins.isOgg(sound) || sound.length > BrinKnifeSkins.MAX_SOUND_BYTES)) {
                 tell("message.brinswathe.skin.upload_failed");
                 return;
@@ -85,92 +73,6 @@ public final class BrinSkinUploadClient {
         } catch (Exception ignored) {
             tell("message.brinswathe.skin.cancelled");
         }
-    }
-
-    private static byte[] pickFile(String extension) throws Exception {
-        if (System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win")) {
-            return pickFileWindows(extension);
-        }
-        return pickFileSwing(extension);
-    }
-
-    private static byte[] pickFileWindows(String extension) throws Exception {
-        Path reply = Files.createTempFile("brin-skin-", ".txt");
-        Files.deleteIfExists(reply);
-        String replyPath = reply.toAbsolutePath().toString().replace("'", "''");
-        String filter = extension.toUpperCase(Locale.ROOT) + " (*." + extension + ")|*." + extension;
-        String script = String.join(" ",
-            "Add-Type -AssemblyName System.Windows.Forms;",
-            "$form = New-Object System.Windows.Forms.Form;",
-            "$form.TopMost = $true;",
-            "$form.ShowInTaskbar = $false;",
-            "$d = New-Object System.Windows.Forms.OpenFileDialog;",
-            "$d.Filter = '" + filter + "';",
-            "$d.Title = '" + extension.toUpperCase(Locale.ROOT) + "';",
-            "$result = $d.ShowDialog($form);",
-            "$form.Dispose();",
-            "if ($result -eq [System.Windows.Forms.DialogResult]::OK) {",
-            "[System.IO.File]::WriteAllText('" + replyPath + "', $d.FileName, [System.Text.UTF8Encoding]::new($false))",
-            "}"
-        );
-        Process process = new ProcessBuilder(
-            "powershell.exe",
-            "-NoProfile",
-            "-STA",
-            "-WindowStyle",
-            "Hidden",
-            "-ExecutionPolicy",
-            "Bypass",
-            "-Command",
-            script
-        ).redirectErrorStream(true).start();
-        process.getInputStream().readAllBytes();
-        int code = process.waitFor();
-        if (code != 0) {
-            Files.deleteIfExists(reply);
-            return pickFileSwing(extension);
-        }
-        if (!Files.isRegularFile(reply) || Files.size(reply) == 0) {
-            Files.deleteIfExists(reply);
-            return null;
-        }
-        String selected = Files.readString(reply, StandardCharsets.UTF_8).trim();
-        Files.deleteIfExists(reply);
-        Path path = Path.of(selected);
-        if (!Files.isRegularFile(path)) return null;
-        return Files.readAllBytes(path);
-    }
-
-    private static byte[] pickFileSwing(String extension) throws Exception {
-        AtomicReference<Path> chosen = new AtomicReference<>();
-        EventQueue.invokeAndWait(() -> {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception ignored) {
-            }
-            Frame owner = new Frame();
-            owner.setAlwaysOnTop(true);
-            owner.setUndecorated(true);
-            owner.setType(Window.Type.UTILITY);
-            owner.setSize(1, 1);
-            owner.setLocationRelativeTo(null);
-            owner.setVisible(true);
-            owner.toFront();
-            try {
-                JFileChooser chooser = new JFileChooser();
-                chooser.setDialogTitle(extension.toUpperCase(Locale.ROOT));
-                chooser.setFileFilter(new FileNameExtensionFilter(extension.toUpperCase(Locale.ROOT), extension));
-                int result = chooser.showOpenDialog(owner);
-                if (result == JFileChooser.APPROVE_OPTION && chooser.getSelectedFile() != null) {
-                    chosen.set(chooser.getSelectedFile().toPath());
-                }
-            } finally {
-                owner.dispose();
-            }
-        });
-        Path path = chosen.get();
-        if (path == null || !Files.isRegularFile(path)) return null;
-        return Files.readAllBytes(path);
     }
 
     private static void tell(String key) {

@@ -25,6 +25,10 @@ public final class BrinIcFlags {
     public static volatile int resetItemsCooldownSeconds = 30;
     public static volatile int psychoMinPlayersForExtraArmour = 6;
     public static volatile int psychoPlayersPerExtraArmour = 6;
+    public static volatile boolean musicBoxEnabled = true;
+    public static volatile int musicBoxMaxKilobytes = 8192;
+    public static final int MUSIC_BOX_MIN_KILOBYTES = 64;
+    public static final int MUSIC_BOX_MAX_KILOBYTES = 32768;
     public static final List<String> resetItemsList = new ArrayList<>(List.of("wathe:revolver", "wathe:knife"));
     public static final List<String> skinEditors = new ArrayList<>(List.of("Erin_Dax"));
 
@@ -53,6 +57,10 @@ public final class BrinIcFlags {
             if (root.has("psycho_players_per_extra_armour")) {
                 psychoPlayersPerExtraArmour = Math.max(1, root.get("psycho_players_per_extra_armour").getAsInt());
             }
+            if (root.has("music_box_enabled")) musicBoxEnabled = root.get("music_box_enabled").getAsBoolean();
+            if (root.has("music_box_max_kilobytes")) {
+                musicBoxMaxKilobytes = clampMusicBoxKilobytes(root.get("music_box_max_kilobytes").getAsInt());
+            }
             if (root.has("reset_items_list") && root.get("reset_items_list").isJsonArray()) {
                 resetItemsList.clear();
                 for (JsonElement element : root.getAsJsonArray("reset_items_list")) {
@@ -70,6 +78,14 @@ public final class BrinIcFlags {
         }
     }
 
+    public static int clampMusicBoxKilobytes(int kilobytes) {
+        return Math.max(MUSIC_BOX_MIN_KILOBYTES, Math.min(MUSIC_BOX_MAX_KILOBYTES, kilobytes));
+    }
+
+    public static int musicBoxMaxBytes() {
+        return clampMusicBoxKilobytes(musicBoxMaxKilobytes) * 1024;
+    }
+
     public static void save() {
         JsonObject root = new JsonObject();
         root.addProperty("allow_killme", allowKillme);
@@ -82,6 +98,8 @@ public final class BrinIcFlags {
         root.addProperty("reset_items_cooldown_seconds", resetItemsCooldownSeconds);
         root.addProperty("psycho_min_players_for_extra_armour", psychoMinPlayersForExtraArmour);
         root.addProperty("psycho_players_per_extra_armour", psychoPlayersPerExtraArmour);
+        root.addProperty("music_box_enabled", musicBoxEnabled);
+        root.addProperty("music_box_max_kilobytes", clampMusicBoxKilobytes(musicBoxMaxKilobytes));
         JsonArray items = new JsonArray();
         for (String id : resetItemsList) items.add(id);
         root.add("reset_items_list", items);

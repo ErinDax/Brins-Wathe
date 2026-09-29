@@ -6,6 +6,7 @@ import cn.erindax.brinswathe.BrinKnifeSkins;
 import cn.erindax.brinswathe.BrinRoleWeights;
 import cn.erindax.brinswathe.BrinSkinEditors;
 import cn.erindax.brinswathe.config.BrinConfig;
+import cn.erindax.brinswathe.musicbox.BrinMusicBox;
 import cn.erindax.brinswathe.network.BrinConfigS2CPacket;
 import cn.erindax.brinswathe.network.BrinIcNightVisionS2CPacket;
 import cn.erindax.brinswathe.network.BrinKnifeSkinApplyS2CPacket;
@@ -159,6 +160,7 @@ public final class BrinConfigCommands {
     private static int showHelp(CommandSourceStack source) {
         line(source, "/killme", "自杀");
         line(source, "/iWantBe <vulture|executioner|jester>", "自选职业");
+        line(source, "J 键", "打开音乐盒, 上传当选 MVP 时播放的结算音乐");
         if (!source.hasPermission(2)) return 1;
         blank(source);
         blank(source);
@@ -179,6 +181,8 @@ public final class BrinConfigCommands {
         line(source, "/brinswathe badguesser <true|false>", "开关禁猜者");
         line(source, "/brinswathe weights [true|false]", "查看或设置角色权重");
         line(source, "/brinswathe setcd [秒]", "查看或设置重置物品冷却");
+        line(source, "/brinswathe musicbox clear <玩家>", "清除该玩家上传的音乐盒音乐");
+        line(source, "/brinswathe musicbox stop", "停止当前结算音乐");
         line(source, "/brinswathe allergic <玩家> food|drink", "改过敏类型");
         line(source, "/brinswathe setnow <玩家> set|remove <职业>", "当场设置或移除职业");
         line(source, "/brinswathe roleRoundsclear", "清空角色轮次权重记录");
@@ -410,12 +414,18 @@ public final class BrinConfigCommands {
         try {
             Object oldValue = readConfig(field);
             writeConfig(field, raw);
+            if ("musicBoxMaxKilobytes".equals(field)) {
+                BrinIcFlags.musicBoxMaxKilobytes = BrinIcFlags.clampMusicBoxKilobytes(BrinIcFlags.musicBoxMaxKilobytes);
+            }
             BrinIcFlags.save();
             if ("instinctNightVision".equals(field) && source.getServer() != null) {
                 BrinIcNightVisionS2CPacket.sendToAll(source.getServer());
             }
             if ("roleWeights".equals(field) && source.getServer() != null) {
                 BrinRoleWeights.apply(source.getServer(), BrinIcFlags.roleWeights);
+            }
+            if ("musicBoxEnabled".equals(field) && !BrinIcFlags.musicBoxEnabled && source.getServer() != null) {
+                BrinMusicBox.stopBroadcast(source.getServer());
             }
             source.sendSuccess(
                 () -> Component.literal("已修改 " + field + ": " + formatConfig(oldValue) + " -> " + formatConfig(readConfig(field))),

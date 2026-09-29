@@ -13,6 +13,7 @@ import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -59,6 +60,10 @@ public class BrinCustomWinnerComponent implements AutoSyncedComponent {
 
     public boolean isWinner(UUID playerId) {
         return this.winnerIds.contains(playerId);
+    }
+
+    public Set<UUID> winnerIds() {
+        return Collections.unmodifiableSet(this.winnerIds);
     }
 
     public void reset() {

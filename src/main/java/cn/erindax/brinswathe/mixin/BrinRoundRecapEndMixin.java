@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.component.BrinRoundRecapComponent;
+import cn.erindax.brinswathe.musicbox.BrinMusicBox;
 import dev.doctor4t.wathe.cca.GameRoundEndComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,8 +22,10 @@ public abstract class BrinRoundRecapEndMixin {
     ) {
         if (players == null || players.isEmpty()) return;
         BrinRoundRecapComponent recap = BrinRoundRecapComponent.KEY.get(players.getFirst().level());
-        if (recap == null) return;
-        recap.snapshotIdentities(players);
-        recap.announceAll();
+        if (recap != null) {
+            recap.snapshotIdentities(players);
+            recap.announceAll();
+        }
+        BrinMusicBox.onRoundEnd(players, winStatus);
     }
 }
