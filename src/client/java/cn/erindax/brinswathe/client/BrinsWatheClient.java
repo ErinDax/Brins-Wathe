@@ -16,6 +16,7 @@ import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.client.gui.EventLogScreen;
+import cn.erindax.brinswathe.client.musicbox.MusicBoxClient;
 import cn.erindax.brinswathe.entity.PuppetEntity;
 import cn.erindax.brinswathe.network.BlindFlashS2CPacket;
 import cn.erindax.brinswathe.network.AbilityC2SPacket;
@@ -171,6 +172,7 @@ public class BrinsWatheClient implements ClientModInitializer {
 
         KnifeSkinClient.init();
         SkinUploadClient.init();
+        MusicBoxClient.init();
         InstinctClient.init();
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
             if (overlay || !EventLogScreen.isEventLog(message)) return true;

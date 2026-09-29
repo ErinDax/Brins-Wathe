@@ -2,6 +2,7 @@ package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.component.ModCustomWinnerComponent;
 import cn.erindax.brinswathe.component.RoundRecapComponent;
+import cn.erindax.brinswathe.musicbox.MusicBox;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,5 +16,6 @@ public abstract class CustomWinnerResetMixin {
     private static void brinResetCustomWinner(ServerLevel serverLevel, CallbackInfo ci) {
         ModCustomWinnerComponent.KEY.get(serverLevel).reset();
         RoundRecapComponent.KEY.get(serverLevel).reset();
+        MusicBox.onGameStart(serverLevel.getServer());
     }
 }

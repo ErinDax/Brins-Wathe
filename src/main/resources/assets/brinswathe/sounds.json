@@ -22,5 +22,14 @@
     "sounds": [
       "wathe:item/knife_prepare_maomochui"
     ]
+  },
+  "music_box": {
+    "sounds": [
+      {
+        "name": "fabric-sound-api-v1:empty",
+        "stream": true,
+        "preload": false
+      }
+    ]
   }
 }

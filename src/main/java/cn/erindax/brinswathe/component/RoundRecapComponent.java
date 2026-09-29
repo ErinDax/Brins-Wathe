@@ -200,6 +200,10 @@ public class RoundRecapComponent implements AutoSyncedComponent {
         return line;
     }
 
+    public static MutableComponent playerLabel(String name, String roleId) {
+        return namedRole(name, roleId);
+    }
+
     private static MutableComponent namedRole(String name, String roleId) {
         return Component.translatable("recap.brinswathe.player", name, roleText(roleId));
     }
