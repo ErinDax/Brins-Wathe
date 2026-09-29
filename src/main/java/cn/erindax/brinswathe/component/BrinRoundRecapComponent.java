@@ -139,7 +139,7 @@ public class BrinRoundRecapComponent implements AutoSyncedComponent {
             roleOf(actor),
             nameOf(target),
             roleOf(target),
-            reason == null ? "" : reason.getPath()
+            reason == null ? "" : reason.toString()
         );
     }
 
@@ -237,7 +237,13 @@ public class BrinRoundRecapComponent implements AutoSyncedComponent {
         if (reason == null || reason.isEmpty()) {
             return Component.translatable("recap.brinswathe.reason.generic");
         }
-        return Component.translatable("recap.brinswathe.reason." + reason);
+        ResourceLocation id = ResourceLocation.tryParse(reason);
+        if (id == null) return Component.literal(reason);
+        MutableComponent sourceText = Component.translatableWithFallback(
+            "death_reason." + id.getNamespace() + "." + id.getPath(),
+            id.getPath()
+        );
+        return Component.translatableWithFallback("recap.brinswathe.reason." + id.getPath(), "%s", sourceText);
     }
 
     @Override
