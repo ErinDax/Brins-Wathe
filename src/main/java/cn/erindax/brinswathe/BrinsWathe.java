@@ -176,6 +176,7 @@ public class BrinsWathe implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			CowboyDuel.clear();
 			RpsManager.clear();
+			BrinRoleRotation.clear();
 		});
 		ServerLifecycleEvents.SERVER_STARTED.register(server ->
 			BrinRoleWeights.apply(server, BrinIcFlags.roleWeights)

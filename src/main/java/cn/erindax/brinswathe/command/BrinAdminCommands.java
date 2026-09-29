@@ -3,6 +3,7 @@ package cn.erindax.brinswathe.command;
 import cn.erindax.brinswathe.BrinHarpyRoles;
 import cn.erindax.brinswathe.BrinIcFlags;
 import cn.erindax.brinswathe.BrinNoelleAccess;
+import cn.erindax.brinswathe.BrinRoleRotation;
 import cn.erindax.brinswathe.BrinRoleWeights;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
@@ -487,13 +488,10 @@ public final class BrinAdminCommands {
     }
 
     private static int clearRoleRounds(CommandSourceStack source) {
+        BrinRoleRotation.clear();
         Object rounds = roleRoundsMap();
-        if (!(rounds instanceof Map<?, ?> map)) {
-            source.sendFailure(Component.literal("官包 Harpy 没有 roleRounds，无法清空"));
-            return 0;
-        }
-        map.clear();
-        source.sendSuccess(() -> Component.literal("已清空角色轮次权重记录"), true);
+        if (rounds instanceof Map<?, ?> map) map.clear();
+        source.sendSuccess(() -> Component.literal("已清空角色轮次权重和防连任记录"), true);
         return 1;
     }
 

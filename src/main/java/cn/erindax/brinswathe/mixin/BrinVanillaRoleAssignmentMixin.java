@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.BrinHarpyRoles;
+import cn.erindax.brinswathe.BrinRoleRotation;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -59,5 +60,6 @@ public abstract class BrinVanillaRoleAssignmentMixin {
         CallbackInfo ci
     ) {
         BrinHarpyRoles.FORCED_REFRESH_ROLES.clear();
+        BrinRoleRotation.recordRound(gameWorld);
     }
 }

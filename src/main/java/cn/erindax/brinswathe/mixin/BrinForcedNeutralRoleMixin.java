@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.BrinHarpyRoles;
+import cn.erindax.brinswathe.BrinRoleRotation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import dev.doctor4t.wathe.api.Role;
@@ -90,7 +91,7 @@ public abstract class BrinForcedNeutralRoleMixin {
             }
         }
 
-        Collections.shuffle(neutralPlayers);
+        BrinRoleRotation.order(neutralPlayers, BrinRoleRotation.NEUTRAL, serverLevel.getRandom());
         neutralPlayers.sort((left, right) -> Boolean.compare(
             brinIsExplicitlyForced(right),
             brinIsExplicitlyForced(left)
@@ -111,7 +112,7 @@ public abstract class BrinForcedNeutralRoleMixin {
                     civilianCandidates.add(player);
                 }
             }
-            Collections.shuffle(civilianCandidates);
+            BrinRoleRotation.order(civilianCandidates, BrinRoleRotation.NEUTRAL, serverLevel.getRandom());
 
             List<Role> neutralRoles = new ArrayList<>();
             for (Role role : WatheRoles.ROLES) {

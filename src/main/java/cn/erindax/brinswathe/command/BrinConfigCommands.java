@@ -185,7 +185,7 @@ public final class BrinConfigCommands {
         line(source, "/brinswathe musicbox stop", "停止当前结算音乐");
         line(source, "/brinswathe allergic <玩家> food|drink", "改过敏类型");
         line(source, "/brinswathe setnow <玩家> set|remove <职业>", "当场设置或移除职业");
-        line(source, "/brinswathe roleRoundsclear", "清空角色轮次权重记录");
+        line(source, "/brinswathe roleRoundsclear", "清空角色轮次权重和防连任记录");
         line(source, "/brinswathe PrintRounds", "打印角色轮次权重记录");
         line(source, "/brinswathe setRoleCount neutral|killer|vigilante <数量>", "设置阵营角色数量");
         line(source, "/brinswathe forceRefreshRole add|remove|clear|list [职业…]", "强制后续刷新指定职业");
@@ -414,9 +414,7 @@ public final class BrinConfigCommands {
         try {
             Object oldValue = readConfig(field);
             writeConfig(field, raw);
-            if ("musicBoxMaxKilobytes".equals(field)) {
-                BrinIcFlags.musicBoxMaxKilobytes = BrinIcFlags.clampMusicBoxKilobytes(BrinIcFlags.musicBoxMaxKilobytes);
-            }
+            BrinIcFlags.normalize();
             BrinIcFlags.save();
             if ("instinctNightVision".equals(field) && source.getServer() != null) {
                 BrinIcNightVisionS2CPacket.sendToAll(source.getServer());

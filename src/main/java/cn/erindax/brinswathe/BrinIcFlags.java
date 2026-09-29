@@ -29,6 +29,13 @@ public final class BrinIcFlags {
     public static volatile int musicBoxMaxKilobytes = 8192;
     public static final int MUSIC_BOX_MIN_KILOBYTES = 64;
     public static final int MUSIC_BOX_MAX_KILOBYTES = 32768;
+    public static volatile boolean roleRepeatGuard = true;
+    public static volatile float roleRepeatStrength = 1.0F;
+    public static volatile float roleRepeatDecay = 0.5F;
+    public static volatile int roleRepeatMaxStreak = 3;
+    public static final float ROLE_REPEAT_MAX_STRENGTH = 5.0F;
+    public static final float ROLE_REPEAT_MAX_DECAY = 0.9F;
+    public static final int ROLE_REPEAT_MAX_STREAK_LIMIT = 10;
     public static final List<String> resetItemsList = new ArrayList<>(List.of("wathe:revolver", "wathe:knife"));
     public static final List<String> skinEditors = new ArrayList<>(List.of("Erin_Dax"));
 
@@ -61,6 +68,10 @@ public final class BrinIcFlags {
             if (root.has("music_box_max_kilobytes")) {
                 musicBoxMaxKilobytes = clampMusicBoxKilobytes(root.get("music_box_max_kilobytes").getAsInt());
             }
+            if (root.has("role_repeat_guard")) roleRepeatGuard = root.get("role_repeat_guard").getAsBoolean();
+            if (root.has("role_repeat_strength")) roleRepeatStrength = root.get("role_repeat_strength").getAsFloat();
+            if (root.has("role_repeat_decay")) roleRepeatDecay = root.get("role_repeat_decay").getAsFloat();
+            if (root.has("role_repeat_max_streak")) roleRepeatMaxStreak = root.get("role_repeat_max_streak").getAsInt();
             if (root.has("reset_items_list") && root.get("reset_items_list").isJsonArray()) {
                 resetItemsList.clear();
                 for (JsonElement element : root.getAsJsonArray("reset_items_list")) {
@@ -76,6 +87,19 @@ public final class BrinIcFlags {
             }
         } catch (Exception ignored) {
         }
+        normalize();
+    }
+
+    public static void normalize() {
+        musicBoxMaxKilobytes = clampMusicBoxKilobytes(musicBoxMaxKilobytes);
+        roleRepeatStrength = clampFloat(roleRepeatStrength, ROLE_REPEAT_MAX_STRENGTH, 1.0F);
+        roleRepeatDecay = clampFloat(roleRepeatDecay, ROLE_REPEAT_MAX_DECAY, 0.5F);
+        roleRepeatMaxStreak = Math.max(0, Math.min(ROLE_REPEAT_MAX_STREAK_LIMIT, roleRepeatMaxStreak));
+    }
+
+    private static float clampFloat(float value, float max, float fallback) {
+        if (Float.isNaN(value)) return fallback;
+        return Math.max(0.0F, Math.min(max, value));
     }
 
     public static int clampMusicBoxKilobytes(int kilobytes) {
@@ -100,6 +124,10 @@ public final class BrinIcFlags {
         root.addProperty("psycho_players_per_extra_armour", psychoPlayersPerExtraArmour);
         root.addProperty("music_box_enabled", musicBoxEnabled);
         root.addProperty("music_box_max_kilobytes", clampMusicBoxKilobytes(musicBoxMaxKilobytes));
+        root.addProperty("role_repeat_guard", roleRepeatGuard);
+        root.addProperty("role_repeat_strength", roleRepeatStrength);
+        root.addProperty("role_repeat_decay", roleRepeatDecay);
+        root.addProperty("role_repeat_max_streak", roleRepeatMaxStreak);
         JsonArray items = new JsonArray();
         for (String id : resetItemsList) items.add(id);
         root.add("reset_items_list", items);
