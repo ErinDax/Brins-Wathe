@@ -33,7 +33,6 @@ import cn.erindax.brinswathe.network.ConfigS2CPacket;
 import cn.erindax.brinswathe.network.IcNightVisionS2CPacket;
 import cn.erindax.brinswathe.network.InstinctC2SPacket;
 import cn.erindax.brinswathe.network.InstinctSnapshotS2CPacket;
-import cn.erindax.brinswathe.network.KnifeSkinApplyS2CPacket;
 import cn.erindax.brinswathe.network.KnifeSkinListS2CPacket;
 import cn.erindax.brinswathe.network.MusicBoxRequestC2SPacket;
 import cn.erindax.brinswathe.network.MusicBoxStatusS2CPacket;
@@ -44,6 +43,9 @@ import cn.erindax.brinswathe.network.MusicUploadAckS2CPacket;
 import cn.erindax.brinswathe.network.MusicUploadChunkC2SPacket;
 import cn.erindax.brinswathe.network.MusicUploadStartC2SPacket;
 import cn.erindax.brinswathe.network.ResourceReloadS2CPacket;
+import cn.erindax.brinswathe.network.SkinPickChoiceC2SPacket;
+import cn.erindax.brinswathe.network.SkinPickOpenS2CPacket;
+import cn.erindax.brinswathe.network.SkinPickResultS2CPacket;
 import cn.erindax.brinswathe.network.SkinSoundS2CPacket;
 import cn.erindax.brinswathe.network.SkinUploadC2SPacket;
 import cn.erindax.brinswathe.network.SkinUploadPromptS2CPacket;
@@ -156,7 +158,6 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playC2S().register(InstinctC2SPacket.TYPE, InstinctC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(InstinctSnapshotS2CPacket.TYPE, InstinctSnapshotS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(KnifeSkinListS2CPacket.TYPE, KnifeSkinListS2CPacket.STREAM_CODEC);
-		PayloadTypeRegistry.playS2C().register(KnifeSkinApplyS2CPacket.TYPE, KnifeSkinApplyS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(SkinUploadC2SPacket.TYPE, SkinUploadC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(SkinUploadPromptS2CPacket.TYPE, SkinUploadPromptS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(SkinSoundS2CPacket.TYPE, SkinSoundS2CPacket.STREAM_CODEC);
@@ -169,8 +170,12 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(MusicUploadAckS2CPacket.TYPE, MusicUploadAckS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(MusicPlayS2CPacket.TYPE, MusicPlayS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(MusicChunkS2CPacket.TYPE, MusicChunkS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(SkinPickOpenS2CPacket.TYPE, SkinPickOpenS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(SkinPickChoiceC2SPacket.TYPE, SkinPickChoiceC2SPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(SkinPickResultS2CPacket.TYPE, SkinPickResultS2CPacket.STREAM_CODEC);
 		registerPackets();
 		MusicBox.init();
+		SkinPicks.init();
 		registerConfigSync();
 		registerCommands();
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {

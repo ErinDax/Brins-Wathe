@@ -25,7 +25,6 @@ import cn.erindax.brinswathe.IcFlags;
 import cn.erindax.brinswathe.network.IcNightVisionS2CPacket;
 import cn.erindax.brinswathe.network.InstinctC2SPacket;
 import cn.erindax.brinswathe.network.InstinctSnapshotS2CPacket;
-import cn.erindax.brinswathe.network.KnifeSkinApplyS2CPacket;
 import cn.erindax.brinswathe.network.KnifeSkinListS2CPacket;
 import cn.erindax.brinswathe.network.ResourceReloadS2CPacket;
 import cn.erindax.brinswathe.network.CowboyShowdownMusicS2CPacket;
@@ -41,7 +40,6 @@ import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import dev.doctor4t.wathe.game.GameFunctions;
-import dev.doctor4t.wathe.index.WatheCosmetics;
 import dev.doctor4t.wathe.index.WatheItems;
 import dev.doctor4t.wathe.item.RevolverItem;
 
@@ -72,7 +70,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -173,6 +170,7 @@ public class BrinsWatheClient implements ClientModInitializer {
         KnifeSkinClient.init();
         SkinUploadClient.init();
         MusicBoxClient.init();
+        SkinPickClient.init();
         InstinctClient.init();
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
             if (overlay || !EventLogScreen.isEventLog(message)) return true;
@@ -223,26 +221,6 @@ public class BrinsWatheClient implements ClientModInitializer {
             context.client().execute(() -> InstinctClient.apply(payload.entries())));
         ClientPlayNetworking.registerGlobalReceiver(KnifeSkinListS2CPacket.TYPE, (payload, context) ->
             context.client().execute(() -> KnifeSkinClient.applyRemoteSkins(payload.skins())));
-        ClientPlayNetworking.registerGlobalReceiver(KnifeSkinApplyS2CPacket.TYPE, (payload, context) ->
-            context.client().execute(() -> {
-                var player = Minecraft.getInstance().player;
-                if (player == null) return;
-                boolean applied = false;
-                for (ItemStack stack : player.getInventory().items) {
-                    if (brinApplySkin(player, stack, payload.itemName(), payload.skinName())) {
-                        applied = true;
-                    }
-                }
-                for (ItemStack stack : player.getInventory().offhand) {
-                    if (brinApplySkin(player, stack, payload.itemName(), payload.skinName())) {
-                        applied = true;
-                    }
-                }
-                if (!applied && "knife".equalsIgnoreCase(payload.itemName())) {
-                    WatheCosmetics.setSkin(player, new ItemStack(WatheItems.KNIFE), payload.skinName());
-                }
-                KnifeSkinClient.refreshHeldItems();
-            }));
         ClientPlayNetworking.registerGlobalReceiver(IcNightVisionS2CPacket.TYPE, (payload, context) ->
             context.client().execute(() -> {
                 IcFlags.instinctNightVision = payload.enabled();
@@ -463,11 +441,6 @@ public class BrinsWatheClient implements ClientModInitializer {
     }
     public static int getBlindFlashRemaining() {
         return blindFlashRemaining;
-    }
-    private static boolean brinApplySkin(LocalPlayer player, ItemStack stack, String itemName, String skinName) {
-        if (!KnifeSkins.applySkin(stack, itemName, skinName)) return false;
-        WatheCosmetics.setSkin(player, stack, skinName);
-        return true;
     }
     @Nullable
     public static KeyMapping getAbilityBind() {
