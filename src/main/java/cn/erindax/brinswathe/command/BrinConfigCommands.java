@@ -5,11 +5,11 @@ import cn.erindax.brinswathe.BrinIcFlags;
 import cn.erindax.brinswathe.BrinKnifeSkins;
 import cn.erindax.brinswathe.BrinRoleWeights;
 import cn.erindax.brinswathe.BrinSkinEditors;
+import cn.erindax.brinswathe.BrinSkinPicks;
 import cn.erindax.brinswathe.config.BrinConfig;
 import cn.erindax.brinswathe.musicbox.BrinMusicBox;
 import cn.erindax.brinswathe.network.BrinConfigS2CPacket;
 import cn.erindax.brinswathe.network.BrinIcNightVisionS2CPacket;
-import cn.erindax.brinswathe.network.BrinKnifeSkinApplyS2CPacket;
 import cn.erindax.brinswathe.network.BrinResourceReloadS2CPacket;
 import cn.erindax.brinswathe.network.BrinSkinUploadPromptS2CPacket;
 import com.mojang.brigadier.CommandDispatcher;
@@ -29,7 +29,6 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
 
 public final class BrinConfigCommands {
     private static final SuggestionProvider<CommandSourceStack> CONFIG_FIELDS = (context, builder) ->
@@ -75,6 +74,38 @@ public final class BrinConfigCommands {
                             StringArgumentType.getString(context, "value")
                         )))))
             .then(Commands.literal("skin")
+                .then(Commands.literal("send")
+                    .requires(source -> BrinSkinEditors.canEdit(source.getPlayer()))
+                    .then(Commands.argument("player", EntityArgument.player())
+                        .then(Commands.argument("type", StringArgumentType.word())
+                            .suggests((context, builder) -> {
+                                String remaining = builder.getRemaining().toLowerCase();
+                                for (String type : new String[] {"knife", "gun"}) {
+                                    if (type.startsWith(remaining)) builder.suggest(type);
+                                }
+                                return builder.buildFuture();
+                            })
+                            .then(Commands.argument("skinName", StringArgumentType.greedyString())
+                                .suggests((context, builder) -> {
+                                    String type = StringArgumentType.getString(context, "type");
+                                    String remaining = builder.getRemaining().toLowerCase();
+                                    List<String> names = new ArrayList<>();
+                                    for (String name : BrinKnifeSkins.drawPool(type)) {
+                                        names.add(name);
+                                        String display = BrinKnifeSkins.displayName(type, name);
+                                        if (!display.isBlank() && !names.contains(display)) names.add(display);
+                                    }
+                                    for (String name : names) {
+                                        if (name.toLowerCase().startsWith(remaining)) builder.suggest(name);
+                                    }
+                                    return builder.buildFuture();
+                                })
+                                .executes(context -> sendPick(
+                                    context.getSource(),
+                                    EntityArgument.getPlayer(context, "player"),
+                                    StringArgumentType.getString(context, "type"),
+                                    StringArgumentType.getString(context, "skinName")
+                                ))))))
                 .then(Commands.literal("upload")
                     .requires(source -> BrinSkinEditors.canEdit(source.getPlayer()))
                     .then(Commands.argument("type", StringArgumentType.word())
@@ -172,6 +203,7 @@ public final class BrinConfigCommands {
         line(source, "/brinswathe skin upload <knife|gun> <名> [tooltip]", "选文件上传贴图, 可附带音效");
         line(source, "/brinswathe skin delete <knife|gun> <名> [files]", "取消注册, 加 files 同时删源文件");
         line(source, "/brinswathe skin <玩家> <knife|gun> <皮肤名>", "给该玩家物品套上指定皮肤");
+        line(source, "/brinswathe skin send <玩家> <knife|gun> <皮肤名>", "弹界面让对方选用或抽一次, 保存规则同上一条");
         blank(source);
         blank(source);
         line(source, "/brinswathe km <true|false>", "开关 /killme");
@@ -316,6 +348,34 @@ public final class BrinConfigCommands {
         return 1;
     }
 
+    private static int sendPick(CommandSourceStack source, ServerPlayer target, String type, String skinName) {
+        ServerPlayer sender = source.getPlayer();
+        if (sender == null || !BrinSkinEditors.canEdit(sender)) {
+            source.sendFailure(Component.translatable("message.brinswathe.skin.denied"));
+            return 0;
+        }
+        if (!BrinSkinEditors.isType(type)) {
+            source.sendFailure(Component.literal("无效物品类型: " + type + "(可用: knife / gun)"));
+            return 0;
+        }
+        List<String> pool = BrinKnifeSkins.drawPool(type);
+        String resolved = BrinKnifeSkins.resolveSkin(type, skinName);
+        if (resolved == null || !pool.contains(resolved)) {
+            source.sendFailure(Component.literal(
+                "无效皮肤: " + skinName + "(可用: " + (pool.isEmpty() ? "-" : String.join(" / ", pool)) + ")"
+            ));
+            return 0;
+        }
+        BrinSkinPicks.send(sender, target, type, resolved);
+        String targetName = target.getGameProfile().getName();
+        String skinLabel = BrinKnifeSkins.displayName(type, resolved);
+        source.sendSuccess(
+            () -> Component.literal("已发给 " + targetName + ": " + skinLabel + ", 等待对方选择"),
+            true
+        );
+        return 1;
+    }
+
     private static int setSkin(CommandSourceStack source, ServerPlayer target, String type, String skinName) {
         ServerPlayer sourcePlayer = source.getPlayer();
         if (sourcePlayer == null || !BrinSkinEditors.canEdit(sourcePlayer)) {
@@ -346,21 +406,7 @@ public final class BrinConfigCommands {
             source.sendFailure(Component.literal("无效物品类型: " + type + "(可用: knife / gun)"));
             return 0;
         }
-        int applied = 0;
-        for (ItemStack stack : target.getInventory().items) {
-            if (BrinKnifeSkins.applySkin(stack, type, resolved)) applied++;
-        }
-        for (ItemStack stack : target.getInventory().offhand) {
-            if (BrinKnifeSkins.applySkin(stack, type, resolved)) applied++;
-        }
-        target.getInventory().setChanged();
-        target.containerMenu.broadcastChanges();
-        if ("knife".equalsIgnoreCase(type)) {
-            BrinKnifeSkins.setKnifeSkin(target.getUUID(), resolved);
-        }
-        BrinKnifeSkins.syncHeldSkins(target);
-        ServerPlayNetworking.send(target, new BrinKnifeSkinApplyS2CPacket(itemName, resolved));
-        int finalApplied = applied;
+        int finalApplied = BrinKnifeSkins.applyHeldSkin(target, itemName, resolved);
         String finalName = resolved;
         source.sendSuccess(
             () -> Component.literal("已设置 " + target.getName().getString() + " 的 " + itemName + " 皮肤为: " + finalName + "(" + finalApplied + " 件物品)"),

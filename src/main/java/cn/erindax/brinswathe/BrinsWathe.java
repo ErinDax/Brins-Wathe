@@ -33,7 +33,6 @@ import cn.erindax.brinswathe.network.BrinConfigS2CPacket;
 import cn.erindax.brinswathe.network.BrinIcNightVisionS2CPacket;
 import cn.erindax.brinswathe.network.BrinInstinctC2SPacket;
 import cn.erindax.brinswathe.network.BrinInstinctSnapshotS2CPacket;
-import cn.erindax.brinswathe.network.BrinKnifeSkinApplyS2CPacket;
 import cn.erindax.brinswathe.network.BrinKnifeSkinListS2CPacket;
 import cn.erindax.brinswathe.network.BrinMusicBoxRequestC2SPacket;
 import cn.erindax.brinswathe.network.BrinMusicBoxStatusS2CPacket;
@@ -44,6 +43,9 @@ import cn.erindax.brinswathe.network.BrinMusicUploadAckS2CPacket;
 import cn.erindax.brinswathe.network.BrinMusicUploadChunkC2SPacket;
 import cn.erindax.brinswathe.network.BrinMusicUploadStartC2SPacket;
 import cn.erindax.brinswathe.network.BrinResourceReloadS2CPacket;
+import cn.erindax.brinswathe.network.BrinSkinPickChoiceC2SPacket;
+import cn.erindax.brinswathe.network.BrinSkinPickOpenS2CPacket;
+import cn.erindax.brinswathe.network.BrinSkinPickResultS2CPacket;
 import cn.erindax.brinswathe.network.BrinSkinSoundS2CPacket;
 import cn.erindax.brinswathe.network.BrinSkinUploadC2SPacket;
 import cn.erindax.brinswathe.network.BrinSkinUploadPromptS2CPacket;
@@ -156,7 +158,6 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playC2S().register(BrinInstinctC2SPacket.TYPE, BrinInstinctC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinInstinctSnapshotS2CPacket.TYPE, BrinInstinctSnapshotS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinKnifeSkinListS2CPacket.TYPE, BrinKnifeSkinListS2CPacket.STREAM_CODEC);
-		PayloadTypeRegistry.playS2C().register(BrinKnifeSkinApplyS2CPacket.TYPE, BrinKnifeSkinApplyS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(BrinSkinUploadC2SPacket.TYPE, BrinSkinUploadC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinSkinUploadPromptS2CPacket.TYPE, BrinSkinUploadPromptS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinSkinSoundS2CPacket.TYPE, BrinSkinSoundS2CPacket.STREAM_CODEC);
@@ -169,8 +170,12 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(BrinMusicUploadAckS2CPacket.TYPE, BrinMusicUploadAckS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinMusicPlayS2CPacket.TYPE, BrinMusicPlayS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinMusicChunkS2CPacket.TYPE, BrinMusicChunkS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(BrinSkinPickOpenS2CPacket.TYPE, BrinSkinPickOpenS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(BrinSkinPickChoiceC2SPacket.TYPE, BrinSkinPickChoiceC2SPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(BrinSkinPickResultS2CPacket.TYPE, BrinSkinPickResultS2CPacket.STREAM_CODEC);
 		registerPackets();
 		BrinMusicBox.init();
+		BrinSkinPicks.init();
 		registerConfigSync();
 		registerCommands();
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {

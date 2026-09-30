@@ -35,6 +35,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import org.jetbrains.annotations.Nullable;
 
 public final class BrinKnifeSkins {
     public static final String FOLDER_NAME = "knife_skin-b";
@@ -116,6 +117,52 @@ public final class BrinKnifeSkins {
 
     public static String knifeSkin(UUID playerId) {
         return KNIFE_SKINS.get(playerId);
+    }
+
+    public static int applyHeldSkin(ServerPlayer target, String type, String skinName) {
+        boolean gun = "gun".equalsIgnoreCase(type);
+        String itemName = gun ? "gun" : "knife";
+        int applied = 0;
+        for (ItemStack stack : target.getInventory().items) {
+            if (applySkin(stack, itemName, skinName)) applied++;
+        }
+        for (ItemStack stack : target.getInventory().offhand) {
+            if (applySkin(stack, itemName, skinName)) applied++;
+        }
+        target.getInventory().setChanged();
+        target.containerMenu.broadcastChanges();
+        if (!gun) setKnifeSkin(target.getUUID(), skinName);
+        syncHeldSkins(target);
+        return applied;
+    }
+
+    @Nullable
+    public static String resolveSkin(String type, String raw) {
+        if (raw == null || raw.isBlank()) return null;
+        String input = raw.trim();
+        if ("gun".equalsIgnoreCase(type)) {
+            String resolved = resolveGunSkinName(input);
+            return isKnownGunSkin(resolved) ? resolved : null;
+        }
+        if ("knife".equalsIgnoreCase(type)) {
+            String resolved = resolveKnifeSkinName(input);
+            return isKnownSkin(resolved) ? resolved : null;
+        }
+        return null;
+    }
+
+    public static List<String> drawPool(String type) {
+        if ("gun".equalsIgnoreCase(type)) return extraGunModelSkinNames();
+        List<String> names = new ArrayList<>(allKnownNames());
+        names.remove(KnifeItem.Skin.DEFAULT.getName());
+        return names;
+    }
+
+    public static String displayName(String type, String name) {
+        if (name == null) return "";
+        if ("gun".equalsIgnoreCase(type)) return tooltipGunName(name);
+        KnifeItem.Skin official = officialSkin(name);
+        return official != null ? official.tooltipName : tooltipName(name);
     }
 
     public static void syncHeldSkins(ServerPlayer player) {
