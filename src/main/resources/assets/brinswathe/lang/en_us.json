@@ -1,5 +1,7 @@
 {
   "tip.brinswathe.medium_no_chat": "You cannot use chat as a Medium. Use voice to speak with the dead.",
+  "tip.brinswathe.guesser_suspended": "Your current role cannot use Guesser. Guesser is suspended.",
+  "tip.brinswathe.guesser_restored": "Guesser restored.",
   "screen.brinswathe.event_log": "Match Event Log",
   "recap.brinswathe.kill": "[Kill]",
   "recap.brinswathe.death": "[Death]",
