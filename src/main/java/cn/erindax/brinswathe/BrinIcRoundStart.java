@@ -5,23 +5,18 @@ import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
-import dev.doctor4t.wathe.index.WatheItems;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.level.Level;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
 import org.agmas.harpymodloader.events.ModifierAssigned;
@@ -42,7 +37,6 @@ public final class BrinIcRoundStart {
         applyBadGuesser(world, game);
         for (Player player : world.players()) {
             if (!(player instanceof ServerPlayer serverPlayer)) continue;
-            stampLetters(serverPlayer, game);
             stampFakeKnives(serverPlayer);
         }
     }
@@ -114,48 +108,9 @@ public final class BrinIcRoundStart {
         return false;
     }
 
-    private static void stampLetters(ServerPlayer player, GameWorldComponent game) {
-        for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
-            ItemStack stack = player.getInventory().getItem(slot);
-            if (!stack.is(WatheItems.LETTER)) continue;
-            Component roleLine = Component.translatableWithFallback(
-                    "tip.letter.role",
-                    "你的职业是 %s",
-                    formatRole(game.getRole(player)))
-                .withStyle(style -> style.withItalic(false).withColor(0xC5B08B));
-            ItemLore oldLore = stack.get(DataComponents.LORE);
-            stack.set(DataComponents.LORE, appendRoleLore(roleLine, oldLore));
-            break;
-        }
-    }
-
     private static void stampFakeKnives(ServerPlayer player) {
         for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
             BrinKnifeSkins.stampOwnerAndSkin(player, player.getInventory().getItem(slot));
         }
-    }
-
-    private static Component formatRole(Role role) {
-        if (role == null) return Component.literal("未知");
-        ResourceLocation id = role.identifier();
-        String nsKey = "announcement.role." + id.getNamespace() + "." + id.getPath();
-        String plainKey = "announcement.role." + id.getPath();
-        MutableComponent text = Language.getInstance().has(nsKey)
-            ? Component.translatable(nsKey)
-            : (Language.getInstance().has(plainKey) ? Component.translatable(plainKey) : Component.literal(id.getPath()));
-        return text.withStyle(style -> style.withColor(role.color()).withItalic(false));
-    }
-
-    private static ItemLore appendRoleLore(Component roleLine, ItemLore lore) {
-        List<Component> old = lore != null && lore.lines() != null ? lore.lines() : List.of();
-        ArrayList<Component> lines = new ArrayList<>();
-        if (!old.isEmpty()) {
-            lines.add(old.getFirst());
-            lines.add(roleLine);
-            lines.addAll(old.subList(1, old.size()));
-        } else {
-            lines.add(roleLine);
-        }
-        return new ItemLore(lines);
     }
 }
