@@ -30,6 +30,10 @@ import cn.erindax.brinswathe.musicbox.BrinMusicBox;
 import cn.erindax.brinswathe.network.BlindFlashS2CPacket;
 import cn.erindax.brinswathe.network.BrinAbilityC2SPacket;
 import cn.erindax.brinswathe.network.BrinConfigS2CPacket;
+import cn.erindax.brinswathe.network.BrinDraftChoiceC2SPacket;
+import cn.erindax.brinswathe.network.BrinDraftCloseS2CPacket;
+import cn.erindax.brinswathe.network.BrinDraftOpenS2CPacket;
+import cn.erindax.brinswathe.network.BrinDraftProgressS2CPacket;
 import cn.erindax.brinswathe.network.BrinIcNightVisionS2CPacket;
 import cn.erindax.brinswathe.network.BrinInstinctC2SPacket;
 import cn.erindax.brinswathe.network.BrinInstinctSnapshotS2CPacket;
@@ -173,9 +177,14 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(BrinSkinPickOpenS2CPacket.TYPE, BrinSkinPickOpenS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(BrinSkinPickChoiceC2SPacket.TYPE, BrinSkinPickChoiceC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinSkinPickResultS2CPacket.TYPE, BrinSkinPickResultS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(BrinDraftOpenS2CPacket.TYPE, BrinDraftOpenS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(BrinDraftChoiceC2SPacket.TYPE, BrinDraftChoiceC2SPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(BrinDraftCloseS2CPacket.TYPE, BrinDraftCloseS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(BrinDraftProgressS2CPacket.TYPE, BrinDraftProgressS2CPacket.STREAM_CODEC);
 		registerPackets();
 		BrinMusicBox.init();
 		BrinSkinPicks.init();
+		BrinDraft.init();
 		registerConfigSync();
 		registerCommands();
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
@@ -226,6 +235,7 @@ public class BrinsWathe implements ModInitializer {
 			BrinRoundRecapComponent recap = BrinRoundRecapComponent.KEY.get(world);
 			if (recap != null) recap.snapshotIdentities(recapPlayers);
 			BrinGuesserSuspension.begin();
+			BrinDraft.roundInitialized();
 		});
 		GameEvents.ON_GAME_START.register(gameMode -> BrinItemCooldowns.schedule());
 		GameEvents.ON_GAME_START.register(gameMode -> BrinGuesserSuspension.reset());

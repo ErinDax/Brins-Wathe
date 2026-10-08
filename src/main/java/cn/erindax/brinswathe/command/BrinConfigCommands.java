@@ -211,6 +211,8 @@ public final class BrinConfigCommands {
         line(source, "/brinswathe hudnames [true|false]", "查看或设置本能准星名字是否隔墙显示");
         line(source, "/brinswathe planb <true|false>", "开关 Plan B");
         line(source, "/brinswathe badguesser <true|false>", "开关禁猜者");
+        line(source, "/brinswathe draft [true|false]", "查看或开关开局轮抽选角");
+        line(source, "/brinswathe draftboost [倍数]", "查看或设置轮抽选中身份的权重倍数");
         line(source, "/brinswathe weights [true|false]", "查看或设置角色权重");
         line(source, "/brinswathe setcd [秒]", "查看或设置重置物品冷却");
         line(source, "/brinswathe musicbox clear <玩家>", "清除该玩家上传的音乐盒音乐");

@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe.mixin;
 
+import cn.erindax.brinswathe.BrinDraft;
 import cn.erindax.brinswathe.BrinRoleRotation;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -21,7 +22,7 @@ public abstract class BrinRoleRotationAssignMixin {
         at = @At(value = "INVOKE", target = "Ldev/doctor4t/wathe/cca/GameWorldComponent;areWeightsEnabled()Z")
     )
     private static boolean brinRotationRoleWeightsEnabled(GameWorldComponent game, Operation<Boolean> original) {
-        return original.call(game) || BrinRoleRotation.active();
+        return original.call(game) || BrinRoleRotation.active() || BrinDraft.boosting();
     }
 
     @WrapOperation(method = "findAndAssignPlayers", at = @At(value = "INVOKE", target = "Ljava/lang/Math;exp(D)D"))
@@ -34,12 +35,17 @@ public abstract class BrinRoleRotationAssignMixin {
         @Local(argsOnly = true) List<ServerPlayer> players,
         @Local(argsOnly = true) GameWorldComponent game
     ) {
-        if (!BrinRoleRotation.active()) return original.call(exponent);
-        List<ServerPlayer> pool = new ArrayList<>(players.size());
-        for (ServerPlayer candidate : players) {
-            if (Harpymodloader.FORCED_MODDED_ROLE_FLIP.containsKey(candidate.getUUID())) continue;
-            if (Harpymodloader.OVERWRITE_ROLES.contains(game.getRole(candidate))) pool.add(candidate);
+        double base;
+        if (BrinRoleRotation.active()) {
+            List<ServerPlayer> pool = new ArrayList<>(players.size());
+            for (ServerPlayer candidate : players) {
+                if (Harpymodloader.FORCED_MODDED_ROLE_FLIP.containsKey(candidate.getUUID())) continue;
+                if (Harpymodloader.OVERWRITE_ROLES.contains(game.getRole(candidate))) pool.add(candidate);
+            }
+            base = BrinRoleRotation.weight(player, BrinRoleRotation.categoryFor(role), pool, remaining);
+        } else {
+            base = game.areWeightsEnabled() ? original.call(exponent) : 1.0;
         }
-        return BrinRoleRotation.weight(player, BrinRoleRotation.categoryFor(role), pool, remaining);
+        return base * BrinDraft.roleBoost(player, role);
     }
 }

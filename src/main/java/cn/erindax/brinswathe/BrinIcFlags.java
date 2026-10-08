@@ -33,6 +33,10 @@ public final class BrinIcFlags {
     public static volatile float roleRepeatStrength = 1.0F;
     public static volatile float roleRepeatDecay = 0.0F;
     public static volatile int roleRepeatMaxStreak = 3;
+    public static volatile boolean draft = false;
+    public static volatile float draftBoost = 3.0F;
+    public static final float DRAFT_MIN_BOOST = 1.0F;
+    public static final float DRAFT_MAX_BOOST = 20.0F;
     public static final float ROLE_REPEAT_MAX_STRENGTH = 5.0F;
     public static final float ROLE_REPEAT_MAX_DECAY = 0.9F;
     public static final int ROLE_REPEAT_MAX_STREAK_LIMIT = 10;
@@ -72,6 +76,8 @@ public final class BrinIcFlags {
             if (root.has("role_repeat_strength")) roleRepeatStrength = root.get("role_repeat_strength").getAsFloat();
             if (root.has("role_repeat_decay")) roleRepeatDecay = root.get("role_repeat_decay").getAsFloat();
             if (root.has("role_repeat_max_streak")) roleRepeatMaxStreak = root.get("role_repeat_max_streak").getAsInt();
+            if (root.has("draft")) draft = root.get("draft").getAsBoolean();
+            if (root.has("draft_boost")) draftBoost = root.get("draft_boost").getAsFloat();
             if (root.has("reset_items_list") && root.get("reset_items_list").isJsonArray()) {
                 resetItemsList.clear();
                 for (JsonElement element : root.getAsJsonArray("reset_items_list")) {
@@ -95,6 +101,12 @@ public final class BrinIcFlags {
         roleRepeatStrength = clampFloat(roleRepeatStrength, ROLE_REPEAT_MAX_STRENGTH, 1.0F);
         roleRepeatDecay = clampFloat(roleRepeatDecay, ROLE_REPEAT_MAX_DECAY, 0.0F);
         roleRepeatMaxStreak = Math.max(0, Math.min(ROLE_REPEAT_MAX_STREAK_LIMIT, roleRepeatMaxStreak));
+        draftBoost = clampDraftBoost(draftBoost);
+    }
+
+    public static float clampDraftBoost(float value) {
+        if (Float.isNaN(value)) return 3.0F;
+        return Math.max(DRAFT_MIN_BOOST, Math.min(DRAFT_MAX_BOOST, value));
     }
 
     private static float clampFloat(float value, float max, float fallback) {
@@ -128,6 +140,8 @@ public final class BrinIcFlags {
         root.addProperty("role_repeat_strength", roleRepeatStrength);
         root.addProperty("role_repeat_decay", roleRepeatDecay);
         root.addProperty("role_repeat_max_streak", roleRepeatMaxStreak);
+        root.addProperty("draft", draft);
+        root.addProperty("draft_boost", clampDraftBoost(draftBoost));
         JsonArray items = new JsonArray();
         for (String id : resetItemsList) items.add(id);
         root.add("reset_items_list", items);
