@@ -213,7 +213,7 @@ public final class BrinConfigCommands {
         line(source, "/brinswathe badguesser <true|false>", "开关禁猜者");
         line(source, "/brinswathe draft [true|false]", "查看或开关开局轮抽选角");
         line(source, "/brinswathe draftboost [倍数]", "查看或设置轮抽选中身份的权重倍数");
-        line(source, "/brinswathe weights [true|false]", "查看或设置角色权重");
+        line(source, "/brinswathe weights [true|false]", "查看或开关原版角色权重，开启时停用防连任");
         line(source, "/brinswathe setcd [秒]", "查看或设置重置物品冷却");
         line(source, "/brinswathe musicbox clear <玩家>", "清除该玩家上传的音乐盒音乐");
         line(source, "/brinswathe musicbox stop", "停止当前结算音乐");

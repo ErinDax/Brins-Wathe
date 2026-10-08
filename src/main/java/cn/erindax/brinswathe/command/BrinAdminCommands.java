@@ -404,19 +404,15 @@ public final class BrinAdminCommands {
     }
 
     private static int showWeights(CommandSourceStack source) {
-        source.sendSuccess(
-            () -> Component.literal("角色权重: " + (BrinIcFlags.roleWeights ? "开启" : "关闭(纯随机)")),
-            false
-        );
+        String description = BrinRoleWeights.describe();
+        source.sendSuccess(() -> Component.literal(description), false);
         return 1;
     }
 
     private static int setWeights(CommandSourceStack source, boolean enabled) {
         BrinRoleWeights.apply(source.getServer(), enabled);
-        source.sendSuccess(
-            () -> Component.literal("角色权重: " + (enabled ? "开启" : "关闭(纯随机)")),
-            true
-        );
+        String description = BrinRoleWeights.describe();
+        source.sendSuccess(() -> Component.literal(description), true);
         return 1;
     }
 

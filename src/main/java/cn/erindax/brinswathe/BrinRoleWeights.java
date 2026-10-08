@@ -26,10 +26,21 @@ public final class BrinRoleWeights {
         CommandSourceStack source = (CommandSourceStack) context.getSource();
         boolean enabled = BoolArgumentType.getBool(context, "enabled");
         apply(source.getServer(), enabled);
-        source.sendSuccess(
-            () -> Component.literal("角色权重: " + (enabled ? "开启" : "关闭（纯随机）")),
-            true
-        );
+        String description = describe();
+        source.sendSuccess(() -> Component.literal(description), true);
         return 1;
+    }
+
+    public static String describe() {
+        if (BrinIcFlags.roleWeights) return "原版权重: 开启（按历史担任次数降权），防连任降权: 停用";
+        if (!BrinIcFlags.roleRepeatGuard) return "原版权重: 关闭，防连任降权: 关闭，当前为纯随机";
+        String memory = BrinIcFlags.roleRepeatDecay <= 0.0F
+            ? "只记上一局"
+            : "记忆衰减 " + BrinIcFlags.roleRepeatDecay;
+        String streak = BrinIcFlags.roleRepeatMaxStreak <= 0
+            ? "不限连任"
+            : "最多连任 " + BrinIcFlags.roleRepeatMaxStreak + " 局";
+        return "原版权重: 关闭，当前生效: 防连任降权（强度 " + BrinIcFlags.roleRepeatStrength
+            + "，" + memory + "，" + streak + "）";
     }
 }
