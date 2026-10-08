@@ -30,6 +30,10 @@ import cn.erindax.brinswathe.musicbox.MusicBox;
 import cn.erindax.brinswathe.network.BlindFlashS2CPacket;
 import cn.erindax.brinswathe.network.AbilityC2SPacket;
 import cn.erindax.brinswathe.network.ConfigS2CPacket;
+import cn.erindax.brinswathe.network.DraftChoiceC2SPacket;
+import cn.erindax.brinswathe.network.DraftCloseS2CPacket;
+import cn.erindax.brinswathe.network.DraftOpenS2CPacket;
+import cn.erindax.brinswathe.network.DraftProgressS2CPacket;
 import cn.erindax.brinswathe.network.IcNightVisionS2CPacket;
 import cn.erindax.brinswathe.network.InstinctC2SPacket;
 import cn.erindax.brinswathe.network.InstinctSnapshotS2CPacket;
@@ -173,9 +177,14 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(SkinPickOpenS2CPacket.TYPE, SkinPickOpenS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(SkinPickChoiceC2SPacket.TYPE, SkinPickChoiceC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(SkinPickResultS2CPacket.TYPE, SkinPickResultS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(DraftOpenS2CPacket.TYPE, DraftOpenS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(DraftChoiceC2SPacket.TYPE, DraftChoiceC2SPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(DraftCloseS2CPacket.TYPE, DraftCloseS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(DraftProgressS2CPacket.TYPE, DraftProgressS2CPacket.STREAM_CODEC);
 		registerPackets();
 		MusicBox.init();
 		SkinPicks.init();
+		Draft.init();
 		registerConfigSync();
 		registerCommands();
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
@@ -226,6 +235,7 @@ public class BrinsWathe implements ModInitializer {
 			RoundRecapComponent recap = RoundRecapComponent.KEY.get(world);
 			if (recap != null) recap.snapshotIdentities(recapPlayers);
 			GuesserSuspension.begin();
+			Draft.roundInitialized();
 		});
 		GameEvents.ON_GAME_START.register(gameMode -> ModItemCooldowns.schedule());
 		GameEvents.ON_GAME_START.register(gameMode -> GuesserSuspension.reset());

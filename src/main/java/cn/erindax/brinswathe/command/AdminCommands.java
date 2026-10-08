@@ -152,6 +152,27 @@ public final class AdminCommands {
                         enabled -> IcFlags.badGuesser = enabled,
                         BoolArgumentType.getBool(context, "enabled")
                     ))))
+            .then(Commands.literal("draft")
+                .requires(source -> source.hasPermission(2))
+                .executes(context -> showDraft(context.getSource()))
+                .then(Commands.argument("enabled", BoolArgumentType.bool())
+                    .executes(context -> setFlag(
+                        context.getSource(),
+                        "Draft",
+                        enabled -> IcFlags.draft = enabled,
+                        BoolArgumentType.getBool(context, "enabled")
+                    ))))
+            .then(Commands.literal("draftboost")
+                .requires(source -> source.hasPermission(2))
+                .executes(context -> showDraft(context.getSource()))
+                .then(Commands.argument(
+                        "multiplier",
+                        FloatArgumentType.floatArg(IcFlags.DRAFT_MIN_BOOST, IcFlags.DRAFT_MAX_BOOST)
+                    )
+                    .executes(context -> setDraftBoost(
+                        context.getSource(),
+                        FloatArgumentType.getFloat(context, "multiplier")
+                    ))))
             .then(Commands.literal("weights")
                 .requires(source -> source.hasPermission(2))
                 .executes(context -> showWeights(context.getSource()))
@@ -403,6 +424,24 @@ public final class AdminCommands {
         setter.accept(enabled);
         IcFlags.save();
         source.sendSuccess(() -> Component.literal(name + ": " + (enabled ? "Enabled" : "Disabled")), true);
+        return 1;
+    }
+
+    private static int showDraft(CommandSourceStack source) {
+        boolean enabled = IcFlags.draft;
+        float boost = IcFlags.draftBoost;
+        source.sendSuccess(
+            () -> Component.literal("开局轮抽选角: " + (enabled ? "开启" : "关闭") + ", 选中身份权重 ×" + boost),
+            false
+        );
+        return 1;
+    }
+
+    private static int setDraftBoost(CommandSourceStack source, float multiplier) {
+        IcFlags.draftBoost = IcFlags.clampDraftBoost(multiplier);
+        IcFlags.save();
+        float applied = IcFlags.draftBoost;
+        source.sendSuccess(() -> Component.literal("轮抽选中身份权重已设置为 ×" + applied), true);
         return 1;
     }
 
