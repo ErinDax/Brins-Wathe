@@ -35,7 +35,7 @@ public final class BrinRoleOverwriteCleanup {
         }
         ResetPlayerEvent.EVENT.invoker().resetPlayer(player);
         resetForeignRoleState(player);
-        clearInventoryKeepingLetter(player);
+        clearInventoryKeepingRoomKey(player);
         return balance;
     }
 
@@ -72,15 +72,15 @@ public final class BrinRoleOverwriteCleanup {
         } catch (ReflectiveOperationException ignored) {
         }
     }
-    private static void clearInventoryKeepingLetter(ServerPlayer player) {
+    private static void clearInventoryKeepingRoomKey(ServerPlayer player) {
         Inventory inventory = player.getInventory();
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             ItemStack stack = inventory.getItem(slot);
-            if (stack.isEmpty() || stack.is(WatheItems.LETTER)) continue;
+            if (stack.isEmpty() || stack.is(WatheItems.KEY)) continue;
             inventory.setItem(slot, ItemStack.EMPTY);
         }
         if (!player.containerMenu.getCarried().isEmpty()
-            && !player.containerMenu.getCarried().is(WatheItems.LETTER)) {
+            && !player.containerMenu.getCarried().is(WatheItems.KEY)) {
             player.containerMenu.setCarried(ItemStack.EMPTY);
         }
     }
