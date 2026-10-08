@@ -1,5 +1,7 @@
 {
   "tip.brinswathe.medium_no_chat": "灵媒无法使用聊天栏，请使用语音与死者交流。",
+  "tip.brinswathe.guesser_suspended": "当前职业不能使用猜测者，猜测者已暂停",
+  "tip.brinswathe.guesser_restored": "猜测者已恢复",
   "screen.brinswathe.event_log": "游戏事件日志",
   "recap.brinswathe.kill": "[击杀]",
   "recap.brinswathe.death": "[死亡]",

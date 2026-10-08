@@ -225,8 +225,10 @@ public class BrinsWathe implements ModInitializer {
 			IcRoundStart.apply(world, gameWorld);
 			RoundRecapComponent recap = RoundRecapComponent.KEY.get(world);
 			if (recap != null) recap.snapshotIdentities(recapPlayers);
+			GuesserSuspension.begin();
 		});
 		GameEvents.ON_GAME_START.register(gameMode -> ModItemCooldowns.schedule());
+		GameEvents.ON_GAME_START.register(gameMode -> GuesserSuspension.reset());
 		ResetPlayerEvent.EVENT.register(player -> {
 			MuzzlerAbilityComponent component = MuzzlerAbilityComponent.KEY.get(player);
 			if (component != null) component.reset();
