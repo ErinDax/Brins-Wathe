@@ -404,19 +404,15 @@ public final class AdminCommands {
     }
 
     private static int showWeights(CommandSourceStack source) {
-        source.sendSuccess(
-            () -> Component.literal("角色权重: " + (IcFlags.roleWeights ? "开启" : "关闭(纯随机)")),
-            false
-        );
+        String description = RoleWeights.describe();
+        source.sendSuccess(() -> Component.literal(description), false);
         return 1;
     }
 
     private static int setWeights(CommandSourceStack source, boolean enabled) {
         RoleWeights.apply(source.getServer(), enabled);
-        source.sendSuccess(
-            () -> Component.literal("角色权重: " + (enabled ? "开启" : "关闭(纯随机)")),
-            true
-        );
+        String description = RoleWeights.describe();
+        source.sendSuccess(() -> Component.literal(description), true);
         return 1;
     }
 
