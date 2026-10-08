@@ -67,6 +67,20 @@ public abstract class BrinGuaranteedGuesserMixin {
         ModifierAssigned.EVENT.invoker().assignModifier(selected, guesser);
     }
 
+    @Inject(method = "lambda$assignModifiers$1", at = @At("HEAD"), cancellable = true)
+    private static void brinSkipRandomGuesserAfterGuaranteed(
+        int desiredRoleCount,
+        List<ServerPlayer> players,
+        GameWorldComponent gameWorld,
+        int killerOnlyCount,
+        WorldModifierComponent worldModifiers,
+        Modifier modifier,
+        CallbackInfo ci
+    ) {
+        if (!BrinModifiers.GUESSER.equals(modifier.identifier())) return;
+        if (!worldModifiers.getAllWithModifier(modifier).isEmpty()) ci.cancel();
+    }
+
     @Unique
     private static boolean brinCanReceive(Modifier modifier, GameWorldComponent gameWorld, ServerPlayer player) {
         Role role = gameWorld.getRole(player);
