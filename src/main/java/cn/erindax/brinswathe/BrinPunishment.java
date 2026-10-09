@@ -8,6 +8,7 @@ import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,8 +34,11 @@ import org.jetbrains.annotations.Nullable;
 
 public final class BrinPunishment {
     public static final int EARLY_FALL_SECONDS = 45;
+    private static final int SWAP_GRACE_SECONDS = 10;
+    private static final String SWAPPER_HANDLER = "org.agmas.noellesroles.Noellesroles";
     private static final int GLOW_TICKS = 60;
     private static final Map<UUID, String> QUEUED = new LinkedHashMap<>();
+    private static final Map<UUID, Integer> SWAPPED = new HashMap<>();
     private static final Set<UUID> GLOWING = new HashSet<>();
     private static final Set<UUID> ENDED = new HashSet<>();
     private static int roundStartTick = -1;
@@ -45,6 +49,7 @@ public final class BrinPunishment {
     public static void init() {
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
             QUEUED.clear();
+            SWAPPED.clear();
             GLOWING.clear();
             ENDED.clear();
             roundStartTick = -1;
@@ -93,7 +98,10 @@ public final class BrinPunishment {
         if (!BrinIcFlags.punishEarlyFall || !(victim instanceof ServerPlayer player)) return;
         if (!GameConstants.DeathReasons.FELL_OUT_OF_TRAIN.equals(deathReason)) return;
         if (killer != null && !killer.getUUID().equals(player.getUUID())) return;
-        if (roundStartTick < 0 || player.server.getTickCount() - roundStartTick > EARLY_FALL_SECONDS * 20) return;
+        int now = player.server.getTickCount();
+        if (roundStartTick < 0 || now - roundStartTick > EARLY_FALL_SECONDS * 20) return;
+        Integer swappedAt = SWAPPED.get(player.getUUID());
+        if (swappedAt != null && now - swappedAt <= SWAP_GRACE_SECONDS * 20) return;
         if (GameFunctions.isPlayerAliveAndSurvival(player)) return;
         if (!GameWorldComponent.KEY.get(player.level()).isRunning()) return;
         if (!queue(player)) return;
@@ -103,6 +111,13 @@ public final class BrinPunishment {
             "你在开局 %s 秒内掉出了列车，下一局将受到惩罚",
             EARLY_FALL_SECONDS
         ).withStyle(ChatFormatting.DARK_RED));
+    }
+
+    public static void onMoved(ServerPlayer player) {
+        if (!GameWorldComponent.KEY.get(player.level()).isRunning()) return;
+        boolean swapped = StackWalker.getInstance().walk(frames ->
+            frames.limit(8).anyMatch(frame -> SWAPPER_HANDLER.equals(frame.getClassName())));
+        if (swapped) SWAPPED.put(player.getUUID(), player.server.getTickCount());
     }
 
     private static void forceRole(UUID playerId, Role role) {
@@ -121,6 +136,7 @@ public final class BrinPunishment {
     private static void roundInitialized(Level world, GameWorldComponent game) {
         if (world.isClientSide() || world.getServer() == null) return;
         roundStartTick = isMurder(game.getGameMode()) ? world.getServer().getTickCount() : -1;
+        SWAPPED.clear();
         Modifier punishment = BrinIcModifiers.PUNISHMENT;
         if (punishment == null) return;
         for (UUID id : WorldModifierComponent.KEY.get(world).getAllWithModifier(punishment)) {
