@@ -13,7 +13,6 @@ import cn.erindax.brinswathe.network.BrinMusicPlayS2CPacket;
 import cn.erindax.brinswathe.network.BrinMusicUploadAckS2CPacket;
 import cn.erindax.brinswathe.network.BrinMusicUploadChunkC2SPacket;
 import cn.erindax.brinswathe.network.BrinMusicUploadStartC2SPacket;
-import com.mojang.blaze3d.platform.InputConstants;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,18 +23,16 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public final class BrinMusicBoxClient {
@@ -54,7 +51,6 @@ public final class BrinMusicBoxClient {
 
     private static final LinkedHashMap<String, CachedTrack> CACHE = new LinkedHashMap<>(16, 0.75F, true);
     private static long cacheBytes;
-    private static KeyMapping openBind;
     private static Status status = Status.UNKNOWN;
     @Nullable
     private static Component notice;
@@ -80,12 +76,6 @@ public final class BrinMusicBoxClient {
     }
 
     public static void init() {
-        openBind = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-            "key.brinswathe.music_box",
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_J,
-            "key.categories.brinswathe"
-        ));
         ClientPlayNetworking.registerGlobalReceiver(BrinMusicBoxStatusS2CPacket.TYPE, (payload, context) ->
             context.client().execute(() -> onStatus(payload)));
         ClientPlayNetworking.registerGlobalReceiver(BrinMusicUploadAckS2CPacket.TYPE, (payload, context) ->
@@ -98,14 +88,14 @@ public final class BrinMusicBoxClient {
         ClientTickEvents.END_CLIENT_TICK.register(BrinMusicBoxClient::tick);
     }
 
-    public static void openScreen(Minecraft client) {
+    public static void openScreen(Minecraft client, @Nullable Screen parent) {
         notice = null;
         if (ClientPlayNetworking.canSend(BrinMusicBoxRequestC2SPacket.TYPE)) {
             ClientPlayNetworking.send(new BrinMusicBoxRequestC2SPacket(BrinMusicBoxRequestC2SPacket.ACTION_QUERY));
         } else {
             status = Status.UNAVAILABLE;
         }
-        client.setScreen(new BrinMusicBoxScreen());
+        client.setScreen(new BrinMusicBoxScreen(parent));
     }
 
     public static boolean statusKnown() {
@@ -509,9 +499,6 @@ public final class BrinMusicBoxClient {
 
     private static void tick(Minecraft client) {
         ticks++;
-        while (openBind != null && openBind.consumeClick()) {
-            if (client.screen == null && client.player != null) openScreen(client);
-        }
         Upload current = upload;
         if (current != null && ticks - current.lastProgressTick > UPLOAD_TIMEOUT_TICKS) {
             upload = null;

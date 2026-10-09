@@ -191,7 +191,7 @@ public final class BrinConfigCommands {
     private static int showHelp(CommandSourceStack source) {
         line(source, "/killme", "自杀");
         line(source, "/iWantBe <vulture|executioner|jester>", "自选职业");
-        line(source, "J 键", "打开音乐盒, 上传当选 MVP 时播放的结算音乐");
+        line(source, "J 键", "打开个人设置: 购买物品放置格、音乐盒（上传当选 MVP 时播放的结算音乐）");
         if (!source.hasPermission(2)) return 1;
         blank(source);
         blank(source);

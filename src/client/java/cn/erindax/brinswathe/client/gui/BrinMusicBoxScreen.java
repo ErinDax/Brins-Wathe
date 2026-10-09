@@ -15,17 +15,21 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public final class BrinMusicBoxScreen extends Screen {
     private static final int TEXT_WIDTH = 320;
     private static final int LINE_HEIGHT = 11;
+    @Nullable
+    private final Screen parent;
     private Button pickButton;
     private Button previewButton;
     private Button deleteButton;
 
-    public BrinMusicBoxScreen() {
+    public BrinMusicBoxScreen(@Nullable Screen parent) {
         super(Component.translatable("screen.brinswathe.music_box"));
+        this.parent = parent;
     }
 
     @Override
@@ -86,6 +90,11 @@ public final class BrinMusicBoxScreen extends Screen {
                 return;
             }
         }
+    }
+
+    @Override
+    public void onClose() {
+        this.minecraft.setScreen(this.parent);
     }
 
     @Override

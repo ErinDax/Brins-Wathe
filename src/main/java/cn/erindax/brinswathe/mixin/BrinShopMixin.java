@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe.mixin;
 
+import cn.erindax.brinswathe.BrinBuySlots;
 import cn.erindax.brinswathe.BrinRoles;
 import cn.erindax.brinswathe.BrinShopAccess;
 import cn.erindax.brinswathe.CowboyDuel;
@@ -40,7 +41,15 @@ public abstract class BrinShopMixin {
     @WrapMethod(method = "tryBuy")
     private void brinTryBuy(int index, Operation<Void> original) {
         if (CowboyDuel.isActive()) return;
+        BrinBuySlots.beginPurchase(this.player);
+        try {
+            this.brinBuy(index, original);
+        } finally {
+            BrinBuySlots.endPurchase();
+        }
+    }
 
+    private void brinBuy(int index, Operation<Void> original) {
         GameWorldComponent game = GameWorldComponent.KEY.get(this.player.level());
         if (game.isRole(this.player, KinsWatheRoles.HUNTER)
             && GameSafeComponent.KEY.get(this.player.level()).isGameSafe) {
