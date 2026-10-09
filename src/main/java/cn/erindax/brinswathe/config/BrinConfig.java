@@ -25,11 +25,12 @@ public final class BrinConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 42;
+    private static final int CONFIG_VERSION = 43;
     private static final int ROLE_BALANCE_MIGRATION_VERSION = 39;
     private static final int AVENGER_INSTINCT_MIGRATION_VERSION = 40;
     private static final int PUPPETEER_KNIFE_MIGRATION_VERSION = 41;
     private static final int TRAPPER_SKILL_COST_MIGRATION_VERSION = 42;
+    private static final int AFK_DEFAULT_ON_MIGRATION_VERSION = 43;
     private static final int PREVIOUS_PUPPETEER_KNIFE_PRICE = 200;
     private static final int PREVIOUS_AVENGER_INSTINCT_SECONDS = 5;
     private static final int PREVIOUS_ARCHIVIST_SKILL_COST = 175;
@@ -468,8 +469,10 @@ public final class BrinConfig {
         JsonObject roleObjects = objectOrEmpty(root, "roles");
         Data defaults = createDefaults();
         JsonObject afkKickObject = objectOrEmpty(root, "afk_kick");
+        boolean afkEnabled = booleanValue(afkKickObject, "enabled", defaults.afk_kick.enabled, "afk_kick");
+        if (sourceVersion < AFK_DEFAULT_ON_MIGRATION_VERSION) afkEnabled = defaults.afk_kick.enabled;
         AfkKickSettings afkKick = new AfkKickSettings(
-            booleanValue(afkKickObject, "enabled", defaults.afk_kick.enabled, "afk_kick"),
+            afkEnabled,
             nonNegativeInt(afkKickObject, "idle_seconds", defaults.afk_kick.idle_seconds, "afk_kick"),
             nonNegativeInt(afkKickObject, "countdown_seconds", defaults.afk_kick.countdown_seconds, "afk_kick")
         );
@@ -1207,7 +1210,7 @@ public final class BrinConfig {
         return new Data(
             CONFIG_VERSION,
             List.of(),
-            new AfkKickSettings(false, 60, 60),
+            new AfkKickSettings(true, 60, 60),
             roles,
             HarpyAssignmentSettings.defaults()
         );

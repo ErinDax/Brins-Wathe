@@ -196,7 +196,7 @@ public final class BrinConfigCommands {
         blank(source);
         blank(source);
         line(source, "/brinswathe reload", "重载全部");
-        line(source, "/brinswathe afk [on|off]", "查看或开关挂机踢出");
+        line(source, "/brinswathe afk [on|off]", "查看或开关挂机处死");
         line(source, "/brinswathe setconfig [字段] [值]", "查看或修改 IC 配置字段");
         blank(source);
         blank(source);
@@ -296,7 +296,7 @@ public final class BrinConfigCommands {
             );
             return 1;
         } catch (Exception exception) {
-            source.sendFailure(Component.literal("挂机踢出设置保存失败: " + exception.getMessage()));
+            source.sendFailure(Component.literal("挂机处死设置保存失败: " + exception.getMessage()));
             return 0;
         }
     }

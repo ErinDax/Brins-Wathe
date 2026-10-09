@@ -1,6 +1,8 @@
 package cn.erindax.brinswathe;
 
 import cn.erindax.brinswathe.component.BombComponent;
+import cn.erindax.brinswathe.component.IllusionistComponent;
+import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -13,17 +15,26 @@ import java.util.UUID;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 public final class AfkKickManager {
     private static final double MOVEMENT_EPSILON = 0.0001D;
     private static final float ROTATION_EPSILON = 0.5F;
+    private static final ResourceLocation VOODOO_DEATH =
+        ResourceLocation.fromNamespaceAndPath("noellesroles", "voodoo");
     private static final Map<UUID, AfkState> STATES = new HashMap<>();
+    private static UUID executing;
 
     private AfkKickManager() {
+    }
+
+    public static boolean isExecuting(Player player) {
+        return executing != null && executing.equals(player.getUUID());
     }
 
     public static void tick(MinecraftServer server) {
@@ -37,7 +48,7 @@ public final class AfkKickManager {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             UUID playerId = player.getUUID();
             onlinePlayers.add(playerId);
-            if (!isEligible(player) || isTrapped(server, playerId) || isPinnedByMine(player)) {
+            if (!isEligible(player) || isTrapped(server, playerId) || isPinnedByMine(player) || isControllingProxy(player)) {
                 STATES.remove(playerId);
                 continue;
             }
@@ -64,7 +75,12 @@ public final class AfkKickManager {
             long countdownElapsedMillis = idleMillis - idleThresholdMillis;
             if (countdownElapsedMillis >= countdownSeconds * 1000L) {
                 STATES.remove(playerId);
-                player.connection.disconnect(Component.translatable("disconnect.brinswathe.afk"));
+                executing = playerId;
+                try {
+                    GameFunctions.killPlayer(player, true, null, VOODOO_DEATH);
+                } finally {
+                    executing = null;
+                }
                 continue;
             }
 
@@ -100,6 +116,13 @@ public final class AfkKickManager {
     private static boolean isPinnedByMine(ServerPlayer player) {
         BombComponent bomb = BombComponent.KEY.get(player);
         return bomb != null && bomb.isMinePinned();
+    }
+
+    private static boolean isControllingProxy(ServerPlayer player) {
+        PuppeteerControlComponent puppeteer = PuppeteerControlComponent.KEY.get(player);
+        if (puppeteer != null && puppeteer.isControlling()) return true;
+        IllusionistComponent illusionist = IllusionistComponent.KEY.get(player);
+        return illusionist != null && illusionist.controlledCloneId != null;
     }
 
     private static boolean isTrapped(MinecraftServer server, UUID playerId) {

@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe.mixin;
 
+import cn.erindax.brinswathe.AfkKickManager;
 import cn.erindax.brinswathe.BrinNoelleAccess;
 import cn.erindax.brinswathe.BrinShieldPierce;
 import cn.erindax.brinswathe.CowboyDuel;
@@ -40,6 +41,7 @@ public abstract class BrinIcDeathMixin {
         ResourceLocation deathReason,
         Operation<Boolean> original
     ) {
+        if (AfkKickManager.isExecuting(victim)) return true;
         if (victim.level().isClientSide || CowboyDuel.isActive()) {
             return original.call(invoker, victim, killer, deathReason);
         }
