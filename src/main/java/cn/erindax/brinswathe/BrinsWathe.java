@@ -279,7 +279,7 @@ public class BrinsWathe implements ModInitializer {
 		boolean shieldPierced = PuppeteerControlComponent.isSelfDestructKill(attacker, deathReason);
 			if (gameWorld.isRole(victim, BrinRoles.NIGHTMARE) && attacker != null) {
 				NightmareComponent nightmare = NightmareComponent.KEY.get(victim);
-				if (nightmare != null && nightmare.isMarked(attacker.getUUID())) return false;
+				if (nightmare != null && !nightmare.isNightmareHour() && nightmare.isMarked(attacker.getUUID())) return false;
 			}
 			if (gameWorld.isRole(victim, BrinRoles.NIGHTMARE)
 				&& !shieldPierced

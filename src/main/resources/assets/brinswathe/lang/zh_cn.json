@@ -140,7 +140,7 @@
   "guidebook.role.description.brin:beastcatcher": "捕兽者布下致命的捕兽夹。\n\n按下技能键花费{skill_cost}金币部署捕兽夹。\n捕兽夹仅你、你的同伴和生存专家可见。\n被夹住的玩家会持续定身直至死亡。\n每夹住一名玩家，你获得{trap_catch_reward}金币。\n\n技能部署的陷阱同时最多存在{trap_limit}个。\n商店的额外捕兽夹花费{extra_trap_price}金币，买下后无视数量限制，直接在脚下放置。\n技能冷却时间{skill_cooldown_seconds}秒。",
   "guidebook.role.brin:nightmare": "梦魇",
   "guidebook.role.title.brin:nightmare": "中立阵营",
-  "guidebook.role.description.brin:nightmare": "梦魇拥有一层初始护盾，可以看到睡觉的玩家\n\n可以对睡觉的玩家进行播种，每播种一位玩家多一层护盾，上限两层\n\n被播种的玩家无法杀死梦魇\n\n你可以给存活玩家发放睡觉任务\n\n当杀手阵营全员死亡之后，若梦魇还存活会触发梦魇时刻\n\n梦魇时刻会给梦魇发放刀、杀手本能以及杀手商店\n\n梦魇时刻前梦魇随杀手一起结算，梦魇时刻后梦魇独立结算\n\n梦魇时刻获胜条件：播种所有存活玩家或者杀死所有人",
+  "guidebook.role.description.brin:nightmare": "梦魇拥有一层初始护盾，可以看到睡觉的玩家\n\n可以对睡觉的玩家进行播种，每播种一位玩家多一层护盾，上限两层\n\n梦魇时刻前，被播种的玩家无法杀死梦魇；梦魇时刻开始后，被播种的玩家也能杀死梦魇\n\n你可以给存活玩家发放睡觉任务\n\n当杀手阵营全员死亡之后，若梦魇还存活会触发梦魇时刻\n\n梦魇时刻会给梦魇发放刀、杀手本能以及杀手商店\n\n梦魇时刻前梦魇随杀手一起结算，梦魇时刻后梦魇独立结算\n\n梦魇时刻获胜条件：播种所有存活玩家或者杀死所有人",
   "guidebook.role.brin:illusionist": "幻术师",
   "guidebook.role.title.brin:illusionist": "杀手阵营",
   "guidebook.role.description.brin:illusionist": "幻术师按下技能键会生成两个分身，分身固定东/西朝向\n\n技能持续期间再次按下技能键可以切换当前的附身视角，切换顺序为东分身→西分身→本体\n\n控制分身时，你的本体会留在原地。如果你的本体死亡，所有分身都会瞬间消失。\n\n分身可以交互，也可以杀人",
