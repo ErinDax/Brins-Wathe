@@ -38,10 +38,9 @@ public abstract class BrinVanillaRoleAssignmentMixin {
             Role forcedRole = Harpymodloader.FORCED_MODDED_ROLE_FLIP.get(player.getUUID());
             if (forcedRole == null) continue;
             if (forcedRole.canUseKiller()) {
-                roleSelector.forcedKillers.add(player.getUUID());
-                if (!playersForKiller.contains(player)) playersForKiller.add(player);
+                if (!roleSelector.forcedKillers.contains(player.getUUID())) roleSelector.forcedKillers.add(player.getUUID());
             } else if (forcedRole.equals(WatheRoles.VIGILANTE)) {
-                roleSelector.forcedVigilantes.add(player.getUUID());
+                if (!roleSelector.forcedVigilantes.contains(player.getUUID())) roleSelector.forcedVigilantes.add(player.getUUID());
                 if (!playersForVigilante.contains(player)) playersForVigilante.add(player);
             } else {
                 playersForKiller.remove(player);

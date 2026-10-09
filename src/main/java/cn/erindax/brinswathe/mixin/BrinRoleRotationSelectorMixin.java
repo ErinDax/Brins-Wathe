@@ -53,7 +53,9 @@ public abstract class BrinRoleRotationSelectorMixin {
         if (BrinRoleRotation.active()) {
             List<ServerPlayer> pool = new ArrayList<>(players.size());
             for (ServerPlayer candidate : players) {
-                if (!game.isRole(candidate, WatheRoles.KILLER)) pool.add(candidate);
+                if (!game.isRole(candidate, WatheRoles.KILLER) && !game.isRole(candidate, WatheRoles.VIGILANTE)) {
+                    pool.add(candidate);
+                }
             }
             base = BrinRoleRotation.weight(player, BrinRoleRotation.VIGILANTE, pool, vigilanteCount);
         } else {
