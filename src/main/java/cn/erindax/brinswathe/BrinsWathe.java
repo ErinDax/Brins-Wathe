@@ -29,6 +29,7 @@ import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 import cn.erindax.brinswathe.musicbox.MusicBox;
 import cn.erindax.brinswathe.network.BlindFlashS2CPacket;
 import cn.erindax.brinswathe.network.AbilityC2SPacket;
+import cn.erindax.brinswathe.network.BuySlotC2SPacket;
 import cn.erindax.brinswathe.network.ConfigS2CPacket;
 import cn.erindax.brinswathe.network.DraftChoiceC2SPacket;
 import cn.erindax.brinswathe.network.DraftCloseS2CPacket;
@@ -181,11 +182,13 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playC2S().register(DraftChoiceC2SPacket.TYPE, DraftChoiceC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(DraftCloseS2CPacket.TYPE, DraftCloseS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(DraftProgressS2CPacket.TYPE, DraftProgressS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(BuySlotC2SPacket.TYPE, BuySlotC2SPacket.STREAM_CODEC);
 		registerPackets();
 		MusicBox.init();
 		SkinPicks.init();
 		Draft.init();
 		Punishment.init();
+		BuySlots.init();
 		registerConfigSync();
 		registerCommands();
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
