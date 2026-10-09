@@ -36,6 +36,7 @@ public class TrapperComponent implements AutoSyncedComponent, ServerTickingCompo
     );
 
     public static final int TRAP_STUN_TICKS = Integer.MAX_VALUE;
+    public static final int TRAP_LIFETIME_TICKS = 210 * 20;
 
     public static boolean isTrapStun(int stunTicks) {
         return stunTicks > TRAP_STUN_TICKS / 2;
