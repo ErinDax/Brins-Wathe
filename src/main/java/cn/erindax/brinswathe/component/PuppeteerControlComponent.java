@@ -15,7 +15,6 @@ import dev.doctor4t.wathe.util.ShopEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -57,7 +56,7 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
     private static final int GLOW_TICKS = 200;
     private static final int KILLED_SLOWNESS_TICKS = 300;
     private static final int PARTICLE_INTERVAL_TICKS = 8;
-    private static final double SELF_DESTRUCT_SIZE = 3.0D;
+    private static final double SELF_DESTRUCT_SIZE = 4.0D;
     private static final double SUMMON_OFFSET = 1.0D;
     private static final int SELF_DESTRUCT_GRACE_TICKS = 20;
     private static final String PUPPET_GEAR_NBT = "BrinPuppetGear";
@@ -437,16 +436,7 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
             && GameConstants.DeathReasons.GRENADE.equals(deathReason);
     }
     private static AABB selfDestructBounds(Vec3 center) {
-        BlockPos origin = BlockPos.containing(center);
-        int radius = (int) SELF_DESTRUCT_SIZE / 2;
-        return new AABB(
-            origin.getX() - radius,
-            origin.getY() - radius,
-            origin.getZ() - radius,
-            origin.getX() + radius + 1,
-            origin.getY() + radius + 1,
-            origin.getZ() + radius + 1
-        );
+        return AABB.ofSize(center, SELF_DESTRUCT_SIZE, SELF_DESTRUCT_SIZE, SELF_DESTRUCT_SIZE);
     }
     public static boolean isPuppet(PlayerBodyEntity entity) {
         return ((PuppetEntity) entity).brin$isPuppet();

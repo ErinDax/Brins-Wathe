@@ -112,8 +112,7 @@ public final class BrinShopAccess {
             case "puppeteer" -> Stream.concat(
                 GameConstants.SHOP_ENTRIES.stream()
                     .filter(entry -> !isFirearm(entry.stack())
-                        && !entry.stack().is(WatheItems.PSYCHO_MODE)
-                        && !entry.stack().is(WatheItems.GRENADE)),
+                        && !entry.stack().is(WatheItems.PSYCHO_MODE)),
                 Stream.of(new PuppeteerSelfDestructShopEntry())
             ).toList();
             case "sniper" -> GameConstants.SHOP_ENTRIES.stream()
