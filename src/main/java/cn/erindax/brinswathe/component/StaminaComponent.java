@@ -97,6 +97,21 @@ public class StaminaComponent implements AutoSyncedComponent, ServerTickingCompo
         persistOverrides();
     }
 
+    public static int globalMaxStamina() {
+        Integer value = globalMaxStaminaOverride;
+        return value == null ? DEFAULT_MAX_STAMINA : value;
+    }
+
+    public static float globalRunSpeed() {
+        Float value = globalRunSpeedOverride;
+        return value == null ? DEFAULT_RUN_SPEED : value;
+    }
+
+    public static int globalRegenRate() {
+        Integer value = globalRegenRateOverride;
+        return value == null ? DEFAULT_REGEN_RATE : value;
+    }
+
     public static void loadPersistedOverrides() {
         Path path = overridePath();
         if (!Files.exists(path)) return;

@@ -149,6 +149,10 @@ public final class BrinMusicBox {
         return true;
     }
 
+    public static boolean hasMusic(UUID owner) {
+        return INDEX.containsKey(owner) || PROCESSING.contains(owner);
+    }
+
     public static boolean adminClear(MinecraftServer server, UUID owner) {
         SESSIONS.remove(owner);
         PREVIEWS.remove(owner);

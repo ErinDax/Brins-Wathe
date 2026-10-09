@@ -6,6 +6,7 @@ import cn.erindax.brinswathe.BrinKnifeSkins;
 import cn.erindax.brinswathe.BrinRoleWeights;
 import cn.erindax.brinswathe.BrinSkinEditors;
 import cn.erindax.brinswathe.BrinSkinPicks;
+import cn.erindax.brinswathe.admin.BrinAdminPanel;
 import cn.erindax.brinswathe.config.BrinConfig;
 import cn.erindax.brinswathe.musicbox.BrinMusicBox;
 import cn.erindax.brinswathe.network.BrinConfigS2CPacket;
@@ -51,6 +52,9 @@ public final class BrinConfigCommands {
             .then(Commands.literal("reload")
                 .requires(source -> source.hasPermission(2))
                 .executes(context -> reload(context.getSource())))
+            .then(Commands.literal("gui")
+                .requires(source -> source.hasPermission(BrinAdminPanel.PERMISSION))
+                .executes(context -> openGui(context.getSource())))
             .then(Commands.literal("afk")
                 .requires(source -> source.hasPermission(2))
                 .executes(context -> status(context.getSource()))
@@ -196,6 +200,7 @@ public final class BrinConfigCommands {
         blank(source);
         blank(source);
         line(source, "/brinswathe reload", "重载全部");
+        line(source, "/brinswathe gui", "打开管理设置界面: 开关、数值、职业和词条启用、一次性操作");
         line(source, "/brinswathe afk [on|off]", "查看或开关挂机处死");
         line(source, "/brinswathe setconfig [字段] [值]", "查看或修改 IC 配置字段");
         blank(source);
@@ -267,6 +272,19 @@ public final class BrinConfigCommands {
             return 0;
         }
     }
+    private static int openGui(CommandSourceStack source) {
+        ServerPlayer player = source.getPlayer();
+        if (player == null) {
+            source.sendFailure(Component.literal("此指令只能由玩家执行"));
+            return 0;
+        }
+        if (!BrinAdminPanel.open(player)) {
+            source.sendFailure(Component.literal("你的客户端没有装最新版模组, 打不开管理设置界面"));
+            return 0;
+        }
+        return 1;
+    }
+
     private static int status(CommandSourceStack source) {
         source.sendSuccess(
             () -> Component.translatable(
