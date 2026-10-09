@@ -44,15 +44,18 @@ public final class AdminScreen extends Screen {
         AdminPanel.ACTION_STAMINA_RESET
     );
     private final Map<String, Button> actionButtons = new LinkedHashMap<>();
+    @Nullable
+    private final Screen parent;
     private AdminSnapshot snapshot;
     @Nullable
     private String armed;
     private long armedUntil;
     private int top;
 
-    public AdminScreen(AdminSnapshot snapshot) {
+    public AdminScreen(AdminSnapshot snapshot, @Nullable Screen parent) {
         super(Component.translatable("screen.brinswathe.admin"));
         this.snapshot = snapshot;
+        this.parent = parent;
     }
 
     public AdminSnapshot snapshot() {
@@ -106,6 +109,11 @@ public final class AdminScreen extends Screen {
             this.top + ROW * PAGES + 5,
             LABEL_COLOR
         );
+    }
+
+    @Override
+    public void onClose() {
+        this.minecraft.setScreen(this.parent);
     }
 
     @Override

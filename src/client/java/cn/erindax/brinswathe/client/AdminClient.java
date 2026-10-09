@@ -1,8 +1,10 @@
 package cn.erindax.brinswathe.client;
 
+import cn.erindax.brinswathe.admin.AdminPanel;
 import cn.erindax.brinswathe.admin.AdminSnapshot;
 import cn.erindax.brinswathe.client.gui.AdminListScreen;
 import cn.erindax.brinswathe.client.gui.AdminScreen;
+import cn.erindax.brinswathe.client.gui.PersonalSettingsScreen;
 import cn.erindax.brinswathe.network.AdminActionC2SPacket;
 import cn.erindax.brinswathe.network.AdminSaveC2SPacket;
 import cn.erindax.brinswathe.network.AdminSnapshotS2CPacket;
@@ -14,6 +16,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 
 @Environment(EnvType.CLIENT)
 public final class AdminClient {
@@ -64,6 +67,16 @@ public final class AdminClient {
         }
     }
 
+    public static boolean canOpen(Minecraft client) {
+        return client.player != null
+            && client.player.hasPermissions(AdminPanel.PERMISSION)
+            && ClientPlayNetworking.canSend(AdminActionC2SPacket.TYPE);
+    }
+
+    public static void open() {
+        action(AdminPanel.ACTION_OPEN);
+    }
+
     private static void send(JsonArray ops, boolean done, boolean quiet) {
         JsonObject root = new JsonObject();
         root.add("ops", ops);
@@ -85,7 +98,8 @@ public final class AdminClient {
             page.hub().update(snapshot);
             page.onSnapshot(snapshot);
         } else if (payload.open()) {
-            client.setScreen(new AdminScreen(snapshot));
+            Screen parent = client.screen instanceof PersonalSettingsScreen ? client.screen : null;
+            client.setScreen(new AdminScreen(snapshot, parent));
         }
     }
 }

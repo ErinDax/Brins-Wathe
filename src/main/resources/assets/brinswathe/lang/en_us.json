@@ -233,6 +233,7 @@
   "screen.brinswathe.personal_settings": "Personal Settings",
   "gui.brinswathe.settings.buy_slot": "Purchase Slot",
   "gui.brinswathe.settings.music_box": "Music Box",
+  "gui.brinswathe.settings.admin": "Admin Settings",
   "screen.brinswathe.buy_slot": "Purchase Slot",
   "gui.brinswathe.buy_slot.hint": "Items you buy go to the slot you pick. If it is taken, they go to the nearest empty slot.",
   "gui.brinswathe.buy_slot.current": "Current: slot %s",
