@@ -2,7 +2,9 @@ package cn.erindax.brinswathe.command;
 
 import cn.erindax.brinswathe.BrinHarpyRoles;
 import cn.erindax.brinswathe.BrinIcFlags;
+import cn.erindax.brinswathe.BrinIcModifiers;
 import cn.erindax.brinswathe.BrinNoelleAccess;
+import cn.erindax.brinswathe.BrinPunishment;
 import cn.erindax.brinswathe.BrinRoleRotation;
 import cn.erindax.brinswathe.BrinRoleWeights;
 import cn.erindax.brinswathe.component.StaminaComponent;
@@ -44,6 +46,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import org.BsXinQin.kinswathe.KinsWatheRoles;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.commands.argument.ModifierArgumentType;
 import org.agmas.harpymodloader.commands.argument.RoleArgumentType;
@@ -225,6 +228,21 @@ public final class BrinAdminCommands {
                                 RoleArgumentType.getRole(context, "role"),
                                 false
                             ))))))
+            .then(Commands.literal("error")
+                .requires(source -> source.hasPermission(2))
+                .executes(context -> showPunishments(context.getSource()))
+                .then(Commands.literal("true").executes(context -> setPunishEarlyFall(context.getSource(), true)))
+                .then(Commands.literal("false").executes(context -> setPunishEarlyFall(context.getSource(), false)))
+                .then(Commands.argument("player", GameProfileArgument.gameProfile())
+                    .executes(context -> queuePunishment(
+                        context.getSource(),
+                        GameProfileArgument.getGameProfiles(context, "player")
+                    ))
+                    .then(Commands.literal("cancel")
+                        .executes(context -> cancelPunishment(
+                            context.getSource(),
+                            GameProfileArgument.getGameProfiles(context, "player")
+                        )))))
             .then(Commands.literal("roleRoundsclear")
                 .requires(source -> source.hasPermission(2))
                 .executes(context -> clearRoleRounds(context.getSource())))
@@ -510,6 +528,71 @@ public final class BrinAdminCommands {
             );
         }
         return 1;
+    }
+
+    private static int showPunishments(CommandSourceStack source) {
+        source.sendSuccess(() -> Component.literal(earlyFallStatus()), false);
+        List<String> names = BrinPunishment.queuedNames();
+        if (names.isEmpty()) {
+            source.sendSuccess(() -> Component.literal("惩罚名单为空"), false);
+            return 0;
+        }
+        String joined = String.join(", ", names);
+        source.sendSuccess(() -> Component.literal("等待惩罚的玩家: " + joined), false);
+        return names.size();
+    }
+
+    private static int setPunishEarlyFall(CommandSourceStack source, boolean enabled) {
+        BrinIcFlags.punishEarlyFall = enabled;
+        BrinIcFlags.save();
+        source.sendSuccess(() -> Component.literal(earlyFallStatus()), true);
+        return 1;
+    }
+
+    private static String earlyFallStatus() {
+        return "开局 " + BrinPunishment.EARLY_FALL_SECONDS + " 秒内掉出列车, 下一局受惩罚: "
+            + (BrinIcFlags.punishEarlyFall ? "开启" : "关闭");
+    }
+
+    private static int queuePunishment(CommandSourceStack source, Collection<GameProfile> profiles) {
+        if (BrinIcModifiers.PUNISHMENT == null || KinsWatheRoles.DRUGMAKER == null) {
+            source.sendFailure(Component.literal("惩罚不可用: 没有找到惩罚词条或制毒师"));
+            return 0;
+        }
+        List<String> added = new ArrayList<>();
+        for (GameProfile profile : profiles) {
+            if (BrinPunishment.queue(profile.getId(), profile.getName())) added.add(profile.getName());
+        }
+        if (added.isEmpty()) {
+            source.sendFailure(Component.literal("该玩家已在惩罚名单中"));
+            return 0;
+        }
+        String names = String.join(", ", added);
+        source.sendSuccess(
+            () -> Component.literal("已记入惩罚: " + names + ", 他参加的下一局必定为制毒师, 并全场高亮直至死亡"),
+            true
+        );
+        if (BrinHarpyRoles.isDisabled(KinsWatheRoles.DRUGMAKER)) {
+            source.sendSuccess(
+                () -> Component.literal("注意: 制毒师已被禁用, 受惩罚的玩家只会当普通杀手").withStyle(ChatFormatting.GOLD),
+                false
+            );
+        }
+        return added.size();
+    }
+
+    private static int cancelPunishment(CommandSourceStack source, Collection<GameProfile> profiles) {
+        List<String> removed = new ArrayList<>();
+        for (GameProfile profile : profiles) {
+            if (BrinPunishment.cancel(profile.getId())) removed.add(profile.getName());
+        }
+        if (removed.isEmpty()) {
+            source.sendFailure(Component.literal("该玩家不在惩罚名单中"));
+            return 0;
+        }
+        String names = String.join(", ", removed);
+        source.sendSuccess(() -> Component.literal("已取消惩罚: " + names), true);
+        return removed.size();
     }
 
     private static Object roleRoundsMap() {

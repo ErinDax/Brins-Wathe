@@ -35,6 +35,7 @@ public final class BrinIcFlags {
     public static volatile int roleRepeatMaxStreak = 3;
     public static volatile boolean draft = false;
     public static volatile float draftBoost = 3.0F;
+    public static volatile boolean punishEarlyFall = true;
     public static final float DRAFT_MIN_BOOST = 1.0F;
     public static final float DRAFT_MAX_BOOST = 20.0F;
     public static final float ROLE_REPEAT_MAX_STRENGTH = 5.0F;
@@ -78,6 +79,7 @@ public final class BrinIcFlags {
             if (root.has("role_repeat_max_streak")) roleRepeatMaxStreak = root.get("role_repeat_max_streak").getAsInt();
             if (root.has("draft")) draft = root.get("draft").getAsBoolean();
             if (root.has("draft_boost")) draftBoost = root.get("draft_boost").getAsFloat();
+            if (root.has("punish_early_fall")) punishEarlyFall = root.get("punish_early_fall").getAsBoolean();
             if (root.has("reset_items_list") && root.get("reset_items_list").isJsonArray()) {
                 resetItemsList.clear();
                 for (JsonElement element : root.getAsJsonArray("reset_items_list")) {
@@ -142,6 +144,7 @@ public final class BrinIcFlags {
         root.addProperty("role_repeat_max_streak", roleRepeatMaxStreak);
         root.addProperty("draft", draft);
         root.addProperty("draft_boost", clampDraftBoost(draftBoost));
+        root.addProperty("punish_early_fall", punishEarlyFall);
         JsonArray items = new JsonArray();
         for (String id : resetItemsList) items.add(id);
         root.add("reset_items_list", items);

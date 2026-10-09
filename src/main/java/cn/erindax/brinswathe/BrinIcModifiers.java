@@ -18,6 +18,7 @@ public final class BrinIcModifiers {
     public static Modifier GLUTTON;
     public static Modifier BOTTOMLESS;
     public static Modifier SPEED;
+    public static Modifier PUNISHMENT;
 
     private BrinIcModifiers() {
     }
@@ -102,6 +103,14 @@ public final class BrinIcModifiers {
             0xFFFFFF,
             null,
             null,
+            false,
+            false
+        ));
+        PUNISHMENT = HMLModifiers.registerModifier(new Modifier(
+            BrinModifiers.PUNISHMENT,
+            0xAA0000,
+            null,
+            new ArrayList<>(),
             false,
             false
         ));

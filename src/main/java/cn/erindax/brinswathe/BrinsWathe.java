@@ -185,6 +185,7 @@ public class BrinsWathe implements ModInitializer {
 		BrinMusicBox.init();
 		BrinSkinPicks.init();
 		BrinDraft.init();
+		BrinPunishment.init();
 		registerConfigSync();
 		registerCommands();
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
