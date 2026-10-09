@@ -53,7 +53,9 @@ public abstract class RoleRotationSelectorMixin {
         if (RoleRotation.active()) {
             List<ServerPlayer> pool = new ArrayList<>(players.size());
             for (ServerPlayer candidate : players) {
-                if (!game.isRole(candidate, WatheRoles.KILLER)) pool.add(candidate);
+                if (!game.isRole(candidate, WatheRoles.KILLER) && !game.isRole(candidate, WatheRoles.VIGILANTE)) {
+                    pool.add(candidate);
+                }
             }
             base = RoleRotation.weight(player, RoleRotation.VIGILANTE, pool, vigilanteCount);
         } else {
