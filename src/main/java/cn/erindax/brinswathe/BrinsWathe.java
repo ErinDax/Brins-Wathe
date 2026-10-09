@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe;
 
+import cn.erindax.brinswathe.admin.AdminPanel;
 import cn.erindax.brinswathe.command.ConfigCommands;
 import cn.erindax.brinswathe.component.ArchivistComponent;
 import cn.erindax.brinswathe.component.BerserkerComponent;
@@ -29,6 +30,9 @@ import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 import cn.erindax.brinswathe.musicbox.MusicBox;
 import cn.erindax.brinswathe.network.BlindFlashS2CPacket;
 import cn.erindax.brinswathe.network.AbilityC2SPacket;
+import cn.erindax.brinswathe.network.AdminActionC2SPacket;
+import cn.erindax.brinswathe.network.AdminSaveC2SPacket;
+import cn.erindax.brinswathe.network.AdminSnapshotS2CPacket;
 import cn.erindax.brinswathe.network.BuySlotC2SPacket;
 import cn.erindax.brinswathe.network.ConfigS2CPacket;
 import cn.erindax.brinswathe.network.DraftChoiceC2SPacket;
@@ -183,12 +187,16 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(DraftCloseS2CPacket.TYPE, DraftCloseS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(DraftProgressS2CPacket.TYPE, DraftProgressS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(BuySlotC2SPacket.TYPE, BuySlotC2SPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(AdminSnapshotS2CPacket.TYPE, AdminSnapshotS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(AdminSaveC2SPacket.TYPE, AdminSaveC2SPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(AdminActionC2SPacket.TYPE, AdminActionC2SPacket.STREAM_CODEC);
 		registerPackets();
 		MusicBox.init();
 		SkinPicks.init();
 		Draft.init();
 		Punishment.init();
 		BuySlots.init();
+		AdminPanel.init();
 		registerConfigSync();
 		registerCommands();
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
