@@ -646,10 +646,10 @@ public class BrinsWatheClient implements ClientModInitializer {
                     AbilityC2SPacket.ABILITY_NIGHTMARE_PLANT, targetId));
             }
         } else if (gameWorld.isRole(player, ModRoles.ARCHIVIST)) {
-            UUID corpseId = findPlayerBodyInCrosshair(player);
-            if (corpseId != null) {
+            PlayerBodyEntity corpse = getInspectableBodyInCrosshair(player);
+            if (corpse != null) {
                 ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_ARCHIVIST_SEAL, corpseId));
+                    AbilityC2SPacket.ABILITY_ARCHIVIST_SEAL, corpse.getUUID()));
             }
         } else if (gameWorld.isRole(player, ModRoles.GAMBLER)) {
             UUID targetId = findPlayerInCrosshair(player);
