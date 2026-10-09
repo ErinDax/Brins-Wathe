@@ -360,10 +360,7 @@ public abstract class AbilityHudMixin {
     private void renderArchivistCorpseInfo(GuiGraphics context, Font font, LocalPlayer player) {
         PlayerBodyEntity body = BrinsWatheClient.getInspectableBodyInCrosshair(player);
         if (body == null) return;
-        if (!((ArchivistSealedCorpse) body).brin$isBodymakerForged()
-            && !MorticianComponent.isDisguiseBody(body)) {
-            return;
-        }
+        if (!((ArchivistSealedCorpse) body).brin$isBodymakerForged()) return;
         Component line = Component.translatable(
             "tip.brinswathe.archivist.no_record"
         );
