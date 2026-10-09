@@ -233,6 +233,7 @@
   "screen.brinswathe.personal_settings": "个人设置",
   "gui.brinswathe.settings.buy_slot": "购买物品放置",
   "gui.brinswathe.settings.music_box": "音乐盒",
+  "gui.brinswathe.settings.admin": "管理设置",
   "screen.brinswathe.buy_slot": "购买物品放置",
   "gui.brinswathe.buy_slot.hint": "商店买到的物品会先放到你选的格子，被占了就放到离它最近的空格",
   "gui.brinswathe.buy_slot.current": "当前：第 %s 格",

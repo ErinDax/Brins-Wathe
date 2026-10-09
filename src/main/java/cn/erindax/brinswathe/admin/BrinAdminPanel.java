@@ -57,6 +57,7 @@ public final class BrinAdminPanel {
     public static final String OP_PLAYER_COOLDOWN = "player_cooldown";
     public static final String OP_PLAYER_ITEM_COOLDOWN = "player_item_cooldown";
     public static final String OP_PLAYER_MUSIC_CLEAR = "player_music_clear";
+    public static final String ACTION_OPEN = "open";
     public static final String ACTION_RELOAD = "reload";
     public static final String ACTION_MUSIC_STOP = "music_stop";
     public static final String ACTION_ROUNDS_CLEAR = "rounds_clear";
@@ -189,6 +190,10 @@ public final class BrinAdminPanel {
 
     private static void action(ServerPlayer player, String action) {
         if (!player.hasPermissions(PERMISSION)) return;
+        if (ACTION_OPEN.equals(action)) {
+            send(player, true);
+            return;
+        }
         String command = ACTIONS.get(action);
         if (command == null) return;
         run(player, command);

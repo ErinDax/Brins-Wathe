@@ -200,7 +200,7 @@ public final class BrinConfigCommands {
         blank(source);
         blank(source);
         line(source, "/brinswathe reload", "重载全部");
-        line(source, "/brinswathe gui", "打开管理设置界面: 开关、数值、职业和词条启用、一次性操作");
+        line(source, "/brinswathe gui", "打开管理设置界面(J 键个人设置里也能进): 开关、数值、职业、词条、玩家、一次性操作");
         line(source, "/brinswathe afk [on|off]", "查看或开关挂机处死");
         line(source, "/brinswathe setconfig [字段] [值]", "查看或修改 IC 配置字段");
         blank(source);
