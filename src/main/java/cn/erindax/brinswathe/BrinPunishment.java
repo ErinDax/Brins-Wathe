@@ -41,6 +41,7 @@ public final class BrinPunishment {
     private static final Map<UUID, Integer> SWAPPED = new HashMap<>();
     private static final Set<UUID> GLOWING = new HashSet<>();
     private static final Set<UUID> ENDED = new HashSet<>();
+    private static final Set<UUID> ROUND_PLAYERS = new HashSet<>();
     private static int roundStartTick = -1;
 
     private BrinPunishment() {
@@ -52,6 +53,7 @@ public final class BrinPunishment {
             SWAPPED.clear();
             GLOWING.clear();
             ENDED.clear();
+            ROUND_PLAYERS.clear();
             roundStartTick = -1;
         });
         GameEvents.ON_FINISH_INITIALIZE.register(BrinPunishment::roundInitialized);
@@ -100,6 +102,7 @@ public final class BrinPunishment {
         if (killer != null && !killer.getUUID().equals(player.getUUID())) return;
         int now = player.server.getTickCount();
         if (roundStartTick < 0 || now - roundStartTick > EARLY_FALL_SECONDS * 20) return;
+        if (!ROUND_PLAYERS.contains(player.getUUID())) return;
         Integer swappedAt = SWAPPED.get(player.getUUID());
         if (swappedAt != null && now - swappedAt <= SWAP_GRACE_SECONDS * 20) return;
         if (GameFunctions.isPlayerAliveAndSurvival(player)) return;
@@ -132,6 +135,8 @@ public final class BrinPunishment {
         if (world.isClientSide() || world.getServer() == null) return;
         roundStartTick = isMurder(game.getGameMode()) ? world.getServer().getTickCount() : -1;
         SWAPPED.clear();
+        ROUND_PLAYERS.clear();
+        ROUND_PLAYERS.addAll(game.getRoles().keySet());
         Modifier punishment = BrinIcModifiers.PUNISHMENT;
         if (punishment == null) return;
         for (UUID id : WorldModifierComponent.KEY.get(world).getAllWithModifier(punishment)) {
