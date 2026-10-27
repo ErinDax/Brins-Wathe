@@ -25,13 +25,16 @@ public final class BrinConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 44;
+    private static final int CONFIG_VERSION = 45;
     private static final int ROLE_BALANCE_MIGRATION_VERSION = 39;
     private static final int AVENGER_INSTINCT_MIGRATION_VERSION = 40;
     private static final int PUPPETEER_KNIFE_MIGRATION_VERSION = 41;
     private static final int TRAPPER_SKILL_COST_MIGRATION_VERSION = 42;
     private static final int AFK_DEFAULT_ON_MIGRATION_VERSION = 43;
     private static final int WATCHMAN_SKILL_COST_MIGRATION_VERSION = 44;
+    private static final int PENITENT_BALANCE_MIGRATION_VERSION = 45;
+    private static final int PREVIOUS_PENITENT_INITIAL_BALANCE = 0;
+    private static final int PENITENT_INITIAL_BALANCE = 50;
     private static final int PREVIOUS_PUPPETEER_KNIFE_PRICE = 200;
     private static final int PREVIOUS_AVENGER_INSTINCT_SECONDS = 5;
     private static final int PREVIOUS_ARCHIVIST_SKILL_COST = 175;
@@ -627,6 +630,12 @@ public final class BrinConfig {
             if (brinRoleStartsBroke(roleId) && initialBalance != null && initialBalance == 100) {
                 initialBalance = 0;
             }
+            if (sourceVersion < PENITENT_BALANCE_MIGRATION_VERSION
+                && "penitent".equals(roleId)
+                && initialBalance != null
+                && initialBalance == PREVIOUS_PENITENT_INITIAL_BALANCE) {
+                initialBalance = fallback.initial_balance;
+            }
             parsedRoles.put(roleId, new RoleSettings(
                 skillCost,
                 skillCooldown,
@@ -1205,7 +1214,7 @@ public final class BrinConfig {
         roles.put("bomber", role(0, 0, null, 100, 300, 300).withBomber(200, 75, 45, 30, 2, 3, 60).withMinePrice(125));
         roles.put("compensator", role(0, 0, 0, 100, 300, 300));
         roles.put("gambler", role(100, 120, 0, 100, 300, 300));
-        roles.put("penitent", role(0, 0, 0, 100, 300, 300).withPenitentShop(150, 100).withStartingShieldLayers(0));
+        roles.put("penitent", role(0, 0, PENITENT_INITIAL_BALANCE, 100, 300, 300).withPenitentShop(150, 100).withStartingShieldLayers(0));
         roles.put("terrorist", role(0, 0, 0, 100, 300, 300)
             .withTerroristExplosion(5, 4)
             .withRevolverShopEnabled(false));
