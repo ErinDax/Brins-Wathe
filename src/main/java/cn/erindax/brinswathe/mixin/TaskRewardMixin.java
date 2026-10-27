@@ -83,7 +83,7 @@ public abstract class TaskRewardMixin {
             || game.isRole(this.player, ModRoles.GAMBLER)) {
             this.brin$taskReward = 50;
         } else if (game.isRole(this.player, ModRoles.PENITENT)) {
-            this.brin$taskReward = 20;
+            this.brin$taskReward = 50;
         } else if (role != null && role.getMoodType() == Role.MoodType.REAL) {
             if (NoelleAccess.isRole(game, this.player, NoelleAccess.MIMIC_ID)) {
                 this.brin$taskReward = 25;
