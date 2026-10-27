@@ -966,25 +966,18 @@ public class BrinsWathe implements ModInitializer {
 	                                  AbilityPlayerComponent ability,
 	                                  BrinAbilityC2SPacket payload) {
 		if (!gameWorld.isRole(player, BrinRoles.WATCHMAN)) return;
-		if (ability.cooldown > 0 || payload.targetId() == null) return;
-		ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-		if (target == null || target.level() != player.level()) return;
-		if (!GameFunctions.isPlayerAliveAndSurvival(target)) return;
-		TrapperComponent trappedBy = null;
-		for (ServerPlayer possibleTrapper : player.server.getPlayerList().getPlayers()) {
-			if (possibleTrapper.level() != player.level()) continue;
-			TrapperComponent trapper = TrapperComponent.KEY.get(possibleTrapper);
-			if (trapper != null && trapper.isTrapped(target.getUUID())) {
-				trappedBy = trapper;
-				break;
-			}
+		if (ability.cooldown > 0) return;
+		ServerPlayer target = null;
+		if (payload.targetId() != null) {
+			ServerPlayer aimed = player.server.getPlayerList().getPlayer(payload.targetId());
+			if (aimed != null && aimed.level() == player.level() && BrinWatchmanRescue.canRescue(aimed)) target = aimed;
 		}
+		if (target == null && BrinWatchmanRescue.canRescue(player)) target = player;
+		if (target == null) return;
+		TrapperComponent trappedBy = BrinWatchmanRescue.trapperOf(target);
 		BombComponent bomb = BombComponent.KEY.get(target);
-		boolean hasBombToDefuse = bomb != null && bomb.canBeDefused();
-		PlayerEffectComponent stun = PlayerEffectComponent.KEY.get(target);
-		boolean leftoverTrapStun = trappedBy == null
-			&& stun != null
-			&& stun.stunTicks > 20 * 60;
+		boolean hasBombToDefuse = BrinWatchmanRescue.hasBombToDefuse(target);
+		boolean leftoverTrapStun = trappedBy == null && BrinWatchmanRescue.hasLeftoverStun(target);
 		if (trappedBy == null && !hasBombToDefuse && !leftoverTrapStun) return;
 		if (!spendAbilityCost(player, "watchman")) return;
 		boolean rescued = trappedBy != null && trappedBy.rescuePlayer(target.getUUID());
