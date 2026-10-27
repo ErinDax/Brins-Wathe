@@ -10,10 +10,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
 import dev.doctor4t.wathe.client.model.item.KnifeModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +26,9 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -36,6 +43,9 @@ public final class BrinKnifeSkinClient {
         "inventory"
     );
 
+    private static final String PACK_ID = "file/" + BrinKnifeSkins.PACK_NAME;
+    private static volatile String loadedFingerprint;
+
     private BrinKnifeSkinClient() {
     }
 
@@ -47,6 +57,20 @@ public final class BrinKnifeSkinClient {
             syncPack();
         } catch (IOException ignored) {
         }
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(
+            new SimpleSynchronousResourceReloadListener() {
+                @Override
+                public ResourceLocation getFabricId() {
+                    return ResourceLocation.fromNamespaceAndPath(BrinsWathe.MOD_ID, "weapon_skin_pack");
+                }
+
+                @Override
+                public void onResourceManagerReload(ResourceManager manager) {
+                    boolean active = manager.listPacks().anyMatch(pack -> PACK_ID.equals(pack.packId()));
+                    loadedFingerprint = active ? fingerprint() : null;
+                }
+            }
+        );
         ModelLoadingPlugin.register(plugin -> {
             for (String name : BrinKnifeSkins.extraModelSkinNames()) {
                 plugin.addModels(modelId(name, false), modelId(name, true));
@@ -339,13 +363,42 @@ public final class BrinKnifeSkinClient {
         Minecraft client = Minecraft.getInstance();
         PackRepository repository = client.getResourcePackRepository();
         repository.reload();
-        String packId = "file/" + BrinKnifeSkins.PACK_NAME;
         List<String> selected = new ArrayList<>(repository.getSelectedIds());
-        if (!selected.contains(packId)) {
-            selected.add(packId);
+        boolean added = !selected.contains(PACK_ID);
+        if (added) {
+            selected.add(PACK_ID);
             repository.setSelected(selected);
         }
+        rememberPack(client);
+        String current = fingerprint();
+        if (!added && current != null && current.equals(loadedFingerprint)) return;
         client.reloadResourcePacks().whenComplete((ignored, error) ->
             client.execute(BrinKnifeSkinClient::refreshHeldItems));
+    }
+
+    private static void rememberPack(Minecraft client) {
+        if (client.options == null || client.options.resourcePacks.contains(PACK_ID)) return;
+        client.options.resourcePacks.add(PACK_ID);
+        client.options.save();
+    }
+
+    private static String fingerprint() {
+        Path packDir = FabricLoader.getInstance().getGameDir()
+            .resolve("resourcepacks")
+            .resolve(BrinKnifeSkins.PACK_NAME);
+        if (!Files.isDirectory(packDir)) return null;
+        try (var stream = Files.walk(packDir)) {
+            List<Path> files = stream.filter(Files::isRegularFile).sorted().toList();
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            for (Path file : files) {
+                digest.update(packDir.relativize(file).toString().replace('\\', '/').getBytes(StandardCharsets.UTF_8));
+                digest.update((byte) 0);
+                digest.update(Files.readAllBytes(file));
+                digest.update((byte) 0);
+            }
+            return HexFormat.of().formatHex(digest.digest());
+        } catch (IOException | NoSuchAlgorithmException exception) {
+            return null;
+        }
     }
 }
