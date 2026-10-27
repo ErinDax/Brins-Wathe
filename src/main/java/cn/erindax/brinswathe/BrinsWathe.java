@@ -39,6 +39,7 @@ import cn.erindax.brinswathe.network.BrinDraftChoiceC2SPacket;
 import cn.erindax.brinswathe.network.BrinDraftCloseS2CPacket;
 import cn.erindax.brinswathe.network.BrinDraftOpenS2CPacket;
 import cn.erindax.brinswathe.network.BrinDraftProgressS2CPacket;
+import cn.erindax.brinswathe.network.BrinWelcomeS2CPacket;
 import cn.erindax.brinswathe.network.BrinIcNightVisionS2CPacket;
 import cn.erindax.brinswathe.network.BrinInstinctC2SPacket;
 import cn.erindax.brinswathe.network.BrinInstinctSnapshotS2CPacket;
@@ -183,6 +184,7 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playC2S().register(BrinSkinPickChoiceC2SPacket.TYPE, BrinSkinPickChoiceC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinSkinPickResultS2CPacket.TYPE, BrinSkinPickResultS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinDraftOpenS2CPacket.TYPE, BrinDraftOpenS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(BrinWelcomeS2CPacket.TYPE, BrinWelcomeS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(BrinDraftChoiceC2SPacket.TYPE, BrinDraftChoiceC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinDraftCloseS2CPacket.TYPE, BrinDraftCloseS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(BrinDraftProgressS2CPacket.TYPE, BrinDraftProgressS2CPacket.STREAM_CODEC);

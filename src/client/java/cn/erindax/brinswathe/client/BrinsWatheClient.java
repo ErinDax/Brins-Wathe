@@ -173,6 +173,7 @@ public class BrinsWatheClient implements ClientModInitializer {
         BrinPersonalSettingsClient.init();
         BrinSkinPickClient.init();
         BrinDraftClient.init();
+        BrinWelcomeClient.init();
         BrinAdminClient.init();
         BrinInstinctClient.init();
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
