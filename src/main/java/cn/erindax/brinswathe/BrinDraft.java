@@ -120,6 +120,10 @@ public final class BrinDraft {
         return true;
     }
 
+    public static boolean isBusy() {
+        return pending != null || bypass;
+    }
+
     public static void roundInitialized() {
         APPLIED.clear();
         appliedWorld = null;

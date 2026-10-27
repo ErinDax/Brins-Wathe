@@ -165,6 +165,14 @@ public final class BrinAdminCommands {
                         enabled -> BrinIcFlags.draft = enabled,
                         BoolArgumentType.getBool(context, "enabled")
                     ))))
+            .then(Commands.literal("secretmurder")
+                .requires(source -> source.hasPermission(2))
+                .executes(context -> showSecretMurder(context.getSource()))
+                .then(Commands.argument("chance", FloatArgumentType.floatArg(0.0F, 1.0F))
+                    .executes(context -> setSecretMurder(
+                        context.getSource(),
+                        FloatArgumentType.getFloat(context, "chance")
+                    ))))
             .then(Commands.literal("weights")
                 .requires(source -> source.hasPermission(2))
                 .executes(context -> showWeights(context.getSource()))
@@ -433,6 +441,21 @@ public final class BrinAdminCommands {
     private static int showDraft(CommandSourceStack source) {
         boolean enabled = BrinIcFlags.draft;
         source.sendSuccess(() -> Component.literal("开局轮抽选角: " + (enabled ? "开启" : "关闭")), false);
+        return 1;
+    }
+
+    private static int showSecretMurder(CommandSourceStack source) {
+        float chance = BrinIcFlags.secretMurderChance;
+        source.sendSuccess(() -> Component.literal("秘密谋杀局概率: " + chance), false);
+        return 1;
+    }
+
+    private static int setSecretMurder(CommandSourceStack source, float chance) {
+        BrinIcFlags.secretMurderChance = chance;
+        BrinIcFlags.normalize();
+        BrinIcFlags.save();
+        float applied = BrinIcFlags.secretMurderChance;
+        source.sendSuccess(() -> Component.literal("秘密谋杀局概率已设置为 " + applied), true);
         return 1;
     }
 

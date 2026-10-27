@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.BrinDraft;
+import cn.erindax.brinswathe.BrinSecretMurder;
 import dev.doctor4t.wathe.api.GameMode;
 import dev.doctor4t.wathe.api.MapEffect;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -20,6 +21,9 @@ public abstract class BrinDraftStartMixin {
         int time,
         CallbackInfo ci
     ) {
-        if (BrinDraft.interceptStart(world, gameMode, mapEffect, time)) ci.cancel();
+        if (BrinSecretMurder.interceptStart(world, gameMode, mapEffect, time)
+            || BrinDraft.interceptStart(world, gameMode, mapEffect, time)) {
+            ci.cancel();
+        }
     }
 }

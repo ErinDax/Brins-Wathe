@@ -153,7 +153,7 @@ public final class BrinPunishment {
     }
 
     private static boolean isMurder(GameMode mode) {
-        return mode == WatheGameModes.MURDER || mode == Harpymodloader.MODDED_GAMEMODE;
+        return mode == WatheGameModes.MURDER || mode == Harpymodloader.MODDED_GAMEMODE || mode == BrinSecretMurder.MODE;
     }
 
     private static void tick(MinecraftServer server) {

@@ -3,6 +3,7 @@ package cn.erindax.brinswathe.admin;
 import cn.erindax.brinswathe.BrinHarpyRoles;
 import cn.erindax.brinswathe.BrinNoelleAccess;
 import cn.erindax.brinswathe.BrinPunishment;
+import cn.erindax.brinswathe.BrinSecretMurder;
 import cn.erindax.brinswathe.config.BrinConfig;
 import cn.erindax.brinswathe.musicbox.BrinMusicBox;
 import cn.erindax.brinswathe.network.BrinAdminActionC2SPacket;
@@ -112,6 +113,7 @@ public final class BrinAdminPanel {
         Map<String, List<String>> blacklist = BrinConfig.harpyModifierBlacklist();
         List<BrinAdminSnapshot.RoleState> roles = new ArrayList<>();
         for (Role role : WatheRoles.ROLES) {
+            if (BrinSecretMurder.ROLE.equals(role)) continue;
             String id = role.identifier().toString();
             roles.add(new BrinAdminSnapshot.RoleState(
                 role.identifier(),

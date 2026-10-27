@@ -31,6 +31,8 @@ public enum BrinAdminSetting {
         () -> BrinIcFlags.size2speed),
     DRAFT(Page.RULES, "selection", Kind.BOOL, "brinswathe draft",
         () -> BrinIcFlags.draft),
+    SECRET_MURDER_CHANCE(Page.NUMBERS, "selection", Kind.FLOAT, 0.0F, 1.0F, "brinswathe secretmurder",
+        () -> BrinIcFlags.secretMurderChance),
     ROLE_WEIGHTS(Page.RULES, "selection", Kind.BOOL, "brinswathe weights",
         () -> BrinIcFlags.roleWeights),
     ROLE_REPEAT_GUARD(Page.RULES, "selection", Kind.BOOL, "brinswathe setconfig roleRepeatGuard",

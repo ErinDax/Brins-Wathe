@@ -119,6 +119,7 @@ public final class BrinInstinctClient {
     }
 
     private static int highlightColor(BrinInstinctSnapshotS2CPacket.Entry snapshot) {
+        if (BrinSecretMurderClient.isLocalSecretKiller()) return BrinSecretMurderClient.highlight(snapshot.uuid());
         if (snapshot.canUseKillerFeatures()) return Mth.hsvToRgb(0.0F, 1.0F, 0.6F);
         if (!snapshot.innocent()) return -1;
         if (snapshot.mood() < GameConstants.DEPRESSIVE_MOOD_THRESHOLD) return 0x171DC6;

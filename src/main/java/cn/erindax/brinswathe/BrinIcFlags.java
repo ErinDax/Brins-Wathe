@@ -34,6 +34,7 @@ public final class BrinIcFlags {
     public static volatile float roleRepeatDecay = 0.0F;
     public static volatile int roleRepeatMaxStreak = 3;
     public static volatile boolean draft = false;
+    public static volatile float secretMurderChance = 0.1F;
     public static volatile boolean punishEarlyFall = true;
     public static final float ROLE_REPEAT_MAX_STRENGTH = 5.0F;
     public static final float ROLE_REPEAT_MAX_DECAY = 0.9F;
@@ -75,6 +76,7 @@ public final class BrinIcFlags {
             if (root.has("role_repeat_decay")) roleRepeatDecay = root.get("role_repeat_decay").getAsFloat();
             if (root.has("role_repeat_max_streak")) roleRepeatMaxStreak = root.get("role_repeat_max_streak").getAsInt();
             if (root.has("draft")) draft = root.get("draft").getAsBoolean();
+            if (root.has("secret_murder_chance")) secretMurderChance = root.get("secret_murder_chance").getAsFloat();
             if (root.has("punish_early_fall")) punishEarlyFall = root.get("punish_early_fall").getAsBoolean();
             if (root.has("reset_items_list") && root.get("reset_items_list").isJsonArray()) {
                 resetItemsList.clear();
@@ -99,6 +101,7 @@ public final class BrinIcFlags {
         roleRepeatStrength = clampFloat(roleRepeatStrength, ROLE_REPEAT_MAX_STRENGTH, 1.0F);
         roleRepeatDecay = clampFloat(roleRepeatDecay, ROLE_REPEAT_MAX_DECAY, 0.0F);
         roleRepeatMaxStreak = Math.max(0, Math.min(ROLE_REPEAT_MAX_STREAK_LIMIT, roleRepeatMaxStreak));
+        secretMurderChance = clampFloat(secretMurderChance, 1.0F, 0.1F);
     }
 
     private static float clampFloat(float value, float max, float fallback) {
@@ -133,6 +136,7 @@ public final class BrinIcFlags {
         root.addProperty("role_repeat_decay", roleRepeatDecay);
         root.addProperty("role_repeat_max_streak", roleRepeatMaxStreak);
         root.addProperty("draft", draft);
+        root.addProperty("secret_murder_chance", clampFloat(secretMurderChance, 1.0F, 0.1F));
         root.addProperty("punish_early_fall", punishEarlyFall);
         JsonArray items = new JsonArray();
         for (String id : resetItemsList) items.add(id);

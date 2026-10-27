@@ -2,6 +2,7 @@ package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.BrinNoelleAccess;
 import cn.erindax.brinswathe.BrinRoles;
+import cn.erindax.brinswathe.BrinSecretMurder;
 import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
 import dev.doctor4t.wathe.api.Role;
@@ -9,6 +10,7 @@ import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.ChatFormatting;
@@ -92,7 +94,10 @@ public abstract class BrinTaskRewardMixin {
             }
         } else if (role != null && !game.isInnocent(this.player) && role.canUseKiller()) {
             this.brin$killerBalancesBefore = new HashMap<>();
-            for (UUID killerId : game.getAllKillerTeamPlayers()) {
+            List<UUID> team = BrinSecretMurder.isActive(game)
+                ? List.of(this.player.getUUID())
+                : game.getAllKillerTeamPlayers();
+            for (UUID killerId : team) {
                 Player killer = this.player.level().getPlayerByUUID(killerId);
                 if (killer == null) continue;
                 PlayerShopComponent shop = PlayerShopComponent.KEY.get(killer);

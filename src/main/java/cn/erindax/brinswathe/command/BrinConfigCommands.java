@@ -217,6 +217,7 @@ public final class BrinConfigCommands {
         line(source, "/brinswathe planb <true|false>", "开关 Plan B");
         line(source, "/brinswathe badguesser <true|false>", "开关禁猜者");
         line(source, "/brinswathe draft [true|false]", "查看或开关开局按序号轮抽选角");
+        line(source, "/brinswathe secretmurder [0~1]", "查看或设置普通开局变成秘密谋杀局的概率");
         line(source, "/brinswathe weights [true|false]", "查看或开关原版角色权重，开启时停用防连任");
         line(source, "/brinswathe setcd [秒]", "查看或设置重置物品冷却");
         line(source, "/brinswathe musicbox clear <玩家>", "清除该玩家上传的音乐盒音乐");
