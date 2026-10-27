@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.Draft;
+import cn.erindax.brinswathe.SecretMurder;
 import dev.doctor4t.wathe.api.GameMode;
 import dev.doctor4t.wathe.api.MapEffect;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -20,6 +21,9 @@ public abstract class DraftStartMixin {
         int time,
         CallbackInfo ci
     ) {
-        if (Draft.interceptStart(world, gameMode, mapEffect, time)) ci.cancel();
+        if (SecretMurder.interceptStart(world, gameMode, mapEffect, time)
+            || Draft.interceptStart(world, gameMode, mapEffect, time)) {
+            ci.cancel();
+        }
     }
 }

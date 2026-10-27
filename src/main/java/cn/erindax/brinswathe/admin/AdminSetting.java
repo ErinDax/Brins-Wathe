@@ -31,6 +31,8 @@ public enum AdminSetting {
         () -> IcFlags.size2speed),
     DRAFT(Page.RULES, "selection", Kind.BOOL, "brinswathe draft",
         () -> IcFlags.draft),
+    SECRET_MURDER_CHANCE(Page.NUMBERS, "selection", Kind.FLOAT, 0.0F, 1.0F, "brinswathe secretmurder",
+        () -> IcFlags.secretMurderChance),
     ROLE_WEIGHTS(Page.RULES, "selection", Kind.BOOL, "brinswathe weights",
         () -> IcFlags.roleWeights),
     ROLE_REPEAT_GUARD(Page.RULES, "selection", Kind.BOOL, "brinswathe setconfig roleRepeatGuard",

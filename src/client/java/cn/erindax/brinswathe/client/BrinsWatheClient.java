@@ -174,6 +174,7 @@ public class BrinsWatheClient implements ClientModInitializer {
         PersonalSettingsClient.init();
         SkinPickClient.init();
         DraftClient.init();
+        SecretMurderClient.init();
         WelcomeClient.init();
         AdminClient.init();
         InstinctClient.init();

@@ -3,6 +3,7 @@ package cn.erindax.brinswathe.admin;
 import cn.erindax.brinswathe.HarpyRoles;
 import cn.erindax.brinswathe.NoelleAccess;
 import cn.erindax.brinswathe.Punishment;
+import cn.erindax.brinswathe.SecretMurder;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.musicbox.MusicBox;
 import cn.erindax.brinswathe.network.AdminActionC2SPacket;
@@ -112,6 +113,7 @@ public final class AdminPanel {
         Map<String, List<String>> blacklist = ModConfig.harpyModifierBlacklist();
         List<AdminSnapshot.RoleState> roles = new ArrayList<>();
         for (Role role : WatheRoles.ROLES) {
+            if (SecretMurder.ROLE.equals(role)) continue;
             String id = role.identifier().toString();
             roles.add(new AdminSnapshot.RoleState(
                 role.identifier(),

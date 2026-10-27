@@ -38,6 +38,7 @@ import cn.erindax.brinswathe.network.ConfigS2CPacket;
 import cn.erindax.brinswathe.network.DraftChoiceC2SPacket;
 import cn.erindax.brinswathe.network.DraftCloseS2CPacket;
 import cn.erindax.brinswathe.network.DraftStateS2CPacket;
+import cn.erindax.brinswathe.network.SecretCohortS2CPacket;
 import cn.erindax.brinswathe.network.WelcomeS2CPacket;
 import cn.erindax.brinswathe.network.IcNightVisionS2CPacket;
 import cn.erindax.brinswathe.network.InstinctC2SPacket;
@@ -146,6 +147,7 @@ public class BrinsWathe implements ModInitializer {
 		ModItems.init();
 		ModSounds.init();
 		ModRoles.init();
+		SecretMurder.init();
 		IcModifiers.register();
 
 		applyMuzzlerConfig();
@@ -183,6 +185,7 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playC2S().register(SkinPickChoiceC2SPacket.TYPE, SkinPickChoiceC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(SkinPickResultS2CPacket.TYPE, SkinPickResultS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(DraftStateS2CPacket.TYPE, DraftStateS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(SecretCohortS2CPacket.TYPE, SecretCohortS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(WelcomeS2CPacket.TYPE, WelcomeS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(DraftChoiceC2SPacket.TYPE, DraftChoiceC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(DraftCloseS2CPacket.TYPE, DraftCloseS2CPacket.STREAM_CODEC);
