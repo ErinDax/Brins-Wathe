@@ -4,6 +4,7 @@ import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.ModItems;
 import cn.erindax.brinswathe.NoelleAccess;
 import cn.erindax.brinswathe.ModSounds;
+import cn.erindax.brinswathe.WatchmanRescue;
 import cn.erindax.brinswathe.BrinsWathe;
 import cn.erindax.brinswathe.RpsManager;
 import cn.erindax.brinswathe.KnifeSkins;
@@ -636,8 +637,7 @@ public class BrinsWatheClient implements ClientModInitializer {
         if (gameWorld.isRole(player, ModRoles.TRAPPER)) {
             ClientPlayNetworking.send(new AbilityC2SPacket(AbilityC2SPacket.ABILITY_TRAPPER_PLACE_TRAP, null));
         } else if (gameWorld.isRole(player, ModRoles.WATCHMAN)) {
-
-            UUID targetId = findAimedLivingPlayer(player);
+            UUID targetId = findWatchmanTarget(player);
             if (targetId != null) {
                 ClientPlayNetworking.send(new AbilityC2SPacket(
                     AbilityC2SPacket.ABILITY_WATCHMAN_RESCUE, targetId));
@@ -979,6 +979,31 @@ public class BrinsWatheClient implements ClientModInitializer {
             return targetPlayer.getUUID();
         }
         return null;
+    }
+    @Nullable
+    private static UUID findWatchmanTarget(Player localPlayer) {
+        UUID raycast = findPlayerInCrosshair(localPlayer);
+        if (raycast != null && WatchmanRescue.canRescue(localPlayer.level().getPlayerByUUID(raycast))) {
+            return raycast;
+        }
+        Vec3 eyePos = localPlayer.getEyePosition();
+        Vec3 look = localPlayer.getLookAngle();
+        double bestDot = 0.5;
+        UUID bestTarget = null;
+        for (Player target : localPlayer.level().players()) {
+            if (target == localPlayer || !WatchmanRescue.canRescue(target)) continue;
+            if (eyePos.distanceToSqr(target.position()) > 64.0D * 64.0D) continue;
+            Vec3 toTarget = target.getBoundingBox().getCenter().subtract(eyePos);
+            if (toTarget.lengthSqr() < 1.0E-6) continue;
+            double dot = toTarget.normalize().dot(look);
+            if (dot > bestDot) {
+                bestDot = dot;
+                bestTarget = target.getUUID();
+            }
+        }
+        if (bestTarget != null) return bestTarget;
+        if (WatchmanRescue.canRescue(localPlayer)) return localPlayer.getUUID();
+        return findAimedLivingPlayer(localPlayer);
     }
     @Nullable
     private static UUID findAimedLivingPlayer(Player localPlayer) {
