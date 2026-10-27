@@ -108,6 +108,7 @@ public abstract class BrinForcedNeutralRoleMixin {
         if (assignedNeutralCount < neutralLimit) {
             List<ServerPlayer> civilianCandidates = new ArrayList<>();
             for (ServerPlayer player : players) {
+                if (brinIsExplicitlyForced(player)) continue;
                 if (gameWorld.isRole(player, WatheRoles.CIVILIAN)) {
                     civilianCandidates.add(player);
                 }

@@ -6,6 +6,7 @@ import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Predicate;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -21,6 +22,24 @@ public final class BrinHarpyRoles {
     public static boolean isForced(Role role) {
         return FORCED_REFRESH_ROLES.contains(role)
             || Harpymodloader.FORCED_MODDED_ROLE.containsKey(role);
+    }
+    public static void forceRole(UUID playerId, Role role) {
+        Role previous = Harpymodloader.FORCED_MODDED_ROLE_FLIP.put(playerId, role);
+        if (previous != null && !previous.equals(role)) removeForcedId(previous, playerId);
+        List<UUID> ids = Harpymodloader.FORCED_MODDED_ROLE.computeIfAbsent(role, key -> new ArrayList<>());
+        if (!ids.contains(playerId)) ids.add(playerId);
+    }
+    public static void unforceRole(UUID playerId, Role role) {
+        if (role.equals(Harpymodloader.FORCED_MODDED_ROLE_FLIP.get(playerId))) {
+            Harpymodloader.FORCED_MODDED_ROLE_FLIP.remove(playerId);
+        }
+        removeForcedId(role, playerId);
+    }
+    private static void removeForcedId(Role role, UUID playerId) {
+        List<UUID> ids = Harpymodloader.FORCED_MODDED_ROLE.get(role);
+        if (ids == null) return;
+        ids.removeIf(playerId::equals);
+        if (ids.isEmpty()) Harpymodloader.FORCED_MODDED_ROLE.remove(role);
     }
     public static boolean isEnabled(Role role) {
         Integer maximum = Harpymodloader.ROLE_MAX.get(role.identifier());

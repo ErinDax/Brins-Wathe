@@ -37,8 +37,6 @@ public enum BrinAdminSetting {
         () -> BrinIcFlags.roleRepeatGuard),
     MUSIC_BOX_ENABLED(Page.RULES, "music_box", Kind.BOOL, "brinswathe setconfig musicBoxEnabled",
         () -> BrinIcFlags.musicBoxEnabled),
-    DRAFT_BOOST(Page.NUMBERS, "selection", Kind.FLOAT, BrinIcFlags.DRAFT_MIN_BOOST, BrinIcFlags.DRAFT_MAX_BOOST,
-        "brinswathe draftboost", () -> BrinIcFlags.draftBoost),
     ROLE_REPEAT_STRENGTH(Page.NUMBERS, "selection", Kind.FLOAT, 0.0F, BrinIcFlags.ROLE_REPEAT_MAX_STRENGTH,
         "brinswathe setconfig roleRepeatStrength", () -> BrinIcFlags.roleRepeatStrength),
     ROLE_REPEAT_DECAY(Page.NUMBERS, "selection", Kind.FLOAT, 0.0F, BrinIcFlags.ROLE_REPEAT_MAX_DECAY,

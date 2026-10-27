@@ -88,7 +88,7 @@ public final class BrinPunishment {
             UUID id = player.getUUID();
             boolean queued = QUEUED.remove(id) != null;
             if (!queued && (forcedByCommand == null || !forcedByCommand.contains(id))) continue;
-            forceRole(id, drugmaker);
+            BrinHarpyRoles.forceRole(id, drugmaker);
             List<UUID> forced = Harpymodloader.FORCED_MODDED_MODIFIER.computeIfAbsent(punishment, key -> new ArrayList<>());
             if (!forced.contains(id)) forced.add(id);
         }
@@ -120,17 +120,12 @@ public final class BrinPunishment {
         if (swapped) SWAPPED.put(player.getUUID(), player.server.getTickCount());
     }
 
-    private static void forceRole(UUID playerId, Role role) {
-        Role previous = Harpymodloader.FORCED_MODDED_ROLE_FLIP.put(playerId, role);
-        if (previous != null && !previous.equals(role)) {
-            List<UUID> previousIds = Harpymodloader.FORCED_MODDED_ROLE.get(previous);
-            if (previousIds != null) {
-                previousIds.removeIf(playerId::equals);
-                if (previousIds.isEmpty()) Harpymodloader.FORCED_MODDED_ROLE.remove(previous);
-            }
-        }
-        List<UUID> ids = Harpymodloader.FORCED_MODDED_ROLE.computeIfAbsent(role, key -> new ArrayList<>());
-        if (!ids.contains(playerId)) ids.add(playerId);
+    public static boolean willPunish(UUID playerId) {
+        Modifier punishment = BrinIcModifiers.PUNISHMENT;
+        if (punishment == null || KinsWatheRoles.DRUGMAKER == null) return false;
+        if (QUEUED.containsKey(playerId)) return true;
+        List<UUID> forced = Harpymodloader.FORCED_MODDED_MODIFIER.get(punishment);
+        return forced != null && forced.contains(playerId);
     }
 
     private static void roundInitialized(Level world, GameWorldComponent game) {
