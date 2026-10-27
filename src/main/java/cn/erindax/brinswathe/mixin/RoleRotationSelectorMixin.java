@@ -1,6 +1,5 @@
 package cn.erindax.brinswathe.mixin;
 
-import cn.erindax.brinswathe.Draft;
 import cn.erindax.brinswathe.RoleRotation;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(value = ScoreboardRoleSelectorComponent.class, remap = false)
@@ -22,7 +20,7 @@ public abstract class RoleRotationSelectorMixin {
         at = @At(value = "INVOKE", target = "Ldev/doctor4t/wathe/cca/GameWorldComponent;areWeightsEnabled()Z")
     )
     private boolean brinRotationWeightsEnabled(GameWorldComponent game, Operation<Boolean> original) {
-        return original.call(game) || RoleRotation.active() || Draft.boosting();
+        return original.call(game) || RoleRotation.active();
     }
 
     @WrapOperation(method = "assignKillers", at = @At(value = "INVOKE", target = "Ljava/lang/Math;exp(D)D"))
@@ -30,14 +28,11 @@ public abstract class RoleRotationSelectorMixin {
         double exponent,
         Operation<Double> original,
         @Local ServerPlayer player,
-        @Local(argsOnly = true) GameWorldComponent game,
         @Local(argsOnly = true) List<ServerPlayer> players,
         @Local(argsOnly = true) int killerCount
     ) {
-        double base = RoleRotation.active()
-            ? RoleRotation.weight(player, RoleRotation.KILLER, players, killerCount)
-            : brinBaseWeight(game, exponent, original);
-        return base * Draft.killerBoost(player);
+        if (!RoleRotation.active()) return original.call(exponent);
+        return RoleRotation.weight(player, RoleRotation.KILLER, players, killerCount);
     }
 
     @WrapOperation(method = "assignVigilantes", at = @At(value = "INVOKE", target = "Ljava/lang/Math;exp(D)D"))
@@ -49,23 +44,13 @@ public abstract class RoleRotationSelectorMixin {
         @Local(argsOnly = true) List<ServerPlayer> players,
         @Local(argsOnly = true) int vigilanteCount
     ) {
-        double base;
-        if (RoleRotation.active()) {
-            List<ServerPlayer> pool = new ArrayList<>(players.size());
-            for (ServerPlayer candidate : players) {
-                if (!game.isRole(candidate, WatheRoles.KILLER) && !game.isRole(candidate, WatheRoles.VIGILANTE)) {
-                    pool.add(candidate);
-                }
+        if (!RoleRotation.active()) return original.call(exponent);
+        List<ServerPlayer> pool = new ArrayList<>(players.size());
+        for (ServerPlayer candidate : players) {
+            if (!game.isRole(candidate, WatheRoles.KILLER) && !game.isRole(candidate, WatheRoles.VIGILANTE)) {
+                pool.add(candidate);
             }
-            base = RoleRotation.weight(player, RoleRotation.VIGILANTE, pool, vigilanteCount);
-        } else {
-            base = brinBaseWeight(game, exponent, original);
         }
-        return base * Draft.vigilanteBoost(player);
-    }
-
-    @Unique
-    private static double brinBaseWeight(GameWorldComponent game, double exponent, Operation<Double> original) {
-        return game.areWeightsEnabled() ? original.call(exponent) : 1.0;
+        return RoleRotation.weight(player, RoleRotation.VIGILANTE, pool, vigilanteCount);
     }
 }

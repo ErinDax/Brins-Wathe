@@ -37,8 +37,6 @@ public enum AdminSetting {
         () -> IcFlags.roleRepeatGuard),
     MUSIC_BOX_ENABLED(Page.RULES, "music_box", Kind.BOOL, "brinswathe setconfig musicBoxEnabled",
         () -> IcFlags.musicBoxEnabled),
-    DRAFT_BOOST(Page.NUMBERS, "selection", Kind.FLOAT, IcFlags.DRAFT_MIN_BOOST, IcFlags.DRAFT_MAX_BOOST,
-        "brinswathe draftboost", () -> IcFlags.draftBoost),
     ROLE_REPEAT_STRENGTH(Page.NUMBERS, "selection", Kind.FLOAT, 0.0F, IcFlags.ROLE_REPEAT_MAX_STRENGTH,
         "brinswathe setconfig roleRepeatStrength", () -> IcFlags.roleRepeatStrength),
     ROLE_REPEAT_DECAY(Page.NUMBERS, "selection", Kind.FLOAT, 0.0F, IcFlags.ROLE_REPEAT_MAX_DECAY,
