@@ -1,4 +1,25 @@
 # Brin's Wathe
+
+## ⚠️ 关于许可 / About the License
+
+本模组默认采用 **ARR（All Rights Reserved，保留所有权利）** 许可协议。
+
+**明确允许的行为：**
+
+- **个人使用**：下载本模组，在自己的游戏中自由使用（含单人游戏与私人服务器）
+- **收录进公开发布的整合包**：无需事先申请，建议注明模组名称与原作者
+- **修改与再分发**：可修改并再分发本模组，须注明原作者与来源
+
+**需事先取得书面许可的行为：**
+
+- **商业服务器使用**：在任何商业服务器、付费服务器或营利项目中使用本模组
+
+未在本协议中明确授予的权利，均由版权持有人保留。完整条款（中英双语）见 [LICENSE.md](LICENSE.md)。
+
+This mod defaults to the **ARR (All Rights Reserved)** license agreement. Personal use, inclusion in public modpacks, and derivative works with attribution are explicitly permitted. Commercial server or for-profit use requires prior written permission. See [LICENSE.md](LICENSE.md) for the full terms.
+
+---
+
 ## 🎤 Required versions and mod loaders
 - Minecraft 1.21.1
 - Fabric 0.19.3+
