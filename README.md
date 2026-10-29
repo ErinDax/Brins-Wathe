@@ -2,21 +2,19 @@
 
 ## ⚠️ 关于许可 / About the License
 
-本模组默认采用 **ARR（All Rights Reserved，保留所有权利）** 许可协议。
+本模组以 **GPL-2.0（GNU 通用公共许可证 v2.0）** 发布。
 
-**明确允许的行为：**
+Copyright (C) 2026 **ErinDax（百家）** — https://github.com/ErinDax/Brins-Wathe
 
-- **个人使用**：下载本模组，在自己的游戏中自由使用（含单人游戏与私人服务器）
-- **收录进公开发布的整合包**：无需事先申请，建议注明模组名称与原作者
-- **修改与再分发**：可修改并再分发本模组，须注明原作者与来源
+你可以自由使用、修改并再分发本模组（**包括商业用途**），但再分发时必须：
 
-**需事先取得书面许可的行为：**
+- 保留原作者版权声明与署名（不得声称原创）；
+- 衍生作品同样以 GPL-2.0 发布；
+- 提供对应源代码。
 
-- **商业服务器使用**：在任何商业服务器、付费服务器或营利项目中使用本模组
+This mod is licensed under the **GNU General Public License v2.0 (GPL-2.0)**. You are free to use, modify and redistribute it, including commercially, provided that you keep the original copyright notice and attribution, license any derivative work under the GPL-2.0, and make the corresponding source code available.
 
-未在本协议中明确授予的权利，均由版权持有人保留。完整条款（中英双语）见 [LICENSE.md](LICENSE.md)。
-
-This mod defaults to the **ARR (All Rights Reserved)** license agreement. Personal use, inclusion in public modpacks, and derivative works with attribution are explicitly permitted. Commercial server or for-profit use requires prior written permission. See [LICENSE.md](LICENSE.md) for the full terms.
+完整条款 / Full terms: [LICENSE.md](LICENSE.md)
 
 ---
 
