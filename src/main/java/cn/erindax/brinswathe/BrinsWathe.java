@@ -28,6 +28,7 @@ import cn.erindax.brinswathe.component.ZhangshiComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
 import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 import cn.erindax.brinswathe.musicbox.BrinMusicBox;
+import cn.erindax.brinswathe.network.ArchivistWitnessS2CPacket;
 import cn.erindax.brinswathe.network.BlindFlashS2CPacket;
 import cn.erindax.brinswathe.network.BrinAbilityC2SPacket;
 import cn.erindax.brinswathe.network.BrinAdminActionC2SPacket;
@@ -158,6 +159,7 @@ public class BrinsWathe implements ModInitializer {
 			IllusionistControlC2SPacket.STREAM_CODEC
 		);
 		PayloadTypeRegistry.playS2C().register(BlindFlashS2CPacket.TYPE, BlindFlashS2CPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(ArchivistWitnessS2CPacket.TYPE, ArchivistWitnessS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(CowboyShowdownMusicS2CPacket.TYPE, CowboyShowdownMusicS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(CowboyDuelHideS2CPacket.TYPE, CowboyDuelHideS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(CowboyDuelIdentityS2CPacket.TYPE, CowboyDuelIdentityS2CPacket.STREAM_CODEC);
@@ -362,6 +364,9 @@ public class BrinsWathe implements ModInitializer {
 		UseEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> {
 			if (level.isClientSide || hand != InteractionHand.MAIN_HAND || hitResult == null) {
 				return InteractionResult.PASS;
+			}
+			if (player instanceof ServerPlayer serverPlayer) {
+				BrinArchivistWitness.onCorpseInteract(serverPlayer, entity);
 			}
 			return BomberBombs.tryPassBomb(player, entity);
 		});
@@ -698,6 +703,10 @@ public class BrinsWathe implements ModInitializer {
 				}
 				GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.level());
 				AbilityPlayerComponent ability = AbilityPlayerComponent.KEY.get(player);
+				if (payload.targetId() != null) {
+					Entity abilityTarget = player.serverLevel().getEntity(payload.targetId());
+					if (abilityTarget != null) BrinArchivistWitness.onCorpseInteract(player, abilityTarget);
+				}
                 switch (payload.abilityType()) {
                     case BrinAbilityC2SPacket.ABILITY_PUPPETEER_CRAFT -> handlePuppeteerCraft(player, gameWorld, payload);
                     case BrinAbilityC2SPacket.ABILITY_PUPPETEER_SUMMON -> handlePuppeteerSummon(player, gameWorld, ability, payload);
