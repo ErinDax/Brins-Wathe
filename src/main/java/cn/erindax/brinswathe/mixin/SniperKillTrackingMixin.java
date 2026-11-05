@@ -33,6 +33,7 @@ public abstract class SniperKillTrackingMixin {
         if (GameFunctions.isPlayerAliveAndSurvival(victim)) return;
         GameWorldComponent game = GameWorldComponent.KEY.get(attacker.level());
         if (!game.isRole(attacker, BrinRoles.SNIPER)) return;
+        if (sniper.isOpeningLocked()) return;
         sniper.addRecoveryProgress(BrinConfig.sniperKillTaskProgress(), BrinConfig.sniperTasksToReset());
     }
 }

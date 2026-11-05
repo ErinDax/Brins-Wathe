@@ -116,7 +116,7 @@ public abstract class AbilityHudMixin {
             if (component != null && component.isAiming()) {
                 renderSniperAimHud(context, font, BrinRoles.SNIPER.color());
             } else if (component != null) {
-                int tasksNeeded = BrinConfig.sniperTasksToReset();
+                int tasksNeeded = component.getTasksRequired(BrinConfig.sniperTasksToReset());
                 if (tasksNeeded > 0 && component.isRecoveringByTasks()) {
                     renderSniperTaskHud(
                         context,

@@ -481,19 +481,11 @@ public class BrinRoles {
         SniperComponent component = SniperComponent.KEY.get(player);
         if (component != null) {
             component.reset();
-            component.startCooldown(openingCooldownSeconds());
+            component.startOpeningLock(openingCooldownSeconds());
         }
-        giveSniperRevolver(player);
     }
     private static int openingCooldownSeconds() {
         return Math.max(0, KinsWatheConfig.HANDLER.instance().StartingCooldown);
-    }
-    private static void giveSniperRevolver(Player player) {
-        if (player.level().isClientSide) return;
-        for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
-            if (player.getInventory().getItem(slot).is(WatheItems.REVOLVER)) return;
-        }
-        player.addItem(WatheItems.REVOLVER.getDefaultInstance());
     }
     private static boolean hasHackerPhone(Player player) {
         for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {

@@ -79,7 +79,7 @@
   "announcement.role.brin.illusionist": "Illusionist",
   "announcement.goals.brin.illusionist": "Create perfect clones to deceive your enemies.",
   "announcement.role.brin.sniper": "Sniper",
-  "announcement.goals.brin.sniper": "Scope and shoot. After firing, fill {tasks_to_reset} progress to use it again: +1 per task, +{kill_task_progress} per kill.",
+  "announcement.goals.brin.sniper": "Scope and shoot. You start without a gun and must complete 2 tasks before the ability unlocks. After firing, fill {tasks_to_reset} progress to use it again: +1 per task, +{kill_task_progress} per kill.",
   "announcement.role.brin.berserker": "Berserker",
   "announcement.goals.brin.berserker": "No active ability. Buy Psycho Mode for permanent invincibility and Instinct. When no other killers or independently-settled neutrals remain, Psycho Mode starts on its own. Become the sole survivor.",
   "announcement.role.brin.archivist": "Archivist",

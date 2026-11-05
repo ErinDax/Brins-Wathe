@@ -28,6 +28,7 @@ public class SniperComponent implements AutoSyncedComponent, ServerTickingCompon
         SniperComponent.class
     );
     public static final double MAX_RANGE = 300.0D;
+    public static final int OPENING_TASKS_REQUIRED = 2;
 
     private final Player player;
     private boolean aiming;
@@ -35,6 +36,7 @@ public class SniperComponent implements AutoSyncedComponent, ServerTickingCompon
     private int killsSinceReset;
     private int tasksSinceReset;
     private boolean recoverByTasks;
+    private boolean openingLock;
     private boolean shotKillPending;
     private int glowTicks;
     private double anchorX;
@@ -67,7 +69,25 @@ public class SniperComponent implements AutoSyncedComponent, ServerTickingCompon
         this.killsSinceReset = 0;
         this.tasksSinceReset = 0;
         this.recoverByTasks = false;
+        this.openingLock = false;
         this.sync();
+    }
+
+    public void startOpeningLock(int seconds) {
+        this.startCooldown(seconds);
+        if (BrinModifiers.hasModifier(this.player, BrinModifiers.FAST2FAST)) return;
+        this.cooldownTicks = Math.max(1, this.cooldownTicks);
+        this.recoverByTasks = true;
+        this.openingLock = true;
+        this.sync();
+    }
+
+    public boolean isOpeningLocked() {
+        return this.openingLock && this.isRecoveringByTasks();
+    }
+
+    public int getTasksRequired(int configured) {
+        return this.openingLock ? OPENING_TASKS_REQUIRED : configured;
     }
 
     public void startShotCooldown(int seconds) {
@@ -80,13 +100,14 @@ public class SniperComponent implements AutoSyncedComponent, ServerTickingCompon
 
     public void clearCooldown() {
         if (this.cooldownTicks == 0 && this.killsSinceReset == 0 && this.tasksSinceReset == 0
-            && !this.recoverByTasks) {
+            && !this.recoverByTasks && !this.openingLock) {
             return;
         }
         this.cooldownTicks = 0;
         this.killsSinceReset = 0;
         this.tasksSinceReset = 0;
         this.recoverByTasks = false;
+        this.openingLock = false;
         this.sync();
     }
 
@@ -104,6 +125,7 @@ public class SniperComponent implements AutoSyncedComponent, ServerTickingCompon
 
     public boolean addRecoveryProgress(int amount, int tasksToReset) {
         if (!this.recoverByTasks || this.cooldownTicks <= 0) return false;
+        tasksToReset = this.getTasksRequired(tasksToReset);
         if (tasksToReset < 1 || amount < 1) {
             if (this.tasksSinceReset != 0) {
                 this.tasksSinceReset = 0;
@@ -249,13 +271,15 @@ public class SniperComponent implements AutoSyncedComponent, ServerTickingCompon
     public void reset() {
         boolean ownedGlow = this.aiming || this.glowTicks > 0;
         boolean changed = ownedGlow || this.cooldownTicks != 0
-            || this.killsSinceReset != 0 || this.tasksSinceReset != 0 || this.recoverByTasks;
+            || this.killsSinceReset != 0 || this.tasksSinceReset != 0 || this.recoverByTasks
+            || this.openingLock;
         this.aiming = false;
         this.glowTicks = 0;
         this.cooldownTicks = 0;
         this.killsSinceReset = 0;
         this.tasksSinceReset = 0;
         this.recoverByTasks = false;
+        this.openingLock = false;
         this.shotKillPending = false;
         if (ownedGlow) this.applyGlow();
         if (changed) this.sync();
@@ -282,6 +306,7 @@ public class SniperComponent implements AutoSyncedComponent, ServerTickingCompon
         this.killsSinceReset = tag.getInt("killsSinceReset");
         this.tasksSinceReset = tag.getInt("tasksSinceReset");
         this.recoverByTasks = tag.getBoolean("recoverByTasks");
+        this.openingLock = tag.getBoolean("openingLock");
         this.glowTicks = tag.getInt("glowTicks");
         this.anchorX = tag.getDouble("anchorX");
         this.anchorY = tag.getDouble("anchorY");
@@ -295,6 +320,7 @@ public class SniperComponent implements AutoSyncedComponent, ServerTickingCompon
         tag.putInt("killsSinceReset", this.killsSinceReset);
         tag.putInt("tasksSinceReset", this.tasksSinceReset);
         tag.putBoolean("recoverByTasks", this.recoverByTasks);
+        tag.putBoolean("openingLock", this.openingLock);
         tag.putInt("glowTicks", this.glowTicks);
         tag.putDouble("anchorX", this.anchorX);
         tag.putDouble("anchorY", this.anchorY);
