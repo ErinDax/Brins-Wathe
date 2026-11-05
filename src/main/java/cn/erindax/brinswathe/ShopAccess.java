@@ -52,7 +52,7 @@ public final class ShopAccess {
 
     public static boolean canUseShopAndEconomy(GameWorldComponent game, Player player) {
         return game.isRole(player, ModRoles.MEDIUM)
-            || game.isRole(player, ModRoles.EAVESDROPPER)
+            || game.isRole(player, ModRoles.CONSPIRATOR)
             || game.isRole(player, ModRoles.WATCHMAN)
             || game.isRole(player, ModRoles.ARCHIVIST)
             || game.isRole(player, ModRoles.BERSERKER)
@@ -101,7 +101,7 @@ public final class ShopAccess {
         if (roleId == null) return null;
 
         List<ShopEntry> entries = switch (roleId) {
-            case "civilian", "eavesdropper", "watchman", "archivist" ->
+            case "civilian", "conspirator", "watchman", "archivist" ->
                 civilianRevolverShop(roleId);
             case "vigilante" -> List.of();
             case "nightmare" -> NightmareComponent.isNightmareHour(game, player)

@@ -154,14 +154,14 @@ public abstract class AbilityHudMixin {
             renderArchivistCorpseInfo(context, font, player);
         } else if (gameWorld.isRole(player, ModRoles.GAMBLER)) {
             renderConfiguredRoleAbilityHud(context, font, ability, player, "gambler", ModRoles.GAMBLER.color());
-        } else if (gameWorld.isRole(player, ModRoles.EAVESDROPPER)) {
+        } else if (gameWorld.isRole(player, ModRoles.CONSPIRATOR)) {
             renderConfiguredRoleAbilityHud(
                 context,
                 font,
                 ability,
                 player,
-                "eavesdropper",
-                ModRoles.EAVESDROPPER.color(),
+                "conspirator",
+                ModRoles.CONSPIRATOR.color(),
                 false
             );
         } else if (gameWorld.isRole(player, ModRoles.ZHANGSHI)) {

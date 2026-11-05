@@ -124,13 +124,13 @@ public abstract class InventoryScreenMixin extends LimitedHandledScreen<Inventor
 
         boolean isPuppeteer = gameWorld.isRole(this.player, ModRoles.PUPPETEER);
         boolean isStuntDouble = gameWorld.isRole(this.player, ModRoles.STUNT_DOUBLE);
-        boolean isEavesdropper = gameWorld.isRole(this.player, ModRoles.EAVESDROPPER);
+        boolean isConspirator = gameWorld.isRole(this.player, ModRoles.CONSPIRATOR);
         boolean isNightmare = gameWorld.isRole(this.player, ModRoles.NIGHTMARE);
         boolean isMortician = gameWorld.isRole(this.player, ModRoles.MORTICIAN);
         boolean isCowboy = gameWorld.isRole(this.player, ModRoles.COWBOY);
         NightmareComponent nightmare = NightmareComponent.KEY.get(this.player);
 
-        if (!isPuppeteer && !isStuntDouble && !isEavesdropper && !isNightmare && !isMortician && !isCowboy) return;
+        if (!isPuppeteer && !isStuntDouble && !isConspirator && !isNightmare && !isMortician && !isCowboy) return;
         if (isNightmare && nightmare == null) return;
         if (isMortician) {
             MorticianComponent mortician = MorticianComponent.KEY.get(this.player);
@@ -159,7 +159,7 @@ public abstract class InventoryScreenMixin extends LimitedHandledScreen<Inventor
                 }
                 Player target = this.player.level().getPlayerByUUID(targetId);
                 if (target == null || !GameFunctions.isPlayerAliveAndSurvival(target)) continue;
-                if (isEavesdropper && gameWorld.isRole(target, ModRoles.MEDIUM)) continue;
+                if (isConspirator && !gameWorld.canUseKillerFeatures(target)) continue;
                 targets.add(targetId);
             }
         }
@@ -207,8 +207,8 @@ public abstract class InventoryScreenMixin extends LimitedHandledScreen<Inventor
                 ? AbilityC2SPacket.ABILITY_PUPPETEER_SUMMON
                 : isStuntDouble
                     ? AbilityC2SPacket.ABILITY_STUNT_DOUBLE_MIMIC
-                    : isEavesdropper
-                        ? AbilityC2SPacket.ABILITY_EAVESDROPPER_CHANNEL
+                    : isConspirator
+                        ? AbilityC2SPacket.ABILITY_CONSPIRATOR_CHANNEL
                         : isMortician
                             ? AbilityC2SPacket.ABILITY_MORTICIAN_DISGUISE
                             : isCowboy
