@@ -79,7 +79,7 @@
   "announcement.role.brin.illusionist": "幻术师",
   "announcement.goals.brin.illusionist": "制造完美的幻影分身来迷惑敌人。",
   "announcement.role.brin.sniper": "狙击手",
-  "announcement.goals.brin.sniper": "开镜狙杀。开枪后需攒满{tasks_to_reset}点进度才能再用：完成任务+1，击杀玩家+{kill_task_progress}。",
+  "announcement.goals.brin.sniper": "开镜狙杀。开局没有枪械，需先完成2个任务才能使用技能。开枪后需攒满{tasks_to_reset}点进度才能再用：完成任务+1，击杀玩家+{kill_task_progress}。",
   "announcement.role.brin.berserker": "狂战士",
   "announcement.goals.brin.berserker": "没有主动技能；购买疯魔后永久无敌并可使用本能。场上没有其他杀手或独立结算中立时，将直接开启无限疯魔。成为唯一存活者即可独立获胜。",
   "announcement.role.brin.archivist": "档案员",
