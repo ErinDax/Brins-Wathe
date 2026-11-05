@@ -19,6 +19,7 @@ import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.client.gui.EventLogScreen;
 import cn.erindax.brinswathe.client.musicbox.MusicBoxClient;
 import cn.erindax.brinswathe.entity.PuppetEntity;
+import cn.erindax.brinswathe.network.ArchivistWitnessS2CPacket;
 import cn.erindax.brinswathe.network.BlindFlashS2CPacket;
 import cn.erindax.brinswathe.network.AbilityC2SPacket;
 import cn.erindax.brinswathe.network.ConfigS2CPacket;
@@ -92,7 +93,9 @@ import org.aussiebox.starexpress.client.StarryExpressClient;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -116,6 +119,7 @@ public class BrinsWatheClient implements ClientModInitializer {
     private static int blindFlashTotal;
     private static int blindFlashRemaining;
     private static final Set<UUID> hiddenDuelists = new HashSet<>();
+    private static final Map<UUID, Integer> archivistWitnesses = new HashMap<>();
     private static boolean cowboyDuelHidesIdentities;
     private static boolean cowboyDuelLookLocked;
     private static boolean suppressSpectatorRoleHud;
@@ -232,11 +236,19 @@ public class BrinsWatheClient implements ClientModInitializer {
                 IcFlags.instinctNightVision = payload.enabled();
                 IcFlags.instinctHudNamesThroughWalls = payload.hudNamesThroughWalls();
             }));
+        ClientPlayNetworking.registerGlobalReceiver(ArchivistWitnessS2CPacket.TYPE, (payload, context) ->
+            context.client().execute(() -> archivistWitnesses.put(payload.target(), Math.max(1, payload.durationTicks()))));
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) ->
+            client.execute(archivistWitnesses::clear));
         registerClientStaminaDiagnostic();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (blindFlashRemaining > 0) {
                 blindFlashRemaining--;
+            }
+            if (!archivistWitnesses.isEmpty()) {
+                archivistWitnesses.replaceAll((id, ticks) -> ticks - 1);
+                archivistWitnesses.values().removeIf(ticks -> ticks <= 0);
             }
             if (rpsBind != null && rpsBind.consumeClick() && client.screen == null) {
                 tryInviteRps(client);
@@ -447,6 +459,13 @@ public class BrinsWatheClient implements ClientModInitializer {
     }
     public static int getBlindFlashRemaining() {
         return blindFlashRemaining;
+    }
+    public static boolean isArchivistWitness(Entity entity) {
+        if (!(entity instanceof Player target) || archivistWitnesses.isEmpty()) return false;
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null || client.level == null) return false;
+        if (!GameWorldComponent.KEY.get(client.level).isRole(client.player, ModRoles.ARCHIVIST)) return false;
+        return archivistWitnesses.containsKey(target.getUUID());
     }
     @Nullable
     public static KeyMapping getAbilityBind() {
