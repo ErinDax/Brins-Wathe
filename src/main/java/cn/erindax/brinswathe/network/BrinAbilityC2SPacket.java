@@ -29,7 +29,7 @@ public record BrinAbilityC2SPacket(
     public static final int ABILITY_ILLUSIONIST_CLONES = 6;
     public static final int ABILITY_ARCHIVIST_SEAL = 8;
     public static final int ABILITY_GAMBLER_BET = 10;
-    public static final int ABILITY_EAVESDROPPER_CHANNEL = 14;
+    public static final int ABILITY_CONSPIRATOR_CHANNEL = 14;
     public static final int ABILITY_NIGHTMARE_FORCE_SLEEP = 15;
     public static final int ABILITY_ILLUSIONIST_SWITCH_CONTROL = 11;
     public static final int ABILITY_SNIPER_TOGGLE_OR_FIRE = 12;

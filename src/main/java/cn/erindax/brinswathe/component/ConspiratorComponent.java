@@ -12,10 +12,10 @@ import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 
-public class EavesdropperComponent implements AutoSyncedComponent {
-    public static final ComponentKey<EavesdropperComponent> KEY = ComponentRegistry.getOrCreate(
-        ResourceLocation.fromNamespaceAndPath("brinswathe", "eavesdropper"),
-        EavesdropperComponent.class
+public class ConspiratorComponent implements AutoSyncedComponent {
+    public static final ComponentKey<ConspiratorComponent> KEY = ComponentRegistry.getOrCreate(
+        ResourceLocation.fromNamespaceAndPath("brinswathe", "conspirator"),
+        ConspiratorComponent.class
     );
 
     private final Player player;
@@ -24,7 +24,7 @@ public class EavesdropperComponent implements AutoSyncedComponent {
     public int channelTicks;
     public boolean channelOwner;
 
-    public EavesdropperComponent(Player player) {
+    public ConspiratorComponent(Player player) {
         this.player = player;
     }
 

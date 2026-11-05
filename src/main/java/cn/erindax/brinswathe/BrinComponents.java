@@ -9,7 +9,7 @@ import cn.erindax.brinswathe.component.BrinCustomWinnerComponent;
 import cn.erindax.brinswathe.component.BrinRoundRecapComponent;
 import cn.erindax.brinswathe.component.CompensatorComponent;
 import cn.erindax.brinswathe.component.CowboyComponent;
-import cn.erindax.brinswathe.component.EavesdropperComponent;
+import cn.erindax.brinswathe.component.ConspiratorComponent;
 import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.MediumComponent;
@@ -48,9 +48,9 @@ public class BrinComponents implements EntityComponentInitializer, WorldComponen
         registry.beginRegistration(Player.class, MediumComponent.KEY)
             .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
             .end(MediumComponent::new);
-        registry.beginRegistration(Player.class, EavesdropperComponent.KEY)
+        registry.beginRegistration(Player.class, ConspiratorComponent.KEY)
             .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
-            .end(EavesdropperComponent::new);
+            .end(ConspiratorComponent::new);
         registry.beginRegistration(Player.class, WatchmanComponent.KEY)
             .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
             .end(WatchmanComponent::new);

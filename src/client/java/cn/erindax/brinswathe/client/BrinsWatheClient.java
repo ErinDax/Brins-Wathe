@@ -9,7 +9,7 @@ import cn.erindax.brinswathe.BrinsWathe;
 import cn.erindax.brinswathe.RpsManager;
 import cn.erindax.brinswathe.BrinKnifeSkins;
 import cn.erindax.brinswathe.component.CowboyComponent;
-import cn.erindax.brinswathe.component.EavesdropperComponent;
+import cn.erindax.brinswathe.component.ConspiratorComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
@@ -606,8 +606,8 @@ public class BrinsWatheClient implements ClientModInitializer {
             }
             return;
         }
-        if (gameWorld.isRole(player, BrinRoles.EAVESDROPPER)) {
-            EavesdropperComponent channel = EavesdropperComponent.KEY.get(player);
+        if (gameWorld.isRole(player, BrinRoles.CONSPIRATOR)) {
+            ConspiratorComponent channel = ConspiratorComponent.KEY.get(player);
             if (GameFunctions.isPlayerAliveAndSurvival(player)
                 && ability.cooldown <= 0
                 && (channel == null || !channel.isInTemporaryChannel())) {

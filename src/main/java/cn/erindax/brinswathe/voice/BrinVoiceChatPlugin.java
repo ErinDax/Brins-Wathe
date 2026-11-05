@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.voice;
 
 import cn.erindax.brinswathe.CowboyDuel;
-import cn.erindax.brinswathe.component.EavesdropperComponent;
+import cn.erindax.brinswathe.component.ConspiratorComponent;
 import cn.erindax.brinswathe.component.MediumComponent;
 import de.maxhenkel.voicechat.api.Group;
 import de.maxhenkel.voicechat.api.VoicechatApi;
@@ -83,8 +83,8 @@ public final class BrinVoiceChatPlugin implements VoicechatPlugin {
     }
 
     public static boolean isInSameTemporaryChannel(ServerPlayer first, ServerPlayer second) {
-        EavesdropperComponent firstComponent = EavesdropperComponent.KEY.get(first);
-        EavesdropperComponent secondComponent = EavesdropperComponent.KEY.get(second);
+        ConspiratorComponent firstComponent = ConspiratorComponent.KEY.get(first);
+        ConspiratorComponent secondComponent = ConspiratorComponent.KEY.get(second);
         return firstComponent != null && secondComponent != null
             && firstComponent.channelId != null
             && firstComponent.channelId.equals(secondComponent.channelId);
@@ -92,8 +92,8 @@ public final class BrinVoiceChatPlugin implements VoicechatPlugin {
 
     public static boolean startTemporaryChannel(ServerPlayer first, ServerPlayer second, int durationTicks) {
         if (!canStartTemporaryChannel(first, second)) return false;
-        EavesdropperComponent firstComponent = EavesdropperComponent.KEY.get(first);
-        EavesdropperComponent secondComponent = EavesdropperComponent.KEY.get(second);
+        ConspiratorComponent firstComponent = ConspiratorComponent.KEY.get(first);
+        ConspiratorComponent secondComponent = ConspiratorComponent.KEY.get(second);
         if (firstComponent == null || secondComponent == null) return false;
         endTemporaryChannel(first);
         endTemporaryChannel(second);
@@ -118,7 +118,7 @@ public final class BrinVoiceChatPlugin implements VoicechatPlugin {
     public static void tick(MinecraftServer server) {
         if (serverApi == null) return;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            EavesdropperComponent component = EavesdropperComponent.KEY.get(player);
+            ConspiratorComponent component = ConspiratorComponent.KEY.get(player);
             if (component == null || !component.isInTemporaryChannel()) continue;
             Group group = serverApi.getGroup(component.channelId);
             if (group == null) {
@@ -148,7 +148,7 @@ public final class BrinVoiceChatPlugin implements VoicechatPlugin {
             GameWorldComponent game = GameWorldComponent.KEY.get(player.level());
             if (game.getGameStatus() != GameWorldComponent.GameStatus.ACTIVE) continue;
             if (!player.isSpectator()) continue;
-            EavesdropperComponent channel = EavesdropperComponent.KEY.get(player);
+            ConspiratorComponent channel = ConspiratorComponent.KEY.get(player);
             if (channel != null && channel.isInTemporaryChannel()) continue;
             if (isInTrainChannel(player.getUUID())) continue;
             addPlayer(player.getUUID());
@@ -157,7 +157,7 @@ public final class BrinVoiceChatPlugin implements VoicechatPlugin {
     }
 
     public static void endTemporaryChannel(ServerPlayer player) {
-        EavesdropperComponent component = EavesdropperComponent.KEY.get(player);
+        ConspiratorComponent component = ConspiratorComponent.KEY.get(player);
         if (component == null || component.channelId == null) return;
         UUID channelId = component.channelId;
         ServerPlayer partner = player.server.getPlayerList().getPlayer(component.channelPartner);
@@ -166,7 +166,7 @@ public final class BrinVoiceChatPlugin implements VoicechatPlugin {
         leaveGroup(player, channelId);
         if (partner != null) {
             leaveGroup(partner, channelId);
-            EavesdropperComponent partnerComponent = EavesdropperComponent.KEY.get(partner);
+            ConspiratorComponent partnerComponent = ConspiratorComponent.KEY.get(partner);
             if (partnerComponent != null && channelId.equals(partnerComponent.channelId)) {
                 partnerComponent.clearTemporaryChannel();
             }

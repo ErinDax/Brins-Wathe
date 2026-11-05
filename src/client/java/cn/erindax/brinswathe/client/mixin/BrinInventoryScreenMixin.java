@@ -124,13 +124,13 @@ public abstract class BrinInventoryScreenMixin extends LimitedHandledScreen<Inve
 
         boolean isPuppeteer = gameWorld.isRole(this.player, BrinRoles.PUPPETEER);
         boolean isStuntDouble = gameWorld.isRole(this.player, BrinRoles.STUNT_DOUBLE);
-        boolean isEavesdropper = gameWorld.isRole(this.player, BrinRoles.EAVESDROPPER);
+        boolean isConspirator = gameWorld.isRole(this.player, BrinRoles.CONSPIRATOR);
         boolean isNightmare = gameWorld.isRole(this.player, BrinRoles.NIGHTMARE);
         boolean isMortician = gameWorld.isRole(this.player, BrinRoles.MORTICIAN);
         boolean isCowboy = gameWorld.isRole(this.player, BrinRoles.COWBOY);
         NightmareComponent nightmare = NightmareComponent.KEY.get(this.player);
 
-        if (!isPuppeteer && !isStuntDouble && !isEavesdropper && !isNightmare && !isMortician && !isCowboy) return;
+        if (!isPuppeteer && !isStuntDouble && !isConspirator && !isNightmare && !isMortician && !isCowboy) return;
         if (isNightmare && nightmare == null) return;
         if (isMortician) {
             MorticianComponent mortician = MorticianComponent.KEY.get(this.player);
@@ -159,7 +159,7 @@ public abstract class BrinInventoryScreenMixin extends LimitedHandledScreen<Inve
                 }
                 Player target = this.player.level().getPlayerByUUID(targetId);
                 if (target == null || !GameFunctions.isPlayerAliveAndSurvival(target)) continue;
-                if (isEavesdropper && gameWorld.isRole(target, BrinRoles.MEDIUM)) continue;
+                if (isConspirator && !gameWorld.canUseKillerFeatures(target)) continue;
                 targets.add(targetId);
             }
         }
@@ -207,8 +207,8 @@ public abstract class BrinInventoryScreenMixin extends LimitedHandledScreen<Inve
                 ? BrinAbilityC2SPacket.ABILITY_PUPPETEER_SUMMON
                 : isStuntDouble
                     ? BrinAbilityC2SPacket.ABILITY_STUNT_DOUBLE_MIMIC
-                    : isEavesdropper
-                        ? BrinAbilityC2SPacket.ABILITY_EAVESDROPPER_CHANNEL
+                    : isConspirator
+                        ? BrinAbilityC2SPacket.ABILITY_CONSPIRATOR_CHANNEL
                         : isMortician
                             ? BrinAbilityC2SPacket.ABILITY_MORTICIAN_DISGUISE
                             : isCowboy

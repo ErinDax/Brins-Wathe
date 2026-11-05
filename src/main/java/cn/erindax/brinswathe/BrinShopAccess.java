@@ -52,7 +52,7 @@ public final class BrinShopAccess {
 
     public static boolean canUseShopAndEconomy(GameWorldComponent game, Player player) {
         return game.isRole(player, BrinRoles.MEDIUM)
-            || game.isRole(player, BrinRoles.EAVESDROPPER)
+            || game.isRole(player, BrinRoles.CONSPIRATOR)
             || game.isRole(player, BrinRoles.WATCHMAN)
             || game.isRole(player, BrinRoles.ARCHIVIST)
             || game.isRole(player, BrinRoles.BERSERKER)
@@ -101,7 +101,7 @@ public final class BrinShopAccess {
         if (roleId == null) return null;
 
         List<ShopEntry> entries = switch (roleId) {
-            case "civilian", "eavesdropper", "watchman", "archivist" ->
+            case "civilian", "conspirator", "watchman", "archivist" ->
                 civilianRevolverShop(roleId);
             case "vigilante" -> List.of();
             case "nightmare" -> NightmareComponent.isNightmareHour(game, player)

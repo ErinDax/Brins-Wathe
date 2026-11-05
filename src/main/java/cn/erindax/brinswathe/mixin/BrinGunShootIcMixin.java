@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe.mixin;
 
+import cn.erindax.brinswathe.BrinConspirator;
 import cn.erindax.brinswathe.BrinModifiers;
 import cn.erindax.brinswathe.BrinNoelleAccess;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -35,6 +36,9 @@ public abstract class BrinGunShootIcMixin {
             return false;
         }
         if (BrinNoelleAccess.isRole(game, target, BrinNoelleAccess.MIMIC_ID)) {
+            return false;
+        }
+        if (BrinConspirator.isConspirator(game, target)) {
             return false;
         }
         return original.call(game, target);

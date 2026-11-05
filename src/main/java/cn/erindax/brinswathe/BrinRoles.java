@@ -7,7 +7,7 @@ import cn.erindax.brinswathe.component.BombComponent;
 import cn.erindax.brinswathe.component.BoneharvesterComponent;
 import cn.erindax.brinswathe.component.CompensatorComponent;
 import cn.erindax.brinswathe.component.CowboyComponent;
-import cn.erindax.brinswathe.component.EavesdropperComponent;
+import cn.erindax.brinswathe.component.ConspiratorComponent;
 import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.MediumComponent;
@@ -86,9 +86,9 @@ public class BrinRoles {
         )
     );
 
-    public static Role EAVESDROPPER = registerRole(
+    public static Role CONSPIRATOR = registerRole(
         new Role(
-            ResourceLocation.fromNamespaceAndPath("brin", "eavesdropper"),
+            ResourceLocation.fromNamespaceAndPath("brin", "conspirator"),
             0x00CED1,
             true,
             false,
@@ -322,7 +322,7 @@ public class BrinRoles {
         Harpymodloader.setRoleMaximum(PUPPETEER, 1);
         Harpymodloader.setRoleMaximum(STUNT_DOUBLE, 1);
         Harpymodloader.setRoleMaximum(MEDIUM, 1);
-        Harpymodloader.setRoleMaximum(EAVESDROPPER, 1);
+        Harpymodloader.setRoleMaximum(CONSPIRATOR, 1);
         Harpymodloader.setRoleMaximum(WATCHMAN, 1);
         Harpymodloader.setRoleMaximum(TRAPPER, 1);
         Harpymodloader.setRoleMaximum(NIGHTMARE, 1);
@@ -396,8 +396,8 @@ public class BrinRoles {
             if (staminaComp != null) staminaComp.reset();
             MediumComponent mediumComp = MediumComponent.KEY.get(player);
             if (mediumComp != null) mediumComp.reset();
-            EavesdropperComponent eavesdropperComp = EavesdropperComponent.KEY.get(player);
-            if (eavesdropperComp != null) eavesdropperComp.reset();
+            ConspiratorComponent conspiratorComp = ConspiratorComponent.KEY.get(player);
+            if (conspiratorComp != null) conspiratorComp.reset();
             WatchmanComponent watchmanComp = WatchmanComponent.KEY.get(player);
             if (watchmanComp != null) watchmanComp.reset();
             TrapperComponent trapperComp = TrapperComponent.KEY.get(player);

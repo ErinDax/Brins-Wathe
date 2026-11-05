@@ -59,7 +59,7 @@ public abstract class ChatRangeMixin {
         if (isMedium) return false;
         if (recipient.level() != sender.level()) return false;
         GameWorldComponent recipientGame = GameWorldComponent.KEY.get(recipient.level());
-        if (recipientGame.isRole(recipient, BrinRoles.EAVESDROPPER)
+        if (recipientGame.isRole(recipient, BrinRoles.CONSPIRATOR)
             && GameFunctions.isPlayerAliveAndSurvival(recipient)) {
             return true;
         }

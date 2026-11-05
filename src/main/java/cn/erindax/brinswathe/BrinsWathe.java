@@ -10,7 +10,7 @@ import cn.erindax.brinswathe.component.BrinCustomWinnerComponent;
 import cn.erindax.brinswathe.component.BrinRoundRecapComponent;
 import cn.erindax.brinswathe.component.CowboyComponent;
 import cn.erindax.brinswathe.component.GamblerComponent;
-import cn.erindax.brinswathe.component.EavesdropperComponent;
+import cn.erindax.brinswathe.component.ConspiratorComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.MediumComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
@@ -247,6 +247,7 @@ public class BrinsWathe implements ModInitializer {
 				}
 			}
 			BrinIcRoundStart.apply(world, gameWorld);
+			BrinConspirator.announce(world, gameWorld);
 			BrinRoundRecapComponent recap = BrinRoundRecapComponent.KEY.get(world);
 			if (recap != null) recap.snapshotIdentities(recapPlayers);
 			BrinGuesserSuspension.begin();
@@ -373,8 +374,8 @@ public class BrinsWathe implements ModInitializer {
 			RpsManager.onDisconnect(handler.player);
 			IllusionistComponent component = IllusionistComponent.KEY.get(handler.player);
 			if (component != null) component.reset();
-			EavesdropperComponent eavesdropper = EavesdropperComponent.KEY.get(handler.player);
-			if (eavesdropper != null) eavesdropper.reset();
+			ConspiratorComponent conspirator = ConspiratorComponent.KEY.get(handler.player);
+			if (conspirator != null) conspirator.reset();
 		});
 		ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
 			IllusionistComponent component = IllusionistComponent.KEY.get(player);
@@ -710,7 +711,7 @@ public class BrinsWathe implements ModInitializer {
                     case BrinAbilityC2SPacket.ABILITY_ILLUSIONIST_SWITCH_CONTROL -> handleIllusionistSwitchControl(player, gameWorld, payload);
                     case BrinAbilityC2SPacket.ABILITY_ARCHIVIST_SEAL -> handleArchivistSeal(player, gameWorld, ability, payload);
                     case BrinAbilityC2SPacket.ABILITY_GAMBLER_BET -> handleGamblerBet(player, gameWorld, ability, payload);
-                    case BrinAbilityC2SPacket.ABILITY_EAVESDROPPER_CHANNEL -> handleEavesdropperChannel(player, gameWorld, ability, payload);
+                    case BrinAbilityC2SPacket.ABILITY_CONSPIRATOR_CHANNEL -> handleConspiratorChannel(player, gameWorld, ability, payload);
                     case BrinAbilityC2SPacket.ABILITY_SNIPER_TOGGLE_OR_FIRE -> handleSniperAbility(player, gameWorld);
                     case BrinAbilityC2SPacket.ABILITY_SNIPER_CANCEL -> handleSniperCancel(player, gameWorld);
                     case BrinAbilityC2SPacket.ABILITY_WATCHMAN_RESCUE -> handleWatchmanRescue(player, gameWorld, ability, payload);
@@ -873,8 +874,8 @@ public class BrinsWathe implements ModInitializer {
 		if (ability.cooldown > 0) return;
 		MediumComponent medium = MediumComponent.KEY.get(player);
 		if (medium == null) return;
-		EavesdropperComponent eavesdropper = EavesdropperComponent.KEY.get(player);
-		if (eavesdropper != null && eavesdropper.isInTemporaryChannel()) return;
+		ConspiratorComponent conspirator = ConspiratorComponent.KEY.get(player);
+		if (conspirator != null && conspirator.isInTemporaryChannel()) return;
 
 		if (!medium.startChannelling(BrinConfig.skillDurationSeconds("medium"))) return;
 		if (!spendAbilityCost(player, "medium")) {
@@ -933,25 +934,25 @@ public class BrinsWathe implements ModInitializer {
 		cowboy.markDuelUsed();
 		CowboyDuel.start(player, target, posA, posB, posSpectator);
 	}
-	private void handleEavesdropperChannel(ServerPlayer player, GameWorldComponent gameWorld,
+	private void handleConspiratorChannel(ServerPlayer player, GameWorldComponent gameWorld,
 	                                       AbilityPlayerComponent ability,
 	                                       BrinAbilityC2SPacket payload) {
-		if (!gameWorld.isRole(player, BrinRoles.EAVESDROPPER)) return;
-		EavesdropperComponent ownerChannel = EavesdropperComponent.KEY.get(player);
+		if (!gameWorld.isRole(player, BrinRoles.CONSPIRATOR)) return;
+		ConspiratorComponent ownerChannel = ConspiratorComponent.KEY.get(player);
 		if (ownerChannel != null && ownerChannel.isInTemporaryChannel()) return;
 		if (ability.cooldown > 0 || payload.targetId() == null) return;
 		ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
 		if (target == null || target.equals(player) || target.level() != player.level()) return;
 		if (!GameFunctions.isPlayerAliveAndSurvival(target)) return;
-		if (gameWorld.isRole(target, BrinRoles.MEDIUM)) return;
+		if (!gameWorld.canUseKillerFeatures(target)) return;
 		if (!BrinVoiceChatPlugin.canStartTemporaryChannel(player, target)) return;
-		if (!spendAbilityCost(player, "eavesdropper")) return;
+		if (!spendAbilityCost(player, "conspirator")) return;
 		int durationSeconds = Math.min(
-			BrinConfig.skillDurationSeconds("eavesdropper"),
+			BrinConfig.skillDurationSeconds("conspirator"),
 			Integer.MAX_VALUE / 20
 		);
 		if (!BrinVoiceChatPlugin.startTemporaryChannel(player, target, durationSeconds * 20)) return;
-		ability.setAbilityCooldown(BrinConfig.skillCooldownSeconds("eavesdropper"));
+		ability.setAbilityCooldown(BrinConfig.skillCooldownSeconds("conspirator"));
 		player.playSound(SoundEvents.NOTE_BLOCK_BELL.value(), 1.0F, 1.0F);
 	}
 	private void handleTrapperPlaceTrap(ServerPlayer player, GameWorldComponent gameWorld,

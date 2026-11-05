@@ -1141,14 +1141,14 @@ public final class BrinConfig {
     }
     private static boolean hasConfigurableSkillCost(String roleId) {
         return switch (roleId) {
-            case "archivist", "beast_trapper", "cowboy", "eavesdropper", "gambler", "medium", "vigilante",
+            case "archivist", "beast_trapper", "cowboy", "conspirator", "gambler", "medium", "vigilante",
                 "watchman" -> true;
             default -> false;
         };
     }
     private static boolean hasConfigurableSkillCooldown(String roleId) {
         return switch (roleId) {
-            case "archivist", "eavesdropper", "gambler", "illusionist", "medium", "mortician", "nightmare",
+            case "archivist", "conspirator", "gambler", "illusionist", "medium", "mortician", "nightmare",
                 "puppeteer", "sniper", "stalker", "stunt_double", "vigilante", "watchman", "zhangshi" -> true;
             default -> false;
         };
@@ -1192,7 +1192,7 @@ public final class BrinConfig {
         roles.put("vigilante", civilianRole(200, 90, 350, false));
         roles.put("stunt_double", civilianRole(0, 30, 350, false).withSkillDuration(30));
         roles.put("medium", civilianRole(200, 120, 500, false).withSkillDuration(8));
-        roles.put("eavesdropper", civilianRole(200, 200, 350, false).withSkillDuration(30));
+        roles.put("conspirator", civilianRole(150, 200, 350, false).withSkillDuration(15));
         roles.put("watchman", civilianRole(150, 30, 350, false));
         roles.put("beast_trapper", role(25, 120, null, 100, 300, 300).withTrapLimit(1).withExtraTrapPrice(150).withTrapCatchReward(50));
         roles.put("nightmare", role(0, 60, 0, 100, 300, 300).withForcedSleepTaskCooldown(200));
@@ -1312,7 +1312,7 @@ public final class BrinConfig {
             "bomber",
             "boneharvester",
             "cowboy",
-            "eavesdropper",
+            "conspirator",
             "gambler",
             "illusionist",
             "medium",
@@ -1381,7 +1381,7 @@ public final class BrinConfig {
                 role.addProperty("arena_spectator_y", settings.arena_spectator_y);
                 role.addProperty("arena_spectator_z", settings.arena_spectator_z);
             }
-            case "eavesdropper" -> {
+            case "conspirator" -> {
                 role.addProperty("skill_cost", settings.skill_cost);
                 role.addProperty("skill_cooldown_seconds", settings.skill_cooldown_seconds);
             }
