@@ -15,6 +15,7 @@ import cn.erindax.brinswathe.component.PenitentComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
+import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
 
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -69,6 +70,8 @@ public abstract class HideInstinctMixin {
     @Unique
     private static final int AVENGER_OUTLINE = 0xFFFFFF;
     @Unique
+    private static final int VALENTINA_OUTLINE = 0xFFFFFF;
+    @Unique
     private static final int THIEF_OUTLINE = 0x7A3002;
     @Unique
     private static final int BODY_OUTLINE = 0x606060;
@@ -122,6 +125,13 @@ public abstract class HideInstinctMixin {
                 AvengerComponent avenger = AvengerComponent.KEY.get(localPlayer);
                 cir.setReturnValue(avenger != null && avenger.instinctTicks() > 0);
                 return;
+            }
+            if (gameWorld.isRole(localPlayer, BrinRoles.VALENTINA)) {
+                ValentinaComponent valentina = ValentinaComponent.KEY.get(localPlayer);
+                if (valentina != null && valentina.instinctTicks() > 0) {
+                    cir.setReturnValue(true);
+                    return;
+                }
             }
             if (brinIsThief(role) && WatheClient.instinctKeybind.isDown()) {
                 cir.setReturnValue(true);
@@ -334,6 +344,21 @@ public abstract class HideInstinctMixin {
             }
             cir.setReturnValue(AVENGER_OUTLINE);
             return;
+        }
+
+        if (gameWorld.isRole(localPlayer, BrinRoles.VALENTINA)) {
+            ValentinaComponent valentinaComponent = ValentinaComponent.KEY.get(localPlayer);
+            if (valentinaComponent != null && valentinaComponent.instinctTicks() > 0) {
+                if (!(target instanceof Player targetPlayer)
+                    || targetPlayer == localPlayer
+                    || !GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
+                    || targetPlayer.isInvisible()) {
+                    cir.setReturnValue(-1);
+                    return;
+                }
+                cir.setReturnValue(VALENTINA_OUTLINE);
+                return;
+            }
         }
 
         if (gameWorld.isRole(localPlayer, BrinRoles.WATCHMAN)) {

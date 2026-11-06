@@ -25,7 +25,7 @@ public final class BrinConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 45;
+    private static final int CONFIG_VERSION = 46;
     private static final int ROLE_BALANCE_MIGRATION_VERSION = 39;
     private static final int AVENGER_INSTINCT_MIGRATION_VERSION = 40;
     private static final int PUPPETEER_KNIFE_MIGRATION_VERSION = 41;
@@ -1155,7 +1155,8 @@ public final class BrinConfig {
     }
     private static boolean hasConfigurableSkillDuration(String roleId) {
         return switch (roleId) {
-            case "avenger", "illusionist", "medium", "mortician", "puppeteer", "stunt_double", "zhangshi" -> true;
+            case "avenger", "illusionist", "medium", "mortician", "puppeteer", "stunt_double", "valentina",
+                "zhangshi" -> true;
             default -> false;
         };
     }
@@ -1210,6 +1211,7 @@ public final class BrinConfig {
         roles.put("cowboy", civilianRole(500, 0, 350, false)
             .withCowboy(90, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 "牛仔发起了决斗：{cowboy} 对决 {target}！", 100));
+        roles.put("valentina", civilianRole(0, 0, 350, false).withSkillDuration(10));
         roles.put("boneharvester", role(0, 0, null, 100, 300, 300).withBoneKnife(175, 200));
         roles.put("bomber", role(0, 0, null, 100, 300, 300).withBomber(200, 75, 45, 30, 2, 3, 60).withMinePrice(125));
         roles.put("compensator", role(0, 0, 0, 100, 300, 300));
@@ -1325,6 +1327,7 @@ public final class BrinConfig {
             "stunt_double",
             "terrorist",
             "beast_trapper",
+            "valentina",
             "watchman",
             "zhangshi"
         };
@@ -1447,6 +1450,7 @@ public final class BrinConfig {
                 role.addProperty("extra_trap_price", settings.extra_trap_price);
                 role.addProperty("trap_catch_reward", settings.trap_catch_reward);
             }
+            case "valentina" -> role.addProperty("skill_duration_seconds", settings.skill_duration_seconds);
             case "watchman" -> {
                 role.addProperty("skill_cost", settings.skill_cost);
                 role.addProperty("skill_cooldown_seconds", settings.skill_cooldown_seconds);

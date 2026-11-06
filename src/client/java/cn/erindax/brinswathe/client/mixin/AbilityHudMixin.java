@@ -12,6 +12,7 @@ import cn.erindax.brinswathe.component.MuzzlerAbilityComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
+import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
 import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 
@@ -212,6 +213,9 @@ public abstract class AbilityHudMixin {
                     true
                 );
             }
+        } else if (gameWorld.isRole(player, BrinRoles.VALENTINA)) {
+            ValentinaComponent valentina = ValentinaComponent.KEY.get(player);
+            if (valentina != null) renderValentinaHud(context, font, BrinRoles.VALENTINA.color(), valentina);
         } else if (gameWorld.isRole(player, WatheRoles.VIGILANTE)) {
             renderConfiguredRoleAbilityHud(context, font, ability, player, "vigilante", WatheRoles.VIGILANTE.color());
         }
@@ -370,6 +374,36 @@ public abstract class AbilityHudMixin {
     }
     private void renderSniperTaskHud(GuiGraphics context, Font font, int color, int done, int needed) {
         Component line = Component.translatable("tip.brinswathe.sniper.tasks", done, needed);
+        int y = context.guiHeight() - font.lineHeight - 2;
+        context.drawString(font, line, context.guiWidth() - font.width(line) - 2, y, color);
+    }
+    private void renderValentinaHud(GuiGraphics context, Font font, int color, ValentinaComponent component) {
+        Component line;
+        if (component.instinctTicks() > 0) {
+            line = Component.translatable(
+                "tip.brinswathe.valentina.instinct",
+                (component.instinctTicks() + 19) / 20
+            );
+        } else if (component.canForesee()) {
+            KeyMapping abilityBind = BrinsWatheClient.getAbilityBind();
+            Component keyName = abilityBind == null
+                ? Component.literal("G")
+                : abilityBind.getTranslatedKeyMessage();
+            line = Component.translatable(
+                "tip.brinswathe.valentina.ready",
+                component.eyes(),
+                ValentinaComponent.MAX_EYES,
+                keyName
+            );
+        } else {
+            line = Component.translatable(
+                "tip.brinswathe.valentina.charging",
+                component.eyes(),
+                ValentinaComponent.MAX_EYES,
+                component.taskProgress(),
+                ValentinaComponent.TASKS_PER_EYE
+            );
+        }
         int y = context.guiHeight() - font.lineHeight - 2;
         context.drawString(font, line, context.guiWidth() - font.width(line) - 2, y, color);
     }

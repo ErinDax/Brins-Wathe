@@ -24,6 +24,7 @@ import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.component.StuntDoubleComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
+import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
 import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
@@ -338,6 +339,18 @@ public class BrinsWathe implements ModInitializer {
                     victim.level().playSound(null, victim.blockPosition(), SoundEvents.SHIELD_BLOCK,
                         SoundSource.PLAYERS, 1.0F, 1.0F);
 					BrinRoundRecapComponent.onShieldBroken(victim, attacker, deathReason);
+                    return false;
+                }
+            }
+            if (gameWorld.isRole(victim, BrinRoles.VALENTINA)
+                && !shieldPierced
+                && (GameConstants.DeathReasons.GUN.equals(deathReason)
+                    || GameConstants.DeathReasons.KNIFE.equals(deathReason))) {
+                ValentinaComponent valentina = ValentinaComponent.KEY.get(victim);
+                if (valentina != null && valentina.consumeEye()) {
+                    victim.level().playSound(null, victim.blockPosition(), SoundEvents.SHIELD_BLOCK,
+                        SoundSource.PLAYERS, 1.0F, 1.0F);
+                    BrinRoundRecapComponent.onShieldBroken(victim, attacker, deathReason);
                     return false;
                 }
             }
@@ -728,6 +741,7 @@ public class BrinsWathe implements ModInitializer {
                     case BrinAbilityC2SPacket.ABILITY_MORPHLING_MORPH -> handleMorphlingMorph(player, gameWorld, payload);
                     case BrinAbilityC2SPacket.ABILITY_VIGILANTE_DETECT -> handleVigilanteDetect(player, gameWorld, ability, payload);
                     case BrinAbilityC2SPacket.ABILITY_CORPSE_TOUCH -> handleCorpseTouch(player, payload);
+                    case BrinAbilityC2SPacket.ABILITY_VALENTINA_FORESIGHT -> handleValentinaForesight(player, gameWorld);
                 }
 			}
 		);
@@ -1096,6 +1110,12 @@ public class BrinsWathe implements ModInitializer {
         Entity target = player.serverLevel().getEntity(payload.targetId());
         if (target == null || player.distanceToSqr(target) > 64.0D) return;
         BrinArchivistWitness.onCorpseInteract(player, target);
+    }
+    private static void handleValentinaForesight(ServerPlayer player, GameWorldComponent gameWorld) {
+        if (!gameWorld.isRole(player, BrinRoles.VALENTINA)) return;
+        ValentinaComponent valentina = ValentinaComponent.KEY.get(player);
+        if (valentina == null || !valentina.foresee()) return;
+        player.playNotifySound(SoundEvents.ENDER_EYE_LAUNCH, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
     private void handleGamblerBet(ServerPlayer player, GameWorldComponent gameWorld,
                                   AbilityPlayerComponent ability,

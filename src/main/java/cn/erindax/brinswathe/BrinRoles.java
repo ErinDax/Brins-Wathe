@@ -20,6 +20,7 @@ import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.component.StuntDoubleComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
+import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.WatchmanComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
@@ -314,6 +315,18 @@ public class BrinRoles {
         )
     );
 
+    public static Role VALENTINA = registerRole(
+        new Role(
+            ResourceLocation.fromNamespaceAndPath("brin", "valentina"),
+            0x87CEEB,
+            true,
+            false,
+            MoodType.REAL,
+            WatheRoles.CIVILIAN.getMaxSprintTime(),
+            false
+        )
+    );
+
     public static HashMap<String, Role> getRoles() {
         return ROLES;
     }
@@ -341,6 +354,7 @@ public class BrinRoles {
         Harpymodloader.setRoleMaximum(AVENGER, 1);
         Harpymodloader.setRoleMaximum(STALKER, 1);
         Harpymodloader.setRoleMaximum(COWBOY, 1);
+        Harpymodloader.setRoleMaximum(VALENTINA, 1);
 
         ModdedRoleAssigned.EVENT.register((player, role) -> {
             if (BrinNoelleAccess.EXECUTIONER_ID.equals(role.identifier())) {
@@ -378,6 +392,10 @@ public class BrinRoles {
             }
             if (role.equals(COWBOY)) {
                 CowboyComponent component = CowboyComponent.KEY.get(player);
+                if (component != null) component.reset();
+            }
+            if (role.equals(VALENTINA)) {
+                ValentinaComponent component = ValentinaComponent.KEY.get(player);
                 if (component != null) component.reset();
             }
             if (role.equals(WATCHMAN) && player instanceof ServerPlayer serverPlayer) {
@@ -432,6 +450,8 @@ public class BrinRoles {
             if (stalkerComp != null) stalkerComp.reset();
             CowboyComponent cowboyComp = CowboyComponent.KEY.get(player);
             if (cowboyComp != null) cowboyComp.reset();
+            ValentinaComponent valentinaComp = ValentinaComponent.KEY.get(player);
+            if (valentinaComp != null) valentinaComp.reset();
         });
     }
 

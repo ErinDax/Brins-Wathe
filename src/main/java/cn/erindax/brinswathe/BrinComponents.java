@@ -24,6 +24,7 @@ import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.component.StuntDoubleComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
+import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.WatchmanComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
 import net.minecraft.world.entity.player.Player;
@@ -102,6 +103,9 @@ public class BrinComponents implements EntityComponentInitializer, WorldComponen
         registry.beginRegistration(Player.class, CowboyComponent.KEY)
             .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
             .end(CowboyComponent::new);
+        registry.beginRegistration(Player.class, ValentinaComponent.KEY)
+            .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
+            .end(ValentinaComponent::new);
         registry.beginRegistration(Player.class, MuzzlerAbilityComponent.KEY)
             .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
             .end(MuzzlerAbilityComponent::new);

@@ -4,6 +4,7 @@ import cn.erindax.brinswathe.BrinNoelleAccess;
 import cn.erindax.brinswathe.BrinRoles;
 import cn.erindax.brinswathe.BrinSecretMurder;
 import cn.erindax.brinswathe.component.SniperComponent;
+import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -123,6 +124,10 @@ public abstract class BrinTaskRewardMixin {
             if (game.isRole(this.player, BrinRoles.SNIPER)) {
                 SniperComponent sniper = SniperComponent.KEY.get(this.player);
                 if (sniper != null) sniper.recordTask(BrinConfig.sniperTasksToReset());
+            }
+            if (game.isRole(this.player, BrinRoles.VALENTINA)) {
+                ValentinaComponent valentina = ValentinaComponent.KEY.get(this.player);
+                if (valentina != null) valentina.recordTask();
             }
         }
         if (this.brin$killerBalancesBefore != null) {
