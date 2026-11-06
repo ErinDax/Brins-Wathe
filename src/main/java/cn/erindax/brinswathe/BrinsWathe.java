@@ -204,6 +204,7 @@ public class BrinsWathe implements ModInitializer {
 		BuySlots.init();
 		AdminPanel.init();
 		ArchivistWitness.init();
+		Funeral.init();
 		registerConfigSync();
 		registerCommands();
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
@@ -742,6 +743,8 @@ public class BrinsWathe implements ModInitializer {
                     case AbilityC2SPacket.ABILITY_VIGILANTE_DETECT -> handleVigilanteDetect(player, gameWorld, ability, payload);
                     case AbilityC2SPacket.ABILITY_CORPSE_TOUCH -> handleCorpseTouch(player, payload);
                     case AbilityC2SPacket.ABILITY_VALENTINA_FORESIGHT -> handleValentinaForesight(player, gameWorld);
+                    case AbilityC2SPacket.ABILITY_FUNERAL_PICK_UP -> Funeral.pickUp(player, payload.targetId());
+                    case AbilityC2SPacket.ABILITY_FUNERAL_PUT_DOWN -> Funeral.putDown(player);
                 }
 			}
 		);

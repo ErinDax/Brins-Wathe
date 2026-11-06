@@ -19,6 +19,7 @@ public final class IcModifiers {
     public static Modifier BOTTOMLESS;
     public static Modifier SPEED;
     public static Modifier PUNISHMENT;
+    public static Modifier FUNERAL;
 
     private IcModifiers() {
     }
@@ -111,6 +112,14 @@ public final class IcModifiers {
             0xAA0000,
             null,
             new ArrayList<>(),
+            false,
+            false
+        ));
+        FUNERAL = HMLModifiers.registerModifier(new Modifier(
+            ModModifiers.FUNERAL,
+            Funeral.COLOR,
+            null,
+            null,
             false,
             false
         ));

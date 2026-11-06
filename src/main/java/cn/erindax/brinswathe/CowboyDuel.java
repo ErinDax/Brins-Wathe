@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe;
 
 import cn.erindax.brinswathe.component.BoneharvesterComponent;
+import cn.erindax.brinswathe.component.FuneralComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.NightmareComponent;
@@ -456,6 +457,8 @@ public final class CowboyDuel {
             if (sniper != null) sniper.cancelAiming();
             StuntDoubleComponent stuntDouble = StuntDoubleComponent.KEY.get(player);
             if (stuntDouble != null && stuntDouble.isMimicking()) stuntDouble.reset();
+            FuneralComponent funeral = FuneralComponent.KEY.get(player);
+            if (funeral != null) funeral.putDown();
         }
     }
 

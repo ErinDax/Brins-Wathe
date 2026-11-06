@@ -33,6 +33,8 @@ public final class ModModifiers {
         ResourceLocation.fromNamespaceAndPath("noellesroles", "speed");
     public static final ResourceLocation PUNISHMENT =
         ResourceLocation.fromNamespaceAndPath("brinswathe", "punishment");
+    public static final ResourceLocation FUNERAL =
+        ResourceLocation.fromNamespaceAndPath("brinswathe", "funeral");
     private ModModifiers() {
     }
 
