@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:valentina",
+  "subtitle": "guidebook.role.title.brin:valentina",
+  "keywords": ["guidebook.role.brin:valentina"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:valentina"
+  }]
+}

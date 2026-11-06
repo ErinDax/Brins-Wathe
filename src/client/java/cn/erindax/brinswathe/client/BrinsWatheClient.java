@@ -15,6 +15,7 @@ import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
+import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.client.gui.EventLogScreen;
 import cn.erindax.brinswathe.client.musicbox.MusicBoxClient;
@@ -657,6 +658,14 @@ public class BrinsWatheClient implements ClientModInitializer {
             if (targetId != null) {
                 ClientPlayNetworking.send(new AbilityC2SPacket(
                     AbilityC2SPacket.ABILITY_STALKER_TRACK, targetId));
+            }
+            return;
+        }
+        if (gameWorld.isRole(player, ModRoles.VALENTINA)) {
+            ValentinaComponent valentina = ValentinaComponent.KEY.get(player);
+            if (valentina != null && valentina.canForesee()) {
+                ClientPlayNetworking.send(new AbilityC2SPacket(
+                    AbilityC2SPacket.ABILITY_VALENTINA_FORESIGHT, null));
             }
             return;
         }

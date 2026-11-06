@@ -4,6 +4,7 @@ import cn.erindax.brinswathe.NoelleAccess;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.SecretMurder;
 import cn.erindax.brinswathe.component.SniperComponent;
+import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.config.ModConfig;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -123,6 +124,10 @@ public abstract class TaskRewardMixin {
             if (game.isRole(this.player, ModRoles.SNIPER)) {
                 SniperComponent sniper = SniperComponent.KEY.get(this.player);
                 if (sniper != null) sniper.recordTask(ModConfig.sniperTasksToReset());
+            }
+            if (game.isRole(this.player, ModRoles.VALENTINA)) {
+                ValentinaComponent valentina = ValentinaComponent.KEY.get(this.player);
+                if (valentina != null) valentina.recordTask();
             }
         }
         if (this.brin$killerBalancesBefore != null) {
