@@ -94,6 +94,10 @@ public class BerserkerComponent implements AutoSyncedComponent, ServerTickingCom
             return true;
         }
         if (role.isInnocent()) return false;
+        if (gameWorld.isRole(other, BrinRoles.SUBVERTER)) {
+            SubverterComponent subverter = SubverterComponent.KEY.get(other);
+            return subverter != null && subverter.side() == SubverterComponent.Side.KILLER;
+        }
         return !isKillerSidedOnlyNeutral(role);
     }
     private static boolean isWolfSidedNeutral(Role role) {

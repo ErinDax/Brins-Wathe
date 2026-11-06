@@ -23,6 +23,7 @@ import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.component.StuntDoubleComponent;
+import cn.erindax.brinswathe.component.SubverterComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
@@ -705,6 +706,8 @@ public class BrinsWathe implements ModInitializer {
 					.get(player.level()).isGameSafe
 					&& payload.abilityType() != BrinAbilityC2SPacket.ABILITY_SNIPER_CANCEL
 					&& payload.abilityType() != BrinAbilityC2SPacket.ABILITY_STALKER_TRACK
+					&& payload.abilityType() != BrinAbilityC2SPacket.ABILITY_SUBVERT_KILLER
+					&& payload.abilityType() != BrinAbilityC2SPacket.ABILITY_SUBVERT_CIVILIAN
 					&& payload.abilityType() != BrinAbilityC2SPacket.ABILITY_MUZZLER_SILENCE) return;
 				if (CowboyDuel.isActive()
 					&& payload.abilityType() != BrinAbilityC2SPacket.ABILITY_SNIPER_CANCEL) return;
@@ -745,6 +748,10 @@ public class BrinsWathe implements ModInitializer {
                     case BrinAbilityC2SPacket.ABILITY_VALENTINA_FORESIGHT -> handleValentinaForesight(player, gameWorld);
                     case BrinAbilityC2SPacket.ABILITY_FUNERAL_PICK_UP -> BrinFuneral.pickUp(player, payload.targetId());
                     case BrinAbilityC2SPacket.ABILITY_FUNERAL_PUT_DOWN -> BrinFuneral.putDown(player);
+                    case BrinAbilityC2SPacket.ABILITY_SUBVERT_KILLER ->
+                        BrinSubversion.subvert(player, gameWorld, payload.targetId(), SubverterComponent.Side.KILLER);
+                    case BrinAbilityC2SPacket.ABILITY_SUBVERT_CIVILIAN ->
+                        BrinSubversion.subvert(player, gameWorld, payload.targetId(), SubverterComponent.Side.CIVILIAN);
                 }
 			}
 		);

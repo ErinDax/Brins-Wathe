@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:subverter",
+  "subtitle": "guidebook.role.title.brin:subverter",
+  "keywords": ["guidebook.role.brin:subverter"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:subverter"
+  }]
+}

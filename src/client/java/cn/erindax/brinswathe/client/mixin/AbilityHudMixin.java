@@ -12,6 +12,7 @@ import cn.erindax.brinswathe.component.MuzzlerAbilityComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
+import cn.erindax.brinswathe.component.SubverterComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
 import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
@@ -216,6 +217,9 @@ public abstract class AbilityHudMixin {
         } else if (gameWorld.isRole(player, BrinRoles.VALENTINA)) {
             ValentinaComponent valentina = ValentinaComponent.KEY.get(player);
             if (valentina != null) renderValentinaHud(context, font, BrinRoles.VALENTINA.color(), valentina);
+        } else if (gameWorld.isRole(player, BrinRoles.SUBVERTER)) {
+            SubverterComponent subverter = SubverterComponent.KEY.get(player);
+            if (subverter != null) renderSubverterHud(context, font, BrinRoles.SUBVERTER.color(), subverter);
         } else if (gameWorld.isRole(player, WatheRoles.VIGILANTE)) {
             renderConfiguredRoleAbilityHud(context, font, ability, player, "vigilante", WatheRoles.VIGILANTE.color());
         }
@@ -403,6 +407,28 @@ public abstract class AbilityHudMixin {
                 component.taskProgress(),
                 ValentinaComponent.TASKS_PER_EYE
             );
+        }
+        int y = context.guiHeight() - font.lineHeight - 2;
+        context.drawString(font, line, context.guiWidth() - font.width(line) - 2, y, color);
+    }
+    private void renderSubverterHud(GuiGraphics context, Font font, int color, SubverterComponent component) {
+        Component line;
+        if (component.isPending()) {
+            KeyMapping abilityBind = BrinsWatheClient.getAbilityBind();
+            Component keyName = abilityBind == null
+                ? Component.literal("G")
+                : abilityBind.getTranslatedKeyMessage();
+            line = Component.translatable(
+                "tip.brinswathe.subverter.pending",
+                keyName,
+                (component.deadlineTicks() + 19) / 20
+            );
+        } else if (component.side() == SubverterComponent.Side.KILLER) {
+            line = Component.translatable("tip.brinswathe.subverter.killer_side");
+        } else if (component.side() == SubverterComponent.Side.CIVILIAN) {
+            line = Component.translatable("tip.brinswathe.subverter.civilian_side");
+        } else {
+            return;
         }
         int y = context.guiHeight() - font.lineHeight - 2;
         context.drawString(font, line, context.guiWidth() - font.width(line) - 2, y, color);

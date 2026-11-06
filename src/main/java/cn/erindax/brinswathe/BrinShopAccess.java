@@ -172,7 +172,7 @@ public final class BrinShopAccess {
                     ShopEntry.Type.TOOL
                 ))
             ).toList();
-            case "avenger", "medium", "stalker", "terrorist", "cowboy", "valentina" -> List.of();
+            case "avenger", "medium", "stalker", "terrorist", "cowboy", "valentina", "subverter" -> List.of();
             default -> null;
         };
         if (entries == null) return null;

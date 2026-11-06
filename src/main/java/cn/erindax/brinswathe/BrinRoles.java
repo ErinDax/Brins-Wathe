@@ -20,6 +20,7 @@ import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.component.StuntDoubleComponent;
+import cn.erindax.brinswathe.component.SubverterComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.WatchmanComponent;
@@ -328,6 +329,18 @@ public class BrinRoles {
         )
     );
 
+    public static Role SUBVERTER = registerRole(
+        new Role(
+            ResourceLocation.fromNamespaceAndPath("brin", "subverter"),
+            0xFF7F50,
+            false,
+            false,
+            MoodType.FAKE,
+            WatheRoles.CIVILIAN.getMaxSprintTime(),
+            true
+        )
+    );
+
     public static HashMap<String, Role> getRoles() {
         return ROLES;
     }
@@ -356,6 +369,7 @@ public class BrinRoles {
         Harpymodloader.setRoleMaximum(STALKER, 1);
         Harpymodloader.setRoleMaximum(COWBOY, 1);
         Harpymodloader.setRoleMaximum(VALENTINA, 1);
+        Harpymodloader.setRoleMaximum(SUBVERTER, 1);
 
         ModdedRoleAssigned.EVENT.register((player, role) -> {
             if (BrinNoelleAccess.EXECUTIONER_ID.equals(role.identifier())) {
@@ -398,6 +412,10 @@ public class BrinRoles {
             if (role.equals(VALENTINA)) {
                 ValentinaComponent component = ValentinaComponent.KEY.get(player);
                 if (component != null) component.reset();
+            }
+            if (role.equals(SUBVERTER)) {
+                SubverterComponent component = SubverterComponent.KEY.get(player);
+                if (component != null) component.start();
             }
             if (role.equals(WATCHMAN) && player instanceof ServerPlayer serverPlayer) {
                 ensureWatchmanRoomKey(serverPlayer);
@@ -455,6 +473,8 @@ public class BrinRoles {
             if (valentinaComp != null) valentinaComp.reset();
             FuneralComponent funeralComp = FuneralComponent.KEY.get(player);
             if (funeralComp != null) funeralComp.putDown();
+            SubverterComponent subverterComp = SubverterComponent.KEY.get(player);
+            if (subverterComp != null) subverterComp.reset();
         });
     }
 
@@ -523,6 +543,6 @@ public class BrinRoles {
         return null;
     }
     public static boolean ignoresOpeningSafeTime(GameWorldComponent game, Player player) {
-        return game != null && player != null && game.isRole(player, STALKER);
+        return game != null && player != null && (game.isRole(player, STALKER) || game.isRole(player, SUBVERTER));
     }
 }

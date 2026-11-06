@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.client.mixin;
 
 import cn.erindax.brinswathe.component.BrinCustomWinnerComponent;
+import cn.erindax.brinswathe.component.SubverterWinComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.gui.RoleAnnouncementTexts;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -9,6 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,6 +26,11 @@ public abstract class BrinCustomWinnerAnnouncementMixin {
         if (Minecraft.getInstance().level == null) return;
         BrinCustomWinnerComponent winnerComponent = BrinCustomWinnerComponent.KEY.get(Minecraft.getInstance().level);
         if (!winnerComponent.hasCustomWinner()) {
+            Component subverterText = brinSubverterEndText(status);
+            if (subverterText != null) {
+                cir.setReturnValue(subverterText);
+                return;
+            }
             var player = Minecraft.getInstance().player;
             if (player != null
                 && status == GameFunctions.WinStatus.KILLERS
@@ -37,6 +44,19 @@ public abstract class BrinCustomWinnerAnnouncementMixin {
             "announcement.win.brinswathe." + winnerComponent.getWinningTextId()
         ).withColor(winnerComponent.getColor()));
         cir.cancel();
+    }
+
+    @Unique
+    @Nullable
+    private static Component brinSubverterEndText(GameFunctions.WinStatus status) {
+        if (!SubverterWinComponent.KEY.get(Minecraft.getInstance().level).subverterWon()) return null;
+        return switch (status) {
+            case KILLERS -> Component.translatable("announcement.win.brinswathe.killers_and_subverter")
+                .withColor(RoleAnnouncementTexts.KILLER.colour);
+            case PASSENGERS, TIME -> Component.translatable("announcement.win.brinswathe.passengers_and_subverter")
+                .withColor(RoleAnnouncementTexts.CIVILIAN.colour);
+            default -> null;
+        };
     }
 
     @Unique

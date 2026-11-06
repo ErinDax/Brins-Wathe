@@ -2,6 +2,7 @@ package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.component.BrinCustomWinnerComponent;
 import cn.erindax.brinswathe.component.BrinRoundRecapComponent;
+import cn.erindax.brinswathe.component.SubverterWinComponent;
 import cn.erindax.brinswathe.musicbox.BrinMusicBox;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.level.ServerLevel;
@@ -15,6 +16,7 @@ public abstract class BrinCustomWinnerResetMixin {
     @Inject(method = "initializeGame", at = @At("HEAD"))
     private static void brinResetCustomWinner(ServerLevel serverLevel, CallbackInfo ci) {
         BrinCustomWinnerComponent.KEY.get(serverLevel).reset();
+        SubverterWinComponent.KEY.get(serverLevel).reset();
         BrinRoundRecapComponent.KEY.get(serverLevel).reset();
         BrinMusicBox.onGameStart(serverLevel.getServer());
     }
