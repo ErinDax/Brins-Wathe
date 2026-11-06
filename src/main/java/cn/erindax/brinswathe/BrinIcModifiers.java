@@ -19,6 +19,7 @@ public final class BrinIcModifiers {
     public static Modifier BOTTOMLESS;
     public static Modifier SPEED;
     public static Modifier PUNISHMENT;
+    public static Modifier FUNERAL;
 
     private BrinIcModifiers() {
     }
@@ -111,6 +112,14 @@ public final class BrinIcModifiers {
             0xAA0000,
             null,
             new ArrayList<>(),
+            false,
+            false
+        ));
+        FUNERAL = HMLModifiers.registerModifier(new Modifier(
+            BrinModifiers.FUNERAL,
+            BrinFuneral.COLOR,
+            null,
+            null,
             false,
             false
         ));

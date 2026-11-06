@@ -10,6 +10,7 @@ import cn.erindax.brinswathe.component.BrinRoundRecapComponent;
 import cn.erindax.brinswathe.component.CompensatorComponent;
 import cn.erindax.brinswathe.component.CowboyComponent;
 import cn.erindax.brinswathe.component.ConspiratorComponent;
+import cn.erindax.brinswathe.component.FuneralComponent;
 import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.MediumComponent;
@@ -106,6 +107,9 @@ public class BrinComponents implements EntityComponentInitializer, WorldComponen
         registry.beginRegistration(Player.class, ValentinaComponent.KEY)
             .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
             .end(ValentinaComponent::new);
+        registry.beginRegistration(Player.class, FuneralComponent.KEY)
+            .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
+            .end(FuneralComponent::new);
         registry.beginRegistration(Player.class, MuzzlerAbilityComponent.KEY)
             .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
             .end(MuzzlerAbilityComponent::new);

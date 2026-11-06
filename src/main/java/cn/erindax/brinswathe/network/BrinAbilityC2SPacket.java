@@ -47,6 +47,8 @@ public record BrinAbilityC2SPacket(
     public static final int ABILITY_VIGILANTE_DETECT = 26;
     public static final int ABILITY_CORPSE_TOUCH = 27;
     public static final int ABILITY_VALENTINA_FORESIGHT = 28;
+    public static final int ABILITY_FUNERAL_PICK_UP = 29;
+    public static final int ABILITY_FUNERAL_PUT_DOWN = 30;
 
     private static void write(RegistryFriendlyByteBuf buf, BrinAbilityC2SPacket packet) {
         buf.writeVarInt(packet.abilityType);

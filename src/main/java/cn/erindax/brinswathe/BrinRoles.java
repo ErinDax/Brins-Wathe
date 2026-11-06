@@ -8,6 +8,7 @@ import cn.erindax.brinswathe.component.BoneharvesterComponent;
 import cn.erindax.brinswathe.component.CompensatorComponent;
 import cn.erindax.brinswathe.component.CowboyComponent;
 import cn.erindax.brinswathe.component.ConspiratorComponent;
+import cn.erindax.brinswathe.component.FuneralComponent;
 import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.MediumComponent;
@@ -452,6 +453,8 @@ public class BrinRoles {
             if (cowboyComp != null) cowboyComp.reset();
             ValentinaComponent valentinaComp = ValentinaComponent.KEY.get(player);
             if (valentinaComp != null) valentinaComp.reset();
+            FuneralComponent funeralComp = FuneralComponent.KEY.get(player);
+            if (funeralComp != null) funeralComp.putDown();
         });
     }
 

@@ -220,6 +220,7 @@ public class BrinsWatheClient implements ClientModInitializer {
 
         StalkerTrackerHud.init();
         RpsHud.init();
+        BrinFuneralClient.init();
         rpsBind = KeyBindingHelper.registerKeyBinding(new KeyMapping(
             "key.brinswathe.rps",
             InputConstants.Type.KEYSYM,
