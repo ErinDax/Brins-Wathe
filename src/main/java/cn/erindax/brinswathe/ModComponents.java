@@ -24,6 +24,8 @@ import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.component.StuntDoubleComponent;
+import cn.erindax.brinswathe.component.SubverterComponent;
+import cn.erindax.brinswathe.component.SubverterWinComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.WatchmanComponent;
@@ -110,6 +112,9 @@ public class ModComponents implements EntityComponentInitializer, WorldComponent
         registry.beginRegistration(Player.class, FuneralComponent.KEY)
             .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
             .end(FuneralComponent::new);
+        registry.beginRegistration(Player.class, SubverterComponent.KEY)
+            .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
+            .end(SubverterComponent::new);
         registry.beginRegistration(Player.class, MuzzlerAbilityComponent.KEY)
             .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
             .end(MuzzlerAbilityComponent::new);
@@ -122,5 +127,6 @@ public class ModComponents implements EntityComponentInitializer, WorldComponent
     public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
         registry.register(ModCustomWinnerComponent.KEY, ModCustomWinnerComponent::new);
         registry.register(RoundRecapComponent.KEY, RoundRecapComponent::new);
+        registry.register(SubverterWinComponent.KEY, SubverterWinComponent::new);
     }
 }

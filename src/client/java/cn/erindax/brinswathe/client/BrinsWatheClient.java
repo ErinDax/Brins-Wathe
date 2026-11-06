@@ -15,9 +15,11 @@ import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
+import cn.erindax.brinswathe.component.SubverterComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.client.gui.EventLogScreen;
+import cn.erindax.brinswathe.client.gui.SubverterScreen;
 import cn.erindax.brinswathe.client.musicbox.MusicBoxClient;
 import cn.erindax.brinswathe.entity.PuppetEntity;
 import cn.erindax.brinswathe.network.ArchivistWitnessS2CPacket;
@@ -667,6 +669,15 @@ public class BrinsWatheClient implements ClientModInitializer {
             if (valentina != null && valentina.canForesee()) {
                 ClientPlayNetworking.send(new AbilityC2SPacket(
                     AbilityC2SPacket.ABILITY_VALENTINA_FORESIGHT, null));
+            }
+            return;
+        }
+        if (gameWorld.isRole(player, ModRoles.SUBVERTER)) {
+            SubverterComponent subverter = SubverterComponent.KEY.get(player);
+            UUID targetId = subverter != null && subverter.isPending() ? findPlayerInCrosshair(player) : null;
+            Player target = targetId == null ? null : player.level().getPlayerByUUID(targetId);
+            if (target != null) {
+                Minecraft.getInstance().setScreen(new SubverterScreen(targetId, target.getDisplayName()));
             }
             return;
         }
