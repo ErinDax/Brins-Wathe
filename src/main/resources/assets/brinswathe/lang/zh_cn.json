@@ -153,7 +153,7 @@
   "guidebook.role.description.brin:illusionist": "幻术师按下技能键会生成两个分身，分身固定东/西朝向\n\n技能持续期间再次按下技能键可以切换当前的附身视角，切换顺序为东分身→西分身→本体\n\n控制分身时，你的本体会留在原地。如果你的本体死亡，所有分身都会瞬间消失。\n\n分身可以交互，也可以杀人",
   "guidebook.role.brin:sniper": "狙击手",
   "guidebook.role.title.brin:sniper": "杀手阵营",
-  "guidebook.role.description.brin:sniper": "技能启用期间无法使用本能并且自身高亮\n\n按下技能键，进入瞄准模式，esc退出，瞄准模式期间狙击手无法移动，再次按下技能键，可以射出一发穿透墙壁的子弹，最远射程300格\n\n使用技能后自身会高亮一会，做任务恢复技能",
+  "guidebook.role.description.brin:sniper": "开局没有枪械，需要先完成2个任务才能使用技能\n\n技能启用期间无法使用本能并且自身高亮\n\n按下技能键，进入瞄准模式，esc退出，瞄准模式期间狙击手无法移动，再次按下技能键，可以射出一发穿透墙壁的子弹，最远射程300格\n\n使用技能后自身会高亮一会，做任务恢复技能",
   "guidebook.role.brin:berserker": "狂战士",
   "guidebook.role.title.brin:berserker": "中立阵营",
   "guidebook.role.description.brin:berserker": "好人阵营无法杀死你（除了牛仔时间）\n\n攒到一定数量的金币可以购买无限疯魔模式\n\n无限疯魔模式期间狂战士仅可通过掉出游戏区域死亡\n\n当场上没有其他杀手或独立结算的中立阵营的玩家存活时，狂战士将直接开启无限疯魔模式\n\n狂战士击杀所有人获胜",

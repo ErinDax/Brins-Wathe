@@ -11,7 +11,7 @@ public final class BrinAbilityCooldowns {
     }
     public static void refreshKillerAbilityCooldowns(Player player) {
         SniperComponent sniper = SniperComponent.KEY.get(player);
-        if (sniper != null) sniper.clearCooldown();
+        if (sniper != null && !sniper.isOpeningLocked()) sniper.clearCooldown();
         PuppeteerControlComponent puppeteer = PuppeteerControlComponent.KEY.get(player);
         if (puppeteer != null) puppeteer.clearCraftCooldown();
 

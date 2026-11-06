@@ -74,9 +74,10 @@ public class SniperComponent implements AutoSyncedComponent, ServerTickingCompon
     }
 
     public void startOpeningLock(int seconds) {
-        this.startCooldown(seconds);
-        if (BrinModifiers.hasModifier(this.player, BrinModifiers.FAST2FAST)) return;
-        this.cooldownTicks = Math.max(1, this.cooldownTicks);
+        long ticks = Math.max(1L, (long) seconds * 20L);
+        this.cooldownTicks = (int) Math.min(Integer.MAX_VALUE, ticks);
+        this.killsSinceReset = 0;
+        this.tasksSinceReset = 0;
         this.recoverByTasks = true;
         this.openingLock = true;
         this.sync();
@@ -243,7 +244,7 @@ public class SniperComponent implements AutoSyncedComponent, ServerTickingCompon
             return;
         }
 
-        if (this.cooldownTicks > 0) {
+        if (this.cooldownTicks > 0 && !this.openingLock) {
             if (BrinModifiers.hasModifier(sniper, BrinModifiers.FAST2FAST)) {
                 this.clearCooldown();
             } else if (!this.recoverByTasks) {
