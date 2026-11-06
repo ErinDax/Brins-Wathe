@@ -534,6 +534,13 @@ public class BrinsWatheClient implements ClientModInitializer {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
 
+        PlayerBodyEntity touchedBody = getInspectableBodyInCrosshair(player);
+        if (touchedBody != null) {
+            ClientPlayNetworking.send(new BrinAbilityC2SPacket(
+                BrinAbilityC2SPacket.ABILITY_CORPSE_TOUCH,
+                touchedBody.getUUID()
+            ));
+        }
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.level());
         if (gameWorld.isRole(player, StarryExpressRoles.MUZZLER)) {
             ClientPlayNetworking.send(new BrinAbilityC2SPacket(

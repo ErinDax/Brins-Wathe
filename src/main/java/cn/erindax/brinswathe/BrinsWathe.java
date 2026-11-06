@@ -202,6 +202,7 @@ public class BrinsWathe implements ModInitializer {
 		BrinPunishment.init();
 		BrinBuySlots.init();
 		BrinAdminPanel.init();
+		BrinArchivistWitness.init();
 		registerConfigSync();
 		registerCommands();
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
@@ -364,9 +365,6 @@ public class BrinsWathe implements ModInitializer {
 		UseEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> {
 			if (level.isClientSide || hand != InteractionHand.MAIN_HAND || hitResult == null) {
 				return InteractionResult.PASS;
-			}
-			if (player instanceof ServerPlayer serverPlayer) {
-				BrinArchivistWitness.onCorpseInteract(serverPlayer, entity);
 			}
 			return BomberBombs.tryPassBomb(player, entity);
 		});
@@ -703,10 +701,6 @@ public class BrinsWathe implements ModInitializer {
 				}
 				GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.level());
 				AbilityPlayerComponent ability = AbilityPlayerComponent.KEY.get(player);
-				if (payload.targetId() != null) {
-					Entity abilityTarget = player.serverLevel().getEntity(payload.targetId());
-					if (abilityTarget != null) BrinArchivistWitness.onCorpseInteract(player, abilityTarget);
-				}
                 switch (payload.abilityType()) {
                     case BrinAbilityC2SPacket.ABILITY_PUPPETEER_CRAFT -> handlePuppeteerCraft(player, gameWorld, payload);
                     case BrinAbilityC2SPacket.ABILITY_PUPPETEER_SUMMON -> handlePuppeteerSummon(player, gameWorld, ability, payload);
@@ -733,6 +727,7 @@ public class BrinsWathe implements ModInitializer {
                     case BrinAbilityC2SPacket.ABILITY_INSANE_REVIVE -> handleInsaneRevive(player, gameWorld, payload);
                     case BrinAbilityC2SPacket.ABILITY_MORPHLING_MORPH -> handleMorphlingMorph(player, gameWorld, payload);
                     case BrinAbilityC2SPacket.ABILITY_VIGILANTE_DETECT -> handleVigilanteDetect(player, gameWorld, ability, payload);
+                    case BrinAbilityC2SPacket.ABILITY_CORPSE_TOUCH -> handleCorpseTouch(player, payload);
                 }
 			}
 		);
@@ -1095,6 +1090,12 @@ public class BrinsWathe implements ModInitializer {
             comp.sync();
         }
         player.level().playSound(null, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1.0f, 1.5f);
+    }
+    private static void handleCorpseTouch(ServerPlayer player, BrinAbilityC2SPacket payload) {
+        if (payload.targetId() == null) return;
+        Entity target = player.serverLevel().getEntity(payload.targetId());
+        if (target == null || player.distanceToSqr(target) > 64.0D) return;
+        BrinArchivistWitness.onCorpseInteract(player, target);
     }
     private void handleGamblerBet(ServerPlayer player, GameWorldComponent gameWorld,
                                   AbilityPlayerComponent ability,
