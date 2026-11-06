@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.client.mixin;
 
 import cn.erindax.brinswathe.component.BrinCustomWinnerComponent;
-import cn.erindax.brinswathe.component.SubverterWinComponent;
+import cn.erindax.brinswathe.component.CoWinnerComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.gui.RoleAnnouncementTexts;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -26,9 +26,9 @@ public abstract class BrinCustomWinnerAnnouncementMixin {
         if (Minecraft.getInstance().level == null) return;
         BrinCustomWinnerComponent winnerComponent = BrinCustomWinnerComponent.KEY.get(Minecraft.getInstance().level);
         if (!winnerComponent.hasCustomWinner()) {
-            Component subverterText = brinSubverterEndText(status);
-            if (subverterText != null) {
-                cir.setReturnValue(subverterText);
+            Component coWinnerText = brinCoWinnerEndText(status);
+            if (coWinnerText != null) {
+                cir.setReturnValue(coWinnerText);
                 return;
             }
             var player = Minecraft.getInstance().player;
@@ -48,12 +48,20 @@ public abstract class BrinCustomWinnerAnnouncementMixin {
 
     @Unique
     @Nullable
-    private static Component brinSubverterEndText(GameFunctions.WinStatus status) {
-        if (!SubverterWinComponent.KEY.get(Minecraft.getInstance().level).subverterWon()) return null;
+    private static Component brinCoWinnerEndText(GameFunctions.WinStatus status) {
+        CoWinnerComponent coWinners = CoWinnerComponent.KEY.get(Minecraft.getInstance().level);
+        String followers;
+        if (coWinners.subverterWon()) {
+            followers = coWinners.gamblerWon() ? "subverter_gambler" : "subverter";
+        } else if (coWinners.gamblerWon()) {
+            followers = "gambler";
+        } else {
+            return null;
+        }
         return switch (status) {
-            case KILLERS -> Component.translatable("announcement.win.brinswathe.killers_and_subverter")
+            case KILLERS -> Component.translatable("announcement.win.brinswathe.killers_and_" + followers)
                 .withColor(RoleAnnouncementTexts.KILLER.colour);
-            case PASSENGERS, TIME -> Component.translatable("announcement.win.brinswathe.passengers_and_subverter")
+            case PASSENGERS, TIME -> Component.translatable("announcement.win.brinswathe.passengers_and_" + followers)
                 .withColor(RoleAnnouncementTexts.CIVILIAN.colour);
             default -> null;
         };

@@ -25,7 +25,7 @@ public final class BrinConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 46;
+    private static final int CONFIG_VERSION = 47;
     private static final int ROLE_BALANCE_MIGRATION_VERSION = 39;
     private static final int AVENGER_INSTINCT_MIGRATION_VERSION = 40;
     private static final int PUPPETEER_KNIFE_MIGRATION_VERSION = 41;
@@ -1148,7 +1148,7 @@ public final class BrinConfig {
     }
     private static boolean hasConfigurableSkillCooldown(String roleId) {
         return switch (roleId) {
-            case "archivist", "conspirator", "gambler", "illusionist", "medium", "mortician", "nightmare",
+            case "archivist", "conspirator", "illusionist", "medium", "mortician", "nightmare",
                 "puppeteer", "sniper", "stalker", "stunt_double", "vigilante", "watchman", "zhangshi" -> true;
             default -> false;
         };
@@ -1215,7 +1215,7 @@ public final class BrinConfig {
         roles.put("boneharvester", role(0, 0, null, 100, 300, 300).withBoneKnife(175, 200));
         roles.put("bomber", role(0, 0, null, 100, 300, 300).withBomber(200, 75, 45, 30, 2, 3, 60).withMinePrice(125));
         roles.put("compensator", role(0, 0, 0, 100, 300, 300));
-        roles.put("gambler", role(100, 120, 0, 100, 300, 300));
+        roles.put("gambler", role(100, 0, 0, 100, 300, 300));
         roles.put("penitent", role(0, 0, PENITENT_INITIAL_BALANCE, 100, 300, 300).withPenitentShop(150, 100).withStartingShieldLayers(0));
         roles.put("terrorist", role(0, 0, 0, 100, 300, 300)
             .withTerroristExplosion(5, 4)
@@ -1388,10 +1388,7 @@ public final class BrinConfig {
                 role.addProperty("skill_cost", settings.skill_cost);
                 role.addProperty("skill_cooldown_seconds", settings.skill_cooldown_seconds);
             }
-            case "gambler" -> {
-                role.addProperty("skill_cost", settings.skill_cost);
-                role.addProperty("skill_cooldown_seconds", settings.skill_cooldown_seconds);
-            }
+            case "gambler" -> role.addProperty("skill_cost", settings.skill_cost);
             case "illusionist" -> {
                 shopPrices.addProperty("knife", settings.shop_prices.knife);
                 shopPrices.addProperty("psycho_mode", settings.shop_prices.psycho_mode);

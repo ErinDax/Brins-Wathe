@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe.component;
 
+import cn.erindax.brinswathe.BrinFaction;
 import cn.erindax.brinswathe.BrinRoles;
 import cn.erindax.brinswathe.CowboyDuel;
 import dev.doctor4t.wathe.api.Role;
@@ -94,9 +95,8 @@ public class BerserkerComponent implements AutoSyncedComponent, ServerTickingCom
             return true;
         }
         if (role.isInnocent()) return false;
-        if (gameWorld.isRole(other, BrinRoles.SUBVERTER)) {
-            SubverterComponent subverter = SubverterComponent.KEY.get(other);
-            return subverter != null && subverter.side() == SubverterComponent.Side.KILLER;
+        if (BrinFaction.isFollower(gameWorld, other.getUUID())) {
+            return BrinFaction.followedBy(gameWorld, other) == BrinFaction.KILLER;
         }
         return !isKillerSidedOnlyNeutral(role);
     }

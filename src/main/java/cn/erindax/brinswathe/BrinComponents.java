@@ -7,6 +7,7 @@ import cn.erindax.brinswathe.component.BombComponent;
 import cn.erindax.brinswathe.component.BoneharvesterComponent;
 import cn.erindax.brinswathe.component.BrinCustomWinnerComponent;
 import cn.erindax.brinswathe.component.BrinRoundRecapComponent;
+import cn.erindax.brinswathe.component.CoWinnerComponent;
 import cn.erindax.brinswathe.component.CompensatorComponent;
 import cn.erindax.brinswathe.component.CowboyComponent;
 import cn.erindax.brinswathe.component.ConspiratorComponent;
@@ -25,7 +26,6 @@ import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.component.StuntDoubleComponent;
 import cn.erindax.brinswathe.component.SubverterComponent;
-import cn.erindax.brinswathe.component.SubverterWinComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.WatchmanComponent;
@@ -127,6 +127,6 @@ public class BrinComponents implements EntityComponentInitializer, WorldComponen
     public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
         registry.register(BrinCustomWinnerComponent.KEY, BrinCustomWinnerComponent::new);
         registry.register(BrinRoundRecapComponent.KEY, BrinRoundRecapComponent::new);
-        registry.register(SubverterWinComponent.KEY, SubverterWinComponent::new);
+        registry.register(CoWinnerComponent.KEY, CoWinnerComponent::new);
     }
 }

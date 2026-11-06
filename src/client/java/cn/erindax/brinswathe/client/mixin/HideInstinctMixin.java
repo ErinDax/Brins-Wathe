@@ -8,7 +8,6 @@ import cn.erindax.brinswathe.component.AvengerComponent;
 import cn.erindax.brinswathe.component.BerserkerComponent;
 import cn.erindax.brinswathe.component.BombComponent;
 import cn.erindax.brinswathe.component.BoneharvesterComponent;
-import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.NightmareComponent;
 import cn.erindax.brinswathe.component.PenitentComponent;
@@ -259,21 +258,6 @@ public abstract class HideInstinctMixin {
                 }
                 cir.setReturnValue(NEUTRAL_OUTLINE);
                 return;
-            }
-            cir.setReturnValue(-1);
-            return;
-        }
-
-        if (gameWorld.isRole(localPlayer, BrinRoles.GAMBLER)) {
-            if (target instanceof Player targetPlayer
-                && targetPlayer != localPlayer
-                && GameFunctions.isPlayerAliveAndSurvival(targetPlayer)) {
-                GamblerComponent gamblerComponent = GamblerComponent.KEY.get(localPlayer);
-                if (gamblerComponent != null
-                    && targetPlayer.getUUID().equals(gamblerComponent.betTarget)) {
-                    cir.setReturnValue(0xFFD700);
-                    return;
-                }
             }
             cir.setReturnValue(-1);
             return;

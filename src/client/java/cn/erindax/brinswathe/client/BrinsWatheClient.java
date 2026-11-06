@@ -10,6 +10,7 @@ import cn.erindax.brinswathe.RpsManager;
 import cn.erindax.brinswathe.BrinKnifeSkins;
 import cn.erindax.brinswathe.component.CowboyComponent;
 import cn.erindax.brinswathe.component.ConspiratorComponent;
+import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
@@ -19,7 +20,7 @@ import cn.erindax.brinswathe.component.SubverterComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
 import cn.erindax.brinswathe.client.gui.BrinEventLogScreen;
-import cn.erindax.brinswathe.client.gui.BrinSubverterScreen;
+import cn.erindax.brinswathe.client.gui.BrinFactionScreen;
 import cn.erindax.brinswathe.client.musicbox.BrinMusicBoxClient;
 import cn.erindax.brinswathe.entity.PuppetEntity;
 import cn.erindax.brinswathe.network.ArchivistWitnessS2CPacket;
@@ -677,7 +678,7 @@ public class BrinsWatheClient implements ClientModInitializer {
             UUID targetId = subverter != null && subverter.isPending() ? findPlayerInCrosshair(player) : null;
             Player target = targetId == null ? null : player.level().getPlayerByUUID(targetId);
             if (target != null) {
-                Minecraft.getInstance().setScreen(new BrinSubverterScreen(targetId, target.getDisplayName()));
+                Minecraft.getInstance().setScreen(BrinFactionScreen.subvert(targetId, target.getDisplayName()));
             }
             return;
         }
@@ -703,10 +704,9 @@ public class BrinsWatheClient implements ClientModInitializer {
                     BrinAbilityC2SPacket.ABILITY_ARCHIVIST_SEAL, corpse.getUUID()));
             }
         } else if (gameWorld.isRole(player, BrinRoles.GAMBLER)) {
-            UUID targetId = findPlayerInCrosshair(player);
-            if (targetId != null) {
-                ClientPlayNetworking.send(new BrinAbilityC2SPacket(
-                    BrinAbilityC2SPacket.ABILITY_GAMBLER_BET, targetId));
+            GamblerComponent gambler = GamblerComponent.KEY.get(player);
+            if (gambler != null && gambler.bet() == null) {
+                Minecraft.getInstance().setScreen(BrinFactionScreen.bet());
             }
         } else if (gameWorld.isRole(player, BrinRoles.ZHANGSHI)) {
             ClientPlayNetworking.send(new BrinAbilityC2SPacket(

@@ -1,8 +1,8 @@
 package cn.erindax.brinswathe.component;
 
+import cn.erindax.brinswathe.BrinFaction;
 import cn.erindax.brinswathe.BrinRoles;
 import cn.erindax.brinswathe.CowboyDuel;
-import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -30,7 +30,7 @@ public final class SubverterComponent implements AutoSyncedComponent, ServerTick
     private final Player player;
     private int deadlineTicks;
     @Nullable
-    private Side side;
+    private BrinFaction side;
 
     public SubverterComponent(Player player) {
         this.player = player;
@@ -45,7 +45,7 @@ public final class SubverterComponent implements AutoSyncedComponent, ServerTick
     }
 
     @Nullable
-    public Side side() {
+    public BrinFaction side() {
         return this.side;
     }
 
@@ -55,7 +55,7 @@ public final class SubverterComponent implements AutoSyncedComponent, ServerTick
         this.sync();
     }
 
-    public void settle(@Nullable Side side) {
+    public void settle(@Nullable BrinFaction side) {
         this.side = side;
         this.deadlineTicks = 0;
         this.sync();
@@ -102,27 +102,12 @@ public final class SubverterComponent implements AutoSyncedComponent, ServerTick
     @Override
     public void readFromNbt(@NotNull CompoundTag tag, HolderLookup.Provider registryAccess) {
         this.deadlineTicks = tag.getInt("deadlineTicks");
-        this.side = tag.contains("side") ? Side.valueOf(tag.getString("side")) : null;
+        this.side = tag.contains("side") ? BrinFaction.valueOf(tag.getString("side")) : null;
     }
 
     @Override
     public void writeToNbt(@NotNull CompoundTag tag, HolderLookup.Provider registryAccess) {
         tag.putInt("deadlineTicks", this.deadlineTicks);
         if (this.side != null) tag.putString("side", this.side.name());
-    }
-
-    public enum Side {
-        KILLER,
-        CIVILIAN;
-
-        public boolean includes(Role role) {
-            return this == KILLER ? role.canUseKiller() : role.isInnocent() && !role.canUseKiller();
-        }
-
-        public boolean wins(GameFunctions.WinStatus status) {
-            return this == KILLER
-                ? status == GameFunctions.WinStatus.KILLERS
-                : status == GameFunctions.WinStatus.PASSENGERS || status == GameFunctions.WinStatus.TIME;
-        }
     }
 }

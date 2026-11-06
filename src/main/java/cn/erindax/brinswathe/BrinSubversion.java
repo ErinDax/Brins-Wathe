@@ -1,6 +1,5 @@
 package cn.erindax.brinswathe;
 
-import cn.erindax.brinswathe.component.BrinCustomWinnerComponent;
 import cn.erindax.brinswathe.component.SubverterComponent;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
@@ -16,8 +15,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.level.Level;
-import org.BsXinQin.kinswathe.component.CustomWinnerComponent;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
@@ -34,7 +31,7 @@ public final class BrinSubversion {
         ServerPlayer player,
         GameWorldComponent game,
         @Nullable UUID targetId,
-        SubverterComponent.Side side
+        BrinFaction side
     ) {
         if (targetId == null || !game.isRole(player, BrinRoles.SUBVERTER)) return;
         SubverterComponent subverter = SubverterComponent.KEY.get(player);
@@ -50,7 +47,7 @@ public final class BrinSubversion {
             GameFunctions.killPlayer(player, true, null, GameConstants.DeathReasons.GENERIC);
             return;
         }
-        boolean killerPool = side == SubverterComponent.Side.KILLER;
+        boolean killerPool = side == BrinFaction.KILLER;
         Role newRole = drawRole(game, killerPool);
         game.addRole(target, newRole);
         ModdedRoleAssigned.EVENT.invoker().assignModdedRole(target, newRole);
@@ -63,12 +60,6 @@ public final class BrinSubversion {
             killerPool ? "message.brinswathe.subverter.success_killer" : "message.brinswathe.subverter.success_civilian",
             target.getDisplayName()
         ), false);
-    }
-
-    public static boolean hasCustomWinner(Level level) {
-        if (BrinCustomWinnerComponent.KEY.get(level).hasCustomWinner()) return true;
-        CustomWinnerComponent kins = CustomWinnerComponent.KEY.getNullable(level);
-        return kins != null && kins.hasCustomWinner();
     }
 
     private static Role drawRole(GameWorldComponent game, boolean killerPool) {

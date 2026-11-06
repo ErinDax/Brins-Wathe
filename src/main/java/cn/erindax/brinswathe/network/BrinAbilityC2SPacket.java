@@ -28,7 +28,6 @@ public record BrinAbilityC2SPacket(
     public static final int ABILITY_NIGHTMARE_PLANT = 5;
     public static final int ABILITY_ILLUSIONIST_CLONES = 6;
     public static final int ABILITY_ARCHIVIST_SEAL = 8;
-    public static final int ABILITY_GAMBLER_BET = 10;
     public static final int ABILITY_CONSPIRATOR_CHANNEL = 14;
     public static final int ABILITY_NIGHTMARE_FORCE_SLEEP = 15;
     public static final int ABILITY_ILLUSIONIST_SWITCH_CONTROL = 11;
@@ -51,6 +50,8 @@ public record BrinAbilityC2SPacket(
     public static final int ABILITY_FUNERAL_PUT_DOWN = 30;
     public static final int ABILITY_SUBVERT_KILLER = 31;
     public static final int ABILITY_SUBVERT_CIVILIAN = 32;
+    public static final int ABILITY_GAMBLER_BET_KILLER = 33;
+    public static final int ABILITY_GAMBLER_BET_CIVILIAN = 34;
 
     private static void write(RegistryFriendlyByteBuf buf, BrinAbilityC2SPacket packet) {
         buf.writeVarInt(packet.abilityType);

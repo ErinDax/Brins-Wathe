@@ -23,7 +23,6 @@ import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.component.StuntDoubleComponent;
-import cn.erindax.brinswathe.component.SubverterComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
@@ -76,7 +75,6 @@ import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameRoundEndComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
-import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.api.event.AllowPlayerDeath;
@@ -252,6 +250,7 @@ public class BrinsWathe implements ModInitializer {
 					ShopEntry.insertStackInFreeSlot(serverPlayer, WatheItems.LOCKPICK.getDefaultInstance());
 				}
 			}
+			BrinGamblerBonus.pay(recapPlayers);
 			BrinIcRoundStart.apply(world, gameWorld);
 			BrinConspirator.announce(world, gameWorld);
 			BrinRoundRecapComponent recap = BrinRoundRecapComponent.KEY.get(world);
@@ -414,7 +413,6 @@ public class BrinsWathe implements ModInitializer {
         processDelayedCorpses(server);
         boolean duelActive = CowboyDuel.isActive();
         Set<GameWorldComponent> runningGames = Collections.newSetFromMap(new IdentityHashMap<>());
-        Set<UUID> processedGamblers = new HashSet<>();
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.level());
             if (gameWorld.getGameStatus() != GameWorldComponent.GameStatus.ACTIVE) {
@@ -446,8 +444,6 @@ public class BrinsWathe implements ModInitializer {
             checkNightmareWin(server, gameWorld);
             if (gameWorld.getGameStatus() != GameWorldComponent.GameStatus.ACTIVE) continue;
             checkBerserkerWin(server, gameWorld);
-            if (gameWorld.getGameStatus() != GameWorldComponent.GameStatus.ACTIVE) continue;
-            checkGamblerWin(server, gameWorld, processedGamblers);
             if (gameWorld.getGameStatus() != GameWorldComponent.GameStatus.ACTIVE) continue;
             checkPenitentWin(server, gameWorld);
         }
@@ -664,7 +660,7 @@ public class BrinsWathe implements ModInitializer {
 		List<GameRoundEndComponent.RoundEndData> playerRows = roundEndComponent.getPlayers();
 		for (int index = 0; index < playerRows.size(); index++) {
 			GameRoundEndComponent.RoundEndData row = playerRows.get(index);
-			boolean wasDead = ("gambler".equals(winningTextId) || "nightmare".equals(winningTextId))
+			boolean wasDead = "nightmare".equals(winningTextId)
 				? !row.player().getId().equals(winner.getUUID())
 				: row.wasDead();
 			RoleAnnouncementTexts.RoleAnnouncementText category =
@@ -730,7 +726,6 @@ public class BrinsWathe implements ModInitializer {
                     case BrinAbilityC2SPacket.ABILITY_ILLUSIONIST_CLONES -> handleIllusionistClones(player, gameWorld, ability);
                     case BrinAbilityC2SPacket.ABILITY_ILLUSIONIST_SWITCH_CONTROL -> handleIllusionistSwitchControl(player, gameWorld, payload);
                     case BrinAbilityC2SPacket.ABILITY_ARCHIVIST_SEAL -> handleArchivistSeal(player, gameWorld, ability, payload);
-                    case BrinAbilityC2SPacket.ABILITY_GAMBLER_BET -> handleGamblerBet(player, gameWorld, ability, payload);
                     case BrinAbilityC2SPacket.ABILITY_CONSPIRATOR_CHANNEL -> handleConspiratorChannel(player, gameWorld, ability, payload);
                     case BrinAbilityC2SPacket.ABILITY_SNIPER_TOGGLE_OR_FIRE -> handleSniperAbility(player, gameWorld);
                     case BrinAbilityC2SPacket.ABILITY_SNIPER_CANCEL -> handleSniperCancel(player, gameWorld);
@@ -749,9 +744,11 @@ public class BrinsWathe implements ModInitializer {
                     case BrinAbilityC2SPacket.ABILITY_FUNERAL_PICK_UP -> BrinFuneral.pickUp(player, payload.targetId());
                     case BrinAbilityC2SPacket.ABILITY_FUNERAL_PUT_DOWN -> BrinFuneral.putDown(player);
                     case BrinAbilityC2SPacket.ABILITY_SUBVERT_KILLER ->
-                        BrinSubversion.subvert(player, gameWorld, payload.targetId(), SubverterComponent.Side.KILLER);
+                        BrinSubversion.subvert(player, gameWorld, payload.targetId(), BrinFaction.KILLER);
                     case BrinAbilityC2SPacket.ABILITY_SUBVERT_CIVILIAN ->
-                        BrinSubversion.subvert(player, gameWorld, payload.targetId(), SubverterComponent.Side.CIVILIAN);
+                        BrinSubversion.subvert(player, gameWorld, payload.targetId(), BrinFaction.CIVILIAN);
+                    case BrinAbilityC2SPacket.ABILITY_GAMBLER_BET_KILLER -> handleGamblerBet(player, gameWorld, BrinFaction.KILLER);
+                    case BrinAbilityC2SPacket.ABILITY_GAMBLER_BET_CIVILIAN -> handleGamblerBet(player, gameWorld, BrinFaction.CIVILIAN);
                 }
 			}
 		);
@@ -1127,24 +1124,13 @@ public class BrinsWathe implements ModInitializer {
         if (valentina == null || !valentina.foresee()) return;
         player.playNotifySound(SoundEvents.ENDER_EYE_LAUNCH, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
-    private void handleGamblerBet(ServerPlayer player, GameWorldComponent gameWorld,
-                                  AbilityPlayerComponent ability,
-                                  BrinAbilityC2SPacket payload) {
+    private static void handleGamblerBet(ServerPlayer player, GameWorldComponent gameWorld, BrinFaction faction) {
         if (!gameWorld.isRole(player, BrinRoles.GAMBLER)) return;
-        if (ability.cooldown > 0) return;
-        if (payload.targetId() == null) return;
-
-        ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-        if (target == null || !target.isAlive()) return;
-        if (player.equals(target)) return;
-        if (!GameFunctions.isPlayerAliveAndSurvival(target)) return;
-        GamblerComponent comp = GamblerComponent.KEY.get(player);
-        if (comp == null) return;
-        if (comp.poisoned) return;
+        GamblerComponent gambler = GamblerComponent.KEY.get(player);
+        if (gambler == null || gambler.bet() != null) return;
         if (!spendAbilityCost(player, "gambler")) return;
-        comp.setBetTarget(target.getUUID());
-        ability.setAbilityCooldown(BrinConfig.skillCooldownSeconds("gambler"));
-        player.level().playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0f, 1.0f);
+        gambler.placeBet(faction);
+        player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
     private static void brinPayTrapperCatchReward(ServerPlayer trapper) {
         int reward = BrinConfig.trapperCatchReward();
@@ -1257,41 +1243,6 @@ public class BrinsWathe implements ModInitializer {
         shop.balance -= cost;
         shop.sync();
         return true;
-    }
-    private static void checkGamblerWin(MinecraftServer server, GameWorldComponent gameWorld,
-                                        Set<UUID> processedGamblers) {
-        for (ServerPlayer sp : server.getPlayerList().getPlayers()) {
-            if (!gameWorld.isRole(sp, BrinRoles.GAMBLER)) continue;
-            if (!processedGamblers.add(sp.getUUID())) continue;
-            GamblerComponent comp = GamblerComponent.KEY.get(sp);
-            if (comp == null) continue;
-            if (comp.poisoned) continue;
-
-            if (comp.betTarget != null) {
-                ServerPlayer target = server.getPlayerList().getPlayer(comp.betTarget);
-                if (target == null || !GameFunctions.isPlayerAliveAndSurvival(target)) {
-                    comp.onBetTargetDied();
-                    PlayerPoisonComponent poison = PlayerPoisonComponent.KEY.get(sp);
-                    int poisonTicks = poison.poisonTicks > 0
-                        ? Math.max(1, poison.poisonTicks
-                            - sp.getRandom().nextIntBetweenInclusive(100, 300))
-                        : sp.getRandom().nextIntBetweenInclusive(
-                            PlayerPoisonComponent.clampTime.getA(),
-                            PlayerPoisonComponent.clampTime.getB()
-                        );
-                    poison.setPoisonTicks(poisonTicks, sp.getUUID());
-                    continue;
-		}
-	}
-            if (comp.betTarget == null) continue;
-            if (comp.betTicks > 0) {
-                comp.betTicks--;
-                if (comp.betTicks <= 0) {
-                    endWithCustomWinner(sp, "gambler", BrinRoles.GAMBLER.color());
-                    return;
-                }
-            }
-        }
     }
 	private void handleNightmareForceSleep(ServerPlayer player, GameWorldComponent gameWorld,
 	                                       BrinAbilityC2SPacket payload) {

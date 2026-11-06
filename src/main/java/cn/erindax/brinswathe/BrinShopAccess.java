@@ -38,6 +38,7 @@ import org.agmas.harpymodloader.component.WorldModifierComponent;
 import org.agmas.harpymodloader.events.ModifierAssigned;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 public final class BrinShopAccess {
+    private static final int GAMBLER_LOCKPICK_PRICE = 75;
     private static final ResourceLocation MASTER_KEY_ID =
         ResourceLocation.fromNamespaceAndPath("noellesroles", "master_key");
     private static final ResourceLocation STUPID_EXPRESS_THIEF_ID =
@@ -127,6 +128,9 @@ public final class BrinShopAccess {
             case "gambler" -> GameConstants.SHOP_ENTRIES.stream()
                 .filter(entry -> entry.stack().is(WatheItems.FIRECRACKER)
                     || entry.stack().is(WatheItems.LOCKPICK))
+                .map(entry -> entry.stack().is(WatheItems.LOCKPICK)
+                    ? new RepricedShopEntry(entry, GAMBLER_LOCKPICK_PRICE)
+                    : entry)
                 .toList();
             case "penitent" -> Stream.concat(
                 GameConstants.SHOP_ENTRIES.stream()
