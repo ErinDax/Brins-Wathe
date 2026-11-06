@@ -1,10 +1,12 @@
 package cn.erindax.brinswathe.client.mixin;
 
+import cn.erindax.brinswathe.Faction;
 import cn.erindax.brinswathe.MorphlingAccess;
 import cn.erindax.brinswathe.NoelleAccess;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.client.BrinsWatheClient;
 import cn.erindax.brinswathe.component.CowboyComponent;
+import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.MediumComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
@@ -155,7 +157,17 @@ public abstract class AbilityHudMixin {
             renderConfiguredRoleAbilityHud(context, font, ability, player, "archivist", ModRoles.ARCHIVIST.color());
             renderArchivistCorpseInfo(context, font, player);
         } else if (gameWorld.isRole(player, ModRoles.GAMBLER)) {
-            renderConfiguredRoleAbilityHud(context, font, ability, player, "gambler", ModRoles.GAMBLER.color());
+            GamblerComponent gambler = GamblerComponent.KEY.get(player);
+            Faction bet = gambler == null ? null : gambler.bet();
+            if (bet == null) {
+                renderConfiguredRoleAbilityHud(context, font, ability, player, "gambler", ModRoles.GAMBLER.color());
+            } else {
+                Component line = Component.translatable(
+                    bet == Faction.KILLER ? "tip.brinswathe.gambler.killer_bet" : "tip.brinswathe.gambler.civilian_bet"
+                );
+                int y = context.guiHeight() - font.lineHeight - 2;
+                context.drawString(font, line, context.guiWidth() - font.width(line) - 2, y, ModRoles.GAMBLER.color());
+            }
         } else if (gameWorld.isRole(player, ModRoles.CONSPIRATOR)) {
             renderConfiguredRoleAbilityHud(
                 context,
@@ -423,9 +435,9 @@ public abstract class AbilityHudMixin {
                 keyName,
                 (component.deadlineTicks() + 19) / 20
             );
-        } else if (component.side() == SubverterComponent.Side.KILLER) {
+        } else if (component.side() == Faction.KILLER) {
             line = Component.translatable("tip.brinswathe.subverter.killer_side");
-        } else if (component.side() == SubverterComponent.Side.CIVILIAN) {
+        } else if (component.side() == Faction.CIVILIAN) {
             line = Component.translatable("tip.brinswathe.subverter.civilian_side");
         } else {
             return;
