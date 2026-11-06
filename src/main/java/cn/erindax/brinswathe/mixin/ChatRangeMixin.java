@@ -58,11 +58,6 @@ public abstract class ChatRangeMixin {
         if (senderSpectating) return false;
         if (isMedium) return false;
         if (recipient.level() != sender.level()) return false;
-        GameWorldComponent recipientGame = GameWorldComponent.KEY.get(recipient.level());
-        if (recipientGame.isRole(recipient, BrinRoles.CONSPIRATOR)
-            && GameFunctions.isPlayerAliveAndSurvival(recipient)) {
-            return true;
-        }
         return sender.distanceToSqr(recipient) <= LIVING_CHAT_RANGE * LIVING_CHAT_RANGE;
     }
 }
