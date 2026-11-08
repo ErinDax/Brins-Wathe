@@ -8,6 +8,7 @@ import cn.erindax.brinswathe.client.BrinsWatheClient;
 import cn.erindax.brinswathe.component.CowboyComponent;
 import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
+import cn.erindax.brinswathe.component.InspectorComponent;
 import cn.erindax.brinswathe.component.MediumComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.MuzzlerAbilityComponent;
@@ -232,6 +233,19 @@ public abstract class AbilityHudMixin {
         } else if (gameWorld.isRole(player, BrinRoles.SUBVERTER)) {
             SubverterComponent subverter = SubverterComponent.KEY.get(player);
             if (subverter != null) renderSubverterHud(context, font, BrinRoles.SUBVERTER.color(), subverter);
+        } else if (gameWorld.isRole(player, BrinRoles.INSPECTOR)) {
+            InspectorComponent inspector = InspectorComponent.KEY.get(player);
+            if (inspector != null && !inspector.used()) {
+                renderConfiguredRoleAbilityHud(
+                    context,
+                    font,
+                    0,
+                    player,
+                    "inspector",
+                    BrinRoles.INSPECTOR.color(),
+                    true
+                );
+            }
         } else if (gameWorld.isRole(player, WatheRoles.VIGILANTE)) {
             renderConfiguredRoleAbilityHud(context, font, ability, player, "vigilante", WatheRoles.VIGILANTE.color());
         }

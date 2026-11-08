@@ -25,7 +25,7 @@ public final class BrinConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 47;
+    private static final int CONFIG_VERSION = 48;
     private static final int ROLE_BALANCE_MIGRATION_VERSION = 39;
     private static final int AVENGER_INSTINCT_MIGRATION_VERSION = 40;
     private static final int PUPPETEER_KNIFE_MIGRATION_VERSION = 41;
@@ -1141,8 +1141,8 @@ public final class BrinConfig {
     }
     private static boolean hasConfigurableSkillCost(String roleId) {
         return switch (roleId) {
-            case "archivist", "beast_trapper", "cowboy", "conspirator", "gambler", "medium", "vigilante",
-                "watchman" -> true;
+            case "archivist", "beast_trapper", "cowboy", "conspirator", "gambler", "inspector", "medium",
+                "vigilante", "watchman" -> true;
             default -> false;
         };
     }
@@ -1155,8 +1155,8 @@ public final class BrinConfig {
     }
     private static boolean hasConfigurableSkillDuration(String roleId) {
         return switch (roleId) {
-            case "avenger", "illusionist", "medium", "mortician", "puppeteer", "stunt_double", "valentina",
-                "zhangshi" -> true;
+            case "avenger", "illusionist", "inspector", "medium", "mortician", "puppeteer", "stunt_double",
+                "valentina", "zhangshi" -> true;
             default -> false;
         };
     }
@@ -1212,6 +1212,7 @@ public final class BrinConfig {
             .withCowboy(90, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 "牛仔发起了决斗：{cowboy} 对决 {target}！", 100));
         roles.put("valentina", civilianRole(0, 0, 350, false).withSkillDuration(10));
+        roles.put("inspector", civilianRole(200, 0, 350, false).withSkillDuration(10));
         roles.put("boneharvester", role(0, 0, null, 100, 300, 300).withBoneKnife(175, 200));
         roles.put("bomber", role(0, 0, null, 100, 300, 300).withBomber(200, 75, 45, 30, 2, 3, 60).withMinePrice(125));
         roles.put("compensator", role(0, 0, 0, 100, 300, 300));
@@ -1317,6 +1318,7 @@ public final class BrinConfig {
             "conspirator",
             "gambler",
             "illusionist",
+            "inspector",
             "medium",
             "mortician",
             "nightmare",
@@ -1393,6 +1395,10 @@ public final class BrinConfig {
                 shopPrices.addProperty("knife", settings.shop_prices.knife);
                 shopPrices.addProperty("psycho_mode", settings.shop_prices.psycho_mode);
                 role.addProperty("skill_cooldown_seconds", settings.skill_cooldown_seconds);
+                role.addProperty("skill_duration_seconds", settings.skill_duration_seconds);
+            }
+            case "inspector" -> {
+                role.addProperty("skill_cost", settings.skill_cost);
                 role.addProperty("skill_duration_seconds", settings.skill_duration_seconds);
             }
             case "medium" -> {

@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:inspector",
+  "subtitle": "guidebook.role.title.brin:inspector",
+  "keywords": ["guidebook.role.brin:inspector"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:inspector"
+  }]
+}

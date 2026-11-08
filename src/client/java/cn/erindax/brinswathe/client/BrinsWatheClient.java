@@ -12,6 +12,7 @@ import cn.erindax.brinswathe.component.CowboyComponent;
 import cn.erindax.brinswathe.component.ConspiratorComponent;
 import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
+import cn.erindax.brinswathe.component.InspectorComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import cn.erindax.brinswathe.component.SniperComponent;
@@ -224,6 +225,7 @@ public class BrinsWatheClient implements ClientModInitializer {
         StalkerTrackerHud.init();
         RpsHud.init();
         BrinFuneralClient.init();
+        BrinDisarmClient.init();
         rpsBind = KeyBindingHelper.registerKeyBinding(new KeyMapping(
             "key.brinswathe.rps",
             InputConstants.Type.KEYSYM,
@@ -679,6 +681,14 @@ public class BrinsWatheClient implements ClientModInitializer {
             Player target = targetId == null ? null : player.level().getPlayerByUUID(targetId);
             if (target != null) {
                 Minecraft.getInstance().setScreen(BrinFactionScreen.subvert(targetId, target.getDisplayName()));
+            }
+            return;
+        }
+        if (gameWorld.isRole(player, BrinRoles.INSPECTOR)) {
+            InspectorComponent inspector = InspectorComponent.KEY.get(player);
+            if (GameFunctions.isPlayerAliveAndSurvival(player) && inspector != null && !inspector.used()) {
+                ClientPlayNetworking.send(new BrinAbilityC2SPacket(
+                    BrinAbilityC2SPacket.ABILITY_INSPECTOR_DISARM, null));
             }
             return;
         }

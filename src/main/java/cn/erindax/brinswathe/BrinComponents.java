@@ -11,9 +11,11 @@ import cn.erindax.brinswathe.component.CoWinnerComponent;
 import cn.erindax.brinswathe.component.CompensatorComponent;
 import cn.erindax.brinswathe.component.CowboyComponent;
 import cn.erindax.brinswathe.component.ConspiratorComponent;
+import cn.erindax.brinswathe.component.DisarmComponent;
 import cn.erindax.brinswathe.component.FuneralComponent;
 import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
+import cn.erindax.brinswathe.component.InspectorComponent;
 import cn.erindax.brinswathe.component.MediumComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.MuzzlerAbilityComponent;
@@ -115,6 +117,9 @@ public class BrinComponents implements EntityComponentInitializer, WorldComponen
         registry.beginRegistration(Player.class, SubverterComponent.KEY)
             .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
             .end(SubverterComponent::new);
+        registry.beginRegistration(Player.class, InspectorComponent.KEY)
+            .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
+            .end(InspectorComponent::new);
         registry.beginRegistration(Player.class, MuzzlerAbilityComponent.KEY)
             .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
             .end(MuzzlerAbilityComponent::new);
@@ -128,5 +133,6 @@ public class BrinComponents implements EntityComponentInitializer, WorldComponen
         registry.register(BrinCustomWinnerComponent.KEY, BrinCustomWinnerComponent::new);
         registry.register(BrinRoundRecapComponent.KEY, BrinRoundRecapComponent::new);
         registry.register(CoWinnerComponent.KEY, CoWinnerComponent::new);
+        registry.register(DisarmComponent.KEY, DisarmComponent::new);
     }
 }

@@ -11,6 +11,7 @@ import cn.erindax.brinswathe.component.ConspiratorComponent;
 import cn.erindax.brinswathe.component.FuneralComponent;
 import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
+import cn.erindax.brinswathe.component.InspectorComponent;
 import cn.erindax.brinswathe.component.MediumComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.NightmareComponent;
@@ -341,6 +342,18 @@ public class BrinRoles {
         )
     );
 
+    public static Role INSPECTOR = registerRole(
+        new Role(
+            ResourceLocation.fromNamespaceAndPath("brin", "inspector"),
+            0x3CB371,
+            true,
+            false,
+            MoodType.REAL,
+            WatheRoles.CIVILIAN.getMaxSprintTime(),
+            false
+        )
+    );
+
     public static HashMap<String, Role> getRoles() {
         return ROLES;
     }
@@ -370,6 +383,7 @@ public class BrinRoles {
         Harpymodloader.setRoleMaximum(COWBOY, 1);
         Harpymodloader.setRoleMaximum(VALENTINA, 1);
         Harpymodloader.setRoleMaximum(SUBVERTER, 1);
+        Harpymodloader.setRoleMaximum(INSPECTOR, 1);
 
         ModdedRoleAssigned.EVENT.register((player, role) -> {
             if (BrinNoelleAccess.EXECUTIONER_ID.equals(role.identifier())) {
@@ -416,6 +430,10 @@ public class BrinRoles {
             if (role.equals(SUBVERTER)) {
                 SubverterComponent component = SubverterComponent.KEY.get(player);
                 if (component != null) component.start();
+            }
+            if (role.equals(INSPECTOR)) {
+                InspectorComponent component = InspectorComponent.KEY.get(player);
+                if (component != null) component.reset();
             }
             if (role.equals(WATCHMAN) && player instanceof ServerPlayer serverPlayer) {
                 ensureWatchmanRoomKey(serverPlayer);
@@ -475,6 +493,8 @@ public class BrinRoles {
             if (funeralComp != null) funeralComp.putDown();
             SubverterComponent subverterComp = SubverterComponent.KEY.get(player);
             if (subverterComp != null) subverterComp.reset();
+            InspectorComponent inspectorComp = InspectorComponent.KEY.get(player);
+            if (inspectorComp != null) inspectorComp.reset();
         });
     }
 

@@ -52,6 +52,7 @@ public record BrinAbilityC2SPacket(
     public static final int ABILITY_SUBVERT_CIVILIAN = 32;
     public static final int ABILITY_GAMBLER_BET_KILLER = 33;
     public static final int ABILITY_GAMBLER_BET_CIVILIAN = 34;
+    public static final int ABILITY_INSPECTOR_DISARM = 35;
 
     private static void write(RegistryFriendlyByteBuf buf, BrinAbilityC2SPacket packet) {
         buf.writeVarInt(packet.abilityType);
