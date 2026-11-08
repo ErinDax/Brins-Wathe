@@ -37,6 +37,7 @@ public final class BrinDraft {
     private static final int INNOCENT = 0;
     private static final int KILLER = 1;
     private static final int NEUTRAL = 2;
+    private static final int VIGILANTE = 3;
     private static final List<UUID> ORDER = new ArrayList<>();
     private static final Map<UUID, Integer> NUMBERS = new HashMap<>();
     private static final Map<UUID, Role> PICKS = new HashMap<>();
@@ -44,7 +45,7 @@ public final class BrinDraft {
     private static final Map<Role, Integer> CAPACITY = new LinkedHashMap<>();
     private static final Map<Role, Integer> USED = new HashMap<>();
     private static final Map<UUID, Role> APPLIED = new HashMap<>();
-    private static final int[] SLOTS = new int[3];
+    private static final int[] SLOTS = new int[4];
     private static List<Role> offer = List.of();
     private static PendingStart pending;
     private static ServerLevel appliedWorld;
@@ -75,8 +76,8 @@ public final class BrinDraft {
         List<ServerPlayer> players = BrinGameFunctionsInvoker.brinGetReadyPlayerList(world);
         if (players.size() < mode.minPlayerCount) return false;
         clearDraft();
-        buildPool(players, game);
-        int[] reserved = new int[3];
+        buildPool();
+        int[] reserved = new int[SLOTS.length];
         List<UUID> drafters = new ArrayList<>();
         for (ServerPlayer player : players) {
             UUID id = player.getUUID();
@@ -100,9 +101,13 @@ public final class BrinDraft {
             Math.min(BrinHarpyRoles.resolveNeutralCount(players, game) - reserved[NEUTRAL], neutralCapacity()),
             count - killers
         );
-        SLOTS[INNOCENT] = count - killers - neutrals;
+        int vigilantes = BrinHarpyRoles.isNonMurder(WatheRoles.VIGILANTE) || !BrinHarpyRoles.isEnabled(WatheRoles.VIGILANTE)
+            ? 0
+            : clamp(BrinHarpyRoles.resolveVigilanteCount(players, game) - reserved[VIGILANTE], count - killers - neutrals);
+        SLOTS[INNOCENT] = count - killers - neutrals - vigilantes;
         SLOTS[KILLER] = killers;
         SLOTS[NEUTRAL] = neutrals;
+        SLOTS[VIGILANTE] = vigilantes;
         RandomSource random = world.getRandom();
         for (int i = drafters.size() - 1; i > 0; i--) {
             int j = random.nextInt(i + 1);
@@ -146,6 +151,7 @@ public final class BrinDraft {
         SLOTS[INNOCENT] = 0;
         SLOTS[KILLER] = 0;
         SLOTS[NEUTRAL] = 0;
+        SLOTS[VIGILANTE] = 0;
         offer = List.of();
         pending = null;
         turn = 0;
@@ -198,9 +204,10 @@ public final class BrinDraft {
         boolean current = index == turn;
         if (index < turn) turn--;
         int unpicked = ORDER.size() - turn;
-        while (SLOTS[INNOCENT] + SLOTS[KILLER] + SLOTS[NEUTRAL] > unpicked) {
+        while (SLOTS[INNOCENT] + SLOTS[KILLER] + SLOTS[NEUTRAL] + SLOTS[VIGILANTE] > unpicked) {
             if (SLOTS[INNOCENT] > 0) SLOTS[INNOCENT]--;
             else if (SLOTS[NEUTRAL] > 0) SLOTS[NEUTRAL]--;
+            else if (SLOTS[VIGILANTE] > 0) SLOTS[VIGILANTE]--;
             else SLOTS[KILLER]--;
         }
         if (ORDER.isEmpty()) {
@@ -239,6 +246,8 @@ public final class BrinDraft {
             SLOTS[INNOCENT]--;
         } else if (SLOTS[NEUTRAL] > 0) {
             SLOTS[NEUTRAL]--;
+        } else if (SLOTS[VIGILANTE] > 0) {
+            SLOTS[VIGILANTE]--;
         } else if (SLOTS[KILLER] > 0) {
             SLOTS[KILLER]--;
         }
@@ -326,7 +335,7 @@ public final class BrinDraft {
     }
 
     private static Role draw(List<Role> exclude, boolean includeBase, RandomSource random) {
-        List<Integer> camps = new ArrayList<>(3);
+        List<Integer> camps = new ArrayList<>(SLOTS.length);
         for (int camp = 0; camp < SLOTS.length; camp++) {
             if (SLOTS[camp] > 0) camps.add(camp);
         }
@@ -354,19 +363,11 @@ public final class BrinDraft {
         return null;
     }
 
-    private static void buildPool(List<ServerPlayer> players, GameWorldComponent game) {
-        int vigilantes = BrinHarpyRoles.resolveVigilanteCount(players, game);
+    private static void buildPool() {
         for (Role role : WatheRoles.ROLES) {
-            if (Harpymodloader.NON_MURDER_ROLES.contains(role) || !BrinHarpyRoles.isEnabled(role)) continue;
-            int capacity;
-            if (WatheRoles.VIGILANTE.equals(role)) {
-                capacity = vigilantes;
-            } else if (Harpymodloader.VANNILA_ROLES.contains(role)) {
-                continue;
-            } else {
-                Integer maximum = Harpymodloader.ROLE_MAX.get(role.identifier());
-                capacity = maximum == null ? 1 : maximum;
-            }
+            if (Harpymodloader.VANNILA_ROLES.contains(role) || Harpymodloader.NON_MURDER_ROLES.contains(role) || !BrinHarpyRoles.isEnabled(role)) continue;
+            Integer maximum = Harpymodloader.ROLE_MAX.get(role.identifier());
+            int capacity = maximum == null ? 1 : maximum;
             if (capacity > 0) CAPACITY.put(role, capacity);
         }
     }
@@ -393,10 +394,12 @@ public final class BrinDraft {
     private static Role baseRole(int camp) {
         if (camp == INNOCENT) return WatheRoles.CIVILIAN;
         if (camp == KILLER) return WatheRoles.KILLER;
+        if (camp == VIGILANTE) return WatheRoles.VIGILANTE;
         return null;
     }
 
     private static int camp(Role role) {
+        if (WatheRoles.VIGILANTE.equals(role)) return VIGILANTE;
         if (role.canUseKiller()) return KILLER;
         if (role.isInnocent()) return INNOCENT;
         return NEUTRAL;
