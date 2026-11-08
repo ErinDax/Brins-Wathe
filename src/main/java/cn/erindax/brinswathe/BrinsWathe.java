@@ -12,6 +12,7 @@ import cn.erindax.brinswathe.component.CowboyComponent;
 import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.ConspiratorComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
+import cn.erindax.brinswathe.component.InspectorComponent;
 import cn.erindax.brinswathe.component.MediumComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.MuzzlerAbilityComponent;
@@ -204,6 +205,7 @@ public class BrinsWathe implements ModInitializer {
 		AdminPanel.init();
 		ArchivistWitness.init();
 		Funeral.init();
+		Disarm.init();
 		registerConfigSync();
 		registerCommands();
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
@@ -749,6 +751,7 @@ public class BrinsWathe implements ModInitializer {
                         Subversion.subvert(player, gameWorld, payload.targetId(), Faction.CIVILIAN);
                     case AbilityC2SPacket.ABILITY_GAMBLER_BET_KILLER -> handleGamblerBet(player, gameWorld, Faction.KILLER);
                     case AbilityC2SPacket.ABILITY_GAMBLER_BET_CIVILIAN -> handleGamblerBet(player, gameWorld, Faction.CIVILIAN);
+                    case AbilityC2SPacket.ABILITY_INSPECTOR_DISARM -> handleInspectorDisarm(player, gameWorld);
                 }
 			}
 		);
@@ -1131,6 +1134,14 @@ public class BrinsWathe implements ModInitializer {
         if (!spendAbilityCost(player, "gambler")) return;
         gambler.placeBet(faction);
         player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0F, 1.0F);
+    }
+    private static void handleInspectorDisarm(ServerPlayer player, GameWorldComponent gameWorld) {
+        if (!gameWorld.isRole(player, ModRoles.INSPECTOR) || !GameFunctions.isPlayerAliveAndSurvival(player)) return;
+        InspectorComponent inspector = InspectorComponent.KEY.get(player);
+        if (inspector == null || inspector.used()) return;
+        if (!spendAbilityCost(player, "inspector")) return;
+        inspector.markUsed();
+        Disarm.start(player.serverLevel(), ModConfig.skillDurationSeconds("inspector"));
     }
     private static void brinPayTrapperCatchReward(ServerPlayer trapper) {
         int reward = ModConfig.trapperCatchReward();
