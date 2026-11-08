@@ -3,6 +3,7 @@ package cn.erindax.brinswathe.mixin;
 import cn.erindax.brinswathe.AfkKickManager;
 import cn.erindax.brinswathe.BrinNoelleAccess;
 import cn.erindax.brinswathe.BrinShieldPierce;
+import cn.erindax.brinswathe.BrinSubversion;
 import cn.erindax.brinswathe.CowboyDuel;
 import cn.erindax.brinswathe.component.BrinRoundRecapComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
@@ -41,7 +42,7 @@ public abstract class BrinIcDeathMixin {
         ResourceLocation deathReason,
         Operation<Boolean> original
     ) {
-        if (AfkKickManager.isExecuting(victim)) return true;
+        if (AfkKickManager.isExecuting(victim) || BrinSubversion.isPunishing(victim)) return true;
         if (victim.level().isClientSide || CowboyDuel.isActive()) {
             return original.call(invoker, victim, killer, deathReason);
         }

@@ -2,9 +2,9 @@ package cn.erindax.brinswathe.component;
 
 import cn.erindax.brinswathe.BrinFaction;
 import cn.erindax.brinswathe.BrinRoles;
+import cn.erindax.brinswathe.BrinSubversion;
 import cn.erindax.brinswathe.CowboyDuel;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
-import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -87,7 +87,7 @@ public final class SubverterComponent implements AutoSyncedComponent, ServerTick
         if (this.deadlineTicks > 0) return;
         this.sync();
         serverPlayer.displayClientMessage(Component.translatable("message.brinswathe.subverter.timeout"), false);
-        GameFunctions.killPlayer(serverPlayer, true, null, GameConstants.DeathReasons.GENERIC);
+        BrinSubversion.punish(serverPlayer);
     }
 
     @Override

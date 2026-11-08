@@ -15,6 +15,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Player;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
@@ -23,8 +24,22 @@ import org.jetbrains.annotations.Nullable;
 public final class BrinSubversion {
     private static final double MAX_TARGET_DISTANCE = 80.0D;
     private static final int GLOW_TICKS = 3 * 20;
+    private static UUID punishing;
 
     private BrinSubversion() {
+    }
+
+    public static boolean isPunishing(Player player) {
+        return punishing != null && punishing.equals(player.getUUID());
+    }
+
+    public static void punish(ServerPlayer player) {
+        punishing = player.getUUID();
+        try {
+            GameFunctions.killPlayer(player, true, null, GameConstants.DeathReasons.GENERIC);
+        } finally {
+            punishing = null;
+        }
     }
 
     public static void subvert(
@@ -44,7 +59,7 @@ public final class BrinSubversion {
         if (side.includes(role)) {
             subverter.settle(null);
             player.displayClientMessage(Component.translatable("message.brinswathe.subverter.failed"), false);
-            GameFunctions.killPlayer(player, true, null, GameConstants.DeathReasons.GENERIC);
+            punish(player);
             return;
         }
         boolean killerPool = side == BrinFaction.KILLER;
