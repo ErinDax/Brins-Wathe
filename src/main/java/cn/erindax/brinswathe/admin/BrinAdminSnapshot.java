@@ -59,6 +59,8 @@ public record BrinAdminSnapshot(
             entry.addProperty("armor", player.armor());
             entry.addProperty("psycho", player.psycho());
             entry.addProperty("music", player.music());
+            entry.addProperty("remark", player.remark());
+            entry.addProperty("remark_color", player.remarkColor());
             players.add(entry);
         }
         root.add("players", players);
@@ -107,7 +109,9 @@ public record BrinAdminSnapshot(
                 entry.get("allergy").getAsString(),
                 entry.get("armor").getAsInt(),
                 entry.get("psycho").getAsBoolean(),
-                entry.get("music").getAsBoolean()
+                entry.get("music").getAsBoolean(),
+                entry.get("remark").getAsString(),
+                entry.get("remark_color").getAsString()
             ));
         }
         List<String> punishments = new ArrayList<>();
@@ -136,7 +140,9 @@ public record BrinAdminSnapshot(
         String allergy,
         int armor,
         boolean psycho,
-        boolean music
+        boolean music,
+        String remark,
+        String remarkColor
     ) {
     }
 }

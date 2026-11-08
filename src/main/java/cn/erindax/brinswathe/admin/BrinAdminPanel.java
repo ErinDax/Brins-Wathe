@@ -58,6 +58,8 @@ public final class BrinAdminPanel {
     public static final String OP_PLAYER_COOLDOWN = "player_cooldown";
     public static final String OP_PLAYER_ITEM_COOLDOWN = "player_item_cooldown";
     public static final String OP_PLAYER_MUSIC_CLEAR = "player_music_clear";
+    public static final String OP_PLAYER_REMARK = "player_remark";
+    public static final String OP_PLAYER_REMARK_CLEAR = "player_remark_clear";
     public static final String ACTION_OPEN = "open";
     public static final String ACTION_RELOAD = "reload";
     public static final String ACTION_MUSIC_STOP = "music_stop";
@@ -151,7 +153,9 @@ public final class BrinAdminPanel {
             allergy == null ? "" : allergy,
             BrinNoelleAccess.bartenderArmor(player),
             psycho != null && psycho.getPsychoTicks() > 0,
-            BrinMusicBox.hasMusic(player.getUUID())
+            BrinMusicBox.hasMusic(player.getUUID()),
+            BrinRemark.text(player.server.getScoreboard(), player.getScoreboardName()),
+            BrinRemark.color(player.server.getScoreboard(), player.getScoreboardName())
         );
     }
 
@@ -299,6 +303,15 @@ public final class BrinAdminPanel {
             case OP_PLAYER_MUSIC_CLEAR -> {
                 if (name.isEmpty() || name.startsWith("@")) return null;
                 return "brinswathe musicbox clear " + name;
+            }
+            case OP_PLAYER_REMARK -> {
+                ChatFormatting color = ChatFormatting.getByName(op.get(2).getAsString());
+                String remark = op.get(3).getAsString().trim();
+                if (color == null || !color.isColor() || !BrinRemark.valid(remark)) return null;
+                return "brinswathe remark " + selector + " " + color.getName() + " " + remark;
+            }
+            case OP_PLAYER_REMARK_CLEAR -> {
+                return "brinswathe remark " + selector + " clear";
             }
             default -> {
                 return null;

@@ -3,14 +3,17 @@ package cn.erindax.brinswathe.client.gui;
 import cn.erindax.brinswathe.admin.BrinAdminPanel;
 import cn.erindax.brinswathe.admin.BrinAdminSetting;
 import cn.erindax.brinswathe.admin.BrinAdminSnapshot;
+import cn.erindax.brinswathe.admin.BrinRemark;
 import cn.erindax.brinswathe.client.BrinAdminClient;
 import dev.doctor4t.wathe.api.WatheRoles;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -20,6 +23,8 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextColor;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
@@ -29,11 +34,16 @@ public final class BrinAdminPlayerScreen extends BrinAdminListScreen {
     private static final int WIDE_BUTTON_WIDTH = 80;
     private static final int NUMBER_WIDTH = 44;
     private static final int ITEM_WIDTH = 120;
+    private static final int REMARK_WIDTH = 80;
     private static final int NUMBER_MAX_LENGTH = 6;
     private static final int ITEM_MAX_LENGTH = 128;
     private static final int VALID_COLOR = 0xE0E0E0;
     private static final int INVALID_COLOR = 0xFF5555;
     private static final String DEFAULT_ITEM = "wathe:knife";
+    private static final ChatFormatting DEFAULT_REMARK_COLOR = ChatFormatting.GREEN;
+    private static final List<ChatFormatting> REMARK_COLORS = Arrays.stream(ChatFormatting.values())
+        .filter(ChatFormatting::isColor)
+        .toList();
     private static final String CONFIRM_ROLE_REMOVE = "role_remove";
     private static final String CONFIRM_PSYCHO = "psycho";
     private static final String CONFIRM_MUSIC = "music";
@@ -45,6 +55,8 @@ public final class BrinAdminPlayerScreen extends BrinAdminListScreen {
     private String cooldown = "0";
     private String itemId;
     private String itemTicks = "0";
+    private String remark;
+    private ChatFormatting remarkColor;
 
     public BrinAdminPlayerScreen(BrinAdminScreen hub, Screen parent, UUID playerId, String playerName) {
         super(Component.translatable("screen.brinswathe.admin.player", playerName), hub, parent, false);
@@ -53,6 +65,8 @@ public final class BrinAdminPlayerScreen extends BrinAdminListScreen {
         BrinAdminSnapshot.PlayerState player = this.find(hub.snapshot());
         this.armor = Integer.toString(player == null ? 0 : player.armor());
         this.itemId = firstItem(hub.snapshot());
+        this.remark = player == null ? "" : remarkText(player.remark());
+        this.remarkColor = remarkColor(player == null ? "" : player.remarkColor());
     }
 
     @Override
@@ -196,6 +210,33 @@ public final class BrinAdminPlayerScreen extends BrinAdminListScreen {
             () -> clearMusic.setMessage(this.armedLabel(CONFIRM_MUSIC, clearLabel)),
             clearMusic
         ));
+
+        Component remarkTip = Component.translatable("gui.brinswathe.admin.player.remark.box");
+        EditBox remarkBox = new EditBox(this.font, 0, 0, REMARK_WIDTH, BUTTON_HEIGHT, remarkTip);
+        remarkBox.setMaxLength(BrinRemark.MAX_LENGTH);
+        remarkBox.setValue(this.remark);
+        remarkBox.setTooltip(Tooltip.create(remarkTip));
+        remarkBox.setResponder(value -> this.remark = value);
+        Button remarkColorButton = this.button(remarkColorName(this.remarkColor), BUTTON_WIDTH, () ->
+            this.remarkColor = REMARK_COLORS.get((REMARK_COLORS.indexOf(this.remarkColor) + 1) % REMARK_COLORS.size()));
+        remarkColorButton.setTooltip(Tooltip.create(Component.translatable("gui.brinswathe.admin.player.remark.color")));
+        Button remarkApply = this.button(Component.translatable("gui.brinswathe.admin.apply"), BUTTON_WIDTH, () ->
+            this.send(BrinAdminPanel.OP_PLAYER_REMARK, id, this.remarkColor.getName(), this.remark.trim()));
+        Button remarkClear = this.button(Component.translatable("gui.brinswathe.admin.player.remark.clear"), BUTTON_WIDTH,
+            () -> this.send(BrinAdminPanel.OP_PLAYER_REMARK_CLEAR, id));
+        remarkClear.active = !player.remark().isEmpty();
+        rows.add(new WidgetRow(
+            remarkLabel(player),
+            "gui.brinswathe.admin.player.remark.tip",
+            () -> {
+                remarkColorButton.setMessage(remarkColorName(this.remarkColor));
+                remarkApply.active = BrinRemark.valid(this.remark);
+            },
+            remarkBox,
+            remarkColorButton,
+            remarkApply,
+            remarkClear
+        ));
         return rows;
     }
 
@@ -248,6 +289,30 @@ public final class BrinAdminPlayerScreen extends BrinAdminListScreen {
 
     private static Component allergyName(String type) {
         return Component.translatable("hud.allergic.type." + type);
+    }
+
+    private static Component remarkLabel(BrinAdminSnapshot.PlayerState player) {
+        if (player.remark().isEmpty()) return Component.translatable("gui.brinswathe.admin.player.remark.none");
+        MutableComponent prefix = Component.literal(player.remark());
+        TextColor color = TextColor.parseColor(player.remarkColor()).result().orElse(null);
+        if (color != null) prefix.withStyle(style -> style.withColor(color));
+        return Component.translatable("gui.brinswathe.admin.player.remark",
+            prefix.append(Component.literal(player.name()).withStyle(ChatFormatting.WHITE)));
+    }
+
+    private static Component remarkColorName(ChatFormatting color) {
+        return Component.translatable("gui.brinswathe.admin.player.remark.color." + color.getName()).withStyle(color);
+    }
+
+    private static ChatFormatting remarkColor(String name) {
+        ChatFormatting color = ChatFormatting.getByName(name);
+        return color != null && color.isColor() ? color : DEFAULT_REMARK_COLOR;
+    }
+
+    private static String remarkText(String prefix) {
+        return prefix.length() >= 2 && prefix.startsWith("[") && prefix.endsWith("]")
+            ? prefix.substring(1, prefix.length() - 1)
+            : prefix;
     }
 
     private static boolean inRange(String text, int min, int max) {
