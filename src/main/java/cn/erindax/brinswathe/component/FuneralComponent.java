@@ -4,6 +4,7 @@ import cn.erindax.brinswathe.BrinFuneral;
 import java.util.UUID;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -46,6 +47,7 @@ public final class FuneralComponent implements AutoSyncedComponent, ServerTickin
         if (this.carriedBody != null || !body.startRiding(this.player, true)) return false;
         this.carriedBody = body.getUUID();
         this.applySlowdown();
+        this.syncPassengers();
         this.sync();
         return true;
     }
@@ -57,6 +59,7 @@ public final class FuneralComponent implements AutoSyncedComponent, ServerTickin
         this.removeSlowdown();
         if (body != null && body.getVehicle() == this.player) {
             body.stopRiding();
+            this.syncPassengers();
             body.teleportTo(this.player.getX(), this.player.getY(), this.player.getZ());
             body.setDeltaMovement(Vec3.ZERO);
         }
@@ -70,6 +73,7 @@ public final class FuneralComponent implements AutoSyncedComponent, ServerTickin
         if (body == null || body.getVehicle() != serverPlayer) {
             this.carriedBody = null;
             this.removeSlowdown();
+            this.syncPassengers();
             this.sync();
             return;
         }
@@ -99,6 +103,12 @@ public final class FuneralComponent implements AutoSyncedComponent, ServerTickin
     private void removeSlowdown() {
         AttributeInstance attribute = this.player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (attribute != null) attribute.removeModifier(SLOWDOWN_ID);
+    }
+
+    private void syncPassengers() {
+        if (this.player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.connection.send(new ClientboundSetPassengersPacket(serverPlayer));
+        }
     }
 
     public void sync() {
