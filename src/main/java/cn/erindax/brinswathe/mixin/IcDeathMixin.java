@@ -3,6 +3,7 @@ package cn.erindax.brinswathe.mixin;
 import cn.erindax.brinswathe.AfkKickManager;
 import cn.erindax.brinswathe.NoelleAccess;
 import cn.erindax.brinswathe.ShieldPierce;
+import cn.erindax.brinswathe.Subversion;
 import cn.erindax.brinswathe.CowboyDuel;
 import cn.erindax.brinswathe.component.RoundRecapComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
@@ -41,7 +42,7 @@ public abstract class IcDeathMixin {
         ResourceLocation deathReason,
         Operation<Boolean> original
     ) {
-        if (AfkKickManager.isExecuting(victim)) return true;
+        if (AfkKickManager.isExecuting(victim) || Subversion.isPunishing(victim)) return true;
         if (victim.level().isClientSide || CowboyDuel.isActive()) {
             return original.call(invoker, victim, killer, deathReason);
         }
