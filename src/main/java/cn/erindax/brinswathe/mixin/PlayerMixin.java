@@ -1,14 +1,17 @@
 package cn.erindax.brinswathe.mixin;
 
+import cn.erindax.brinswathe.BrinFuneral;
 import cn.erindax.brinswathe.BrinIcFlags;
 import cn.erindax.brinswathe.BrinModifiers;
 import cn.erindax.brinswathe.BrinsWathe;
 import cn.erindax.brinswathe.BrinRoles;
+import cn.erindax.brinswathe.component.FuneralComponent;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
 import cn.erindax.brinswathe.config.BrinConfig;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
+import dev.doctor4t.wathe.game.GameFunctions;
 import java.lang.reflect.Field;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -72,6 +75,15 @@ public abstract class PlayerMixin {
 			MobEffectInstance potion = self.getEffect(MobEffects.MOVEMENT_SPEED);
 			if (potion != null) {
 				speed *= 1.0F + 0.2F * (potion.getAmplifier() + 1);
+			}
+		}
+		if (GameFunctions.isPlayerAliveAndSurvival(self)) {
+			MobEffectInstance slowness = self.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
+			if (slowness != null) {
+				speed *= Math.max(0.0F, 1.0F - 0.15F * (slowness.getAmplifier() + 1));
+			}
+			if (BrinFuneral.isCarrying(self)) {
+				speed *= (float) (1.0D + FuneralComponent.SLOWDOWN);
 			}
 		}
 		if (BrinIcFlags.size2speed) {
