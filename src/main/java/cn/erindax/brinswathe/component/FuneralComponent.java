@@ -29,7 +29,7 @@ public final class FuneralComponent implements AutoSyncedComponent, ServerTickin
     private static final ResourceLocation SLOWDOWN_ID = ResourceLocation.fromNamespaceAndPath(
         "brinswathe", "funeral_carry"
     );
-    private static final double SLOWDOWN = -0.5D;
+    public static final double SLOWDOWN = -0.5D;
 
     private final Player player;
     @Nullable
