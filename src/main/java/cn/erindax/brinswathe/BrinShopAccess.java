@@ -72,7 +72,8 @@ public final class BrinShopAccess {
     public static boolean showsBalanceHud(GameWorldComponent game, Player player) {
         return canUseShopAndEconomy(game, player)
             || isRole(game, player, BrinNoelleAccess.CONDUCTOR_ID)
-            || game.isRole(player, WatheRoles.VIGILANTE);
+            || game.isRole(player, WatheRoles.VIGILANTE)
+            || game.isRole(player, BrinRoles.INSPECTOR);
     }
     public static boolean hasNoShop(GameWorldComponent game, Player player) {
         return isRole(game, player, STUPID_EXPRESS_ARSONIST_ID)
