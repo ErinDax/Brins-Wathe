@@ -17,7 +17,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import org.agmas.harpymodloader.Harpymodloader;
-import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 import org.jetbrains.annotations.Nullable;
 
@@ -83,7 +82,7 @@ public final class Subversion {
             Harpymodloader.VANNILA_ROLES.contains(role)
                 || Harpymodloader.NON_MURDER_ROLES.contains(role)
                 || (killerPool ? !role.canUseKiller() : !role.isInnocent() || role.canUseKiller())
-                || HarpyModLoaderConfig.HANDLER.instance().disabled.contains(role.identifier().getPath())
+                || HarpyRoles.isDisabled(role)
                 || isFull(game, role)
         );
         if (candidates.isEmpty()) {

@@ -15,7 +15,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import org.agmas.harpymodloader.Harpymodloader;
-import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 
 public final class CompensatorPassive {
@@ -77,7 +76,7 @@ public final class CompensatorPassive {
             Harpymodloader.VANNILA_ROLES.contains(role)
                 || Harpymodloader.NON_MURDER_ROLES.contains(role)
                 || (killerPool ? !role.canUseKiller() : !role.isInnocent())
-                || HarpyModLoaderConfig.HANDLER.instance().disabled.contains(role.identifier().getPath())
+                || HarpyRoles.isDisabled(role)
         );
         if (candidates.isEmpty()) {
             candidates.add(killerPool ? WatheRoles.KILLER : WatheRoles.CIVILIAN);
