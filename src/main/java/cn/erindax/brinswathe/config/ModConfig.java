@@ -25,7 +25,7 @@ public final class ModConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 48;
+    private static final int CONFIG_VERSION = 49;
     private static final int ROLE_BALANCE_MIGRATION_VERSION = 39;
     private static final int AVENGER_INSTINCT_MIGRATION_VERSION = 40;
     private static final int PUPPETEER_KNIFE_MIGRATION_VERSION = 41;
@@ -361,6 +361,10 @@ public final class ModConfig {
     public static int trapperCatchReward() {
         Integer reward = settings("beast_trapper").trap_catch_reward;
         return reward == null ? 50 : Math.max(0, reward);
+    }
+    public static int zhuimuStrugglePresses() {
+        Integer presses = settings("zhuimu").struggle_presses;
+        return presses == null ? 20 : Math.max(1, presses);
     }
     public static int sniperTasksToReset() {
         Integer tasks = settings("sniper").sniper_tasks_to_reset;
@@ -734,6 +738,7 @@ public final class ModConfig {
                 , configurableOptionalInt(role, "extra_trap_price", fallback.extra_trap_price, roleId, "beast_trapper".equals(roleId))
                 , configurableOptionalInt(role, "tasks_to_reset", fallback.sniper_tasks_to_reset, roleId, "sniper".equals(roleId))
                 , configurableOptionalInt(role, "trap_catch_reward", fallback.trap_catch_reward, roleId, "beast_trapper".equals(roleId))
+                , configurableOptionalInt(role, "struggle_presses", fallback.struggle_presses, roleId, "zhuimu".equals(roleId))
             ));
         }
         return new Data(CONFIG_VERSION, announcement, afkKick, parsedRoles, harpy);
@@ -1142,7 +1147,7 @@ public final class ModConfig {
     private static boolean hasConfigurableSkillCost(String roleId) {
         return switch (roleId) {
             case "archivist", "beast_trapper", "cowboy", "conspirator", "gambler", "inspector", "medium",
-                "vigilante", "watchman" -> true;
+                "vigilante", "watchman", "zhuimu" -> true;
             default -> false;
         };
     }
@@ -1213,6 +1218,7 @@ public final class ModConfig {
                 "牛仔发起了决斗：{cowboy} 对决 {target}！", 100));
         roles.put("valentina", civilianRole(0, 0, 350, false).withSkillDuration(10));
         roles.put("inspector", civilianRole(200, 0, 350, false).withSkillDuration(10));
+        roles.put("zhuimu", civilianRole(350, 0, 350, false).withStrugglePresses(20));
         roles.put("boneharvester", role(0, 0, null, 100, 300, 300).withBoneKnife(175, 200));
         roles.put("bomber", role(0, 0, null, 100, 300, 300).withBomber(200, 75, 45, 30, 2, 3, 60).withMinePrice(125));
         roles.put("compensator", role(0, 0, 0, 100, 300, 300));
@@ -1331,7 +1337,8 @@ public final class ModConfig {
             "beast_trapper",
             "valentina",
             "watchman",
-            "zhangshi"
+            "zhangshi",
+            "zhuimu"
         };
         for (String roleId : configurableRoles) {
             roles.add(roleId, renderRoleSettings(data, roleId));
@@ -1467,6 +1474,10 @@ public final class ModConfig {
                 role.addProperty("xuezi_shield_layers", settings.xuezi_shield_layers);
                 role.addProperty("run_speed", settings.run_speed);
             }
+            case "zhuimu" -> {
+                role.addProperty("skill_cost", settings.skill_cost);
+                role.addProperty("struggle_presses", settings.struggle_presses);
+            }
             default -> {
             }
         }
@@ -1582,6 +1593,7 @@ public final class ModConfig {
         public final Integer extra_trap_price;
         public final Integer sniper_tasks_to_reset;
         public final Integer trap_catch_reward;
+        public final Integer struggle_presses;
         private RoleSettings(
             int skillCost,
             int skillCooldownSeconds,
@@ -1615,6 +1627,7 @@ public final class ModConfig {
                 revolverShopEnabled,
                 shopPrices,
                 sniperKillsToReset,
+                null,
                 null,
                 null,
                 null,
@@ -1700,7 +1713,8 @@ public final class ModConfig {
             Integer minePrice,
             Integer extraTrapPrice,
             Integer sniperTasksToReset,
-            Integer trapCatchReward
+            Integer trapCatchReward,
+            Integer strugglePresses
         ) {
             this.skill_cost = skillCost;
             this.skill_cooldown_seconds = skillCooldownSeconds;
@@ -1751,6 +1765,7 @@ public final class ModConfig {
             this.extra_trap_price = extraTrapPrice;
             this.sniper_tasks_to_reset = sniperTasksToReset;
             this.trap_catch_reward = trapCatchReward;
+            this.struggle_presses = strugglePresses;
         }
         private RoleSettings copy(
             Integer skillDurationSeconds,
@@ -1814,7 +1829,8 @@ public final class ModConfig {
                 this.mine_price,
                 this.extra_trap_price,
                 this.sniper_tasks_to_reset,
-                this.trap_catch_reward
+                this.trap_catch_reward,
+                this.struggle_presses
             );
         }
         private RoleSettings withSniperKillsToReset(int killsToReset) {
@@ -1867,7 +1883,8 @@ public final class ModConfig {
                 this.mine_price,
                 this.extra_trap_price,
                 this.sniper_tasks_to_reset,
-                this.trap_catch_reward
+                this.trap_catch_reward,
+                this.struggle_presses
             );
         }
         private RoleSettings withSniperGlow(int glowSeconds) {
@@ -1920,7 +1937,8 @@ public final class ModConfig {
                 this.mine_price,
                 this.extra_trap_price,
                 this.sniper_tasks_to_reset,
-                this.trap_catch_reward
+                this.trap_catch_reward,
+                this.struggle_presses
             );
         }
         private RoleSettings withSkillDuration(int seconds) {
@@ -2093,7 +2111,8 @@ public final class ModConfig {
                 this.mine_price,
                 this.extra_trap_price,
                 this.sniper_tasks_to_reset,
-                this.trap_catch_reward
+                this.trap_catch_reward,
+                this.struggle_presses
             );
         }
         private RoleSettings withRunSpeed(double runSpeed) {
@@ -2146,7 +2165,8 @@ public final class ModConfig {
                 this.mine_price,
                 this.extra_trap_price,
                 this.sniper_tasks_to_reset,
-                this.trap_catch_reward
+                this.trap_catch_reward,
+                this.struggle_presses
             );
         }
         private RoleSettings withPuppeteer(int selfDestructPrice, int returnCooldownSeconds,
@@ -2200,7 +2220,8 @@ public final class ModConfig {
                 this.mine_price,
                 this.extra_trap_price,
                 this.sniper_tasks_to_reset,
-                this.trap_catch_reward
+                this.trap_catch_reward,
+                this.struggle_presses
             );
         }
         private RoleSettings withBomber(
@@ -2261,7 +2282,8 @@ public final class ModConfig {
                 this.mine_price,
                 this.extra_trap_price,
                 this.sniper_tasks_to_reset,
-                this.trap_catch_reward
+                this.trap_catch_reward,
+                this.struggle_presses
             );
         }
         private RoleSettings withAvengerInstinct(int instinctSeconds) {
@@ -2314,7 +2336,8 @@ public final class ModConfig {
                 this.mine_price,
                 this.extra_trap_price,
                 this.sniper_tasks_to_reset,
-                this.trap_catch_reward
+                this.trap_catch_reward,
+                this.struggle_presses
             );
         }
         private RoleSettings withCowboy(
@@ -2381,7 +2404,8 @@ public final class ModConfig {
                 this.mine_price,
                 this.extra_trap_price,
                 this.sniper_tasks_to_reset,
-                this.trap_catch_reward
+                this.trap_catch_reward,
+                this.struggle_presses
             );
         }
         private RoleSettings withMinePrice(int minePrice) {
@@ -2434,7 +2458,8 @@ public final class ModConfig {
                 minePrice,
                 this.extra_trap_price,
                 this.sniper_tasks_to_reset,
-                this.trap_catch_reward
+                this.trap_catch_reward,
+                this.struggle_presses
             );
         }
         private RoleSettings withExtraTrapPrice(int extraTrapPrice) {
@@ -2487,7 +2512,8 @@ public final class ModConfig {
                 this.mine_price,
                 extraTrapPrice,
                 this.sniper_tasks_to_reset,
-                this.trap_catch_reward
+                this.trap_catch_reward,
+                this.struggle_presses
             );
         }
         private RoleSettings withSniperTasksToReset(int tasksToReset) {
@@ -2540,7 +2566,8 @@ public final class ModConfig {
                 this.mine_price,
                 this.extra_trap_price,
                 tasksToReset,
-                this.trap_catch_reward
+                this.trap_catch_reward,
+                this.struggle_presses
             );
         }
         private RoleSettings withTrapCatchReward(int trapCatchReward) {
@@ -2593,7 +2620,8 @@ public final class ModConfig {
                 this.mine_price,
                 this.extra_trap_price,
                 this.sniper_tasks_to_reset,
-                trapCatchReward
+                trapCatchReward,
+                this.struggle_presses
             );
         }
         private RoleSettings withStartingShieldLayers(int layers) {
@@ -2646,7 +2674,62 @@ public final class ModConfig {
                 this.mine_price,
                 this.extra_trap_price,
                 this.sniper_tasks_to_reset,
-                this.trap_catch_reward
+                this.trap_catch_reward,
+                this.struggle_presses
+            );
+        }
+        private RoleSettings withStrugglePresses(int presses) {
+            return new RoleSettings(
+                this.skill_cost,
+                this.skill_cooldown_seconds,
+                this.skill_duration_seconds,
+                this.initial_balance,
+                this.forced_sleep_task_cooldown_seconds,
+                this.bone_knife_price,
+                this.bone_knife_cooldown_seconds,
+                this.explosion_range,
+                this.explosion_survival_kills,
+                this.trap_limit,
+                this.identity_hint_price,
+                this.antidote_price,
+                this.revolver_shop_enabled,
+                this.shop_prices,
+                this.sniper_kills_to_reset,
+                this.xuezi_price,
+                this.xuezi_cooldown_seconds,
+                this.xuezi_shield_layers,
+                this.run_speed,
+                this.self_destruct_price,
+                this.return_cooldown_seconds,
+                this.grenade_price,
+                this.bomb_price,
+                this.bomb_fuse_seconds,
+                this.bomb_warning_seconds,
+                this.bomb_explosion_size,
+                this.mine_stun_seconds,
+                this.particle_delay_seconds,
+                this.bomb_purchase_cooldown_seconds,
+                this.instinct_seconds,
+                this.glow_seconds,
+                this.duel_timeout_seconds,
+                this.duel_countdown_seconds,
+                this.arena_a_x,
+                this.arena_a_y,
+                this.arena_a_z,
+                this.arena_b_x,
+                this.arena_b_y,
+                this.arena_b_z,
+                this.arena_spectator_x,
+                this.arena_spectator_y,
+                this.arena_spectator_z,
+                this.duel_announce_message,
+                this.starting_shield_layers,
+                this.duel_music_volume,
+                this.mine_price,
+                this.extra_trap_price,
+                this.sniper_tasks_to_reset,
+                this.trap_catch_reward,
+                presses
             );
         }
     }

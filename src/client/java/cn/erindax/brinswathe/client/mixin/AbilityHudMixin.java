@@ -17,6 +17,7 @@ import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.SubverterComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
+import cn.erindax.brinswathe.component.ZhuimuComponent;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 
@@ -243,6 +244,19 @@ public abstract class AbilityHudMixin {
                     player,
                     "inspector",
                     ModRoles.INSPECTOR.color(),
+                    true
+                );
+            }
+        } else if (gameWorld.isRole(player, ModRoles.ZHUIMU)) {
+            ZhuimuComponent zhuimu = ZhuimuComponent.KEY.get(player);
+            if (zhuimu != null && !zhuimu.used()) {
+                renderConfiguredRoleAbilityHud(
+                    context,
+                    font,
+                    0,
+                    player,
+                    "zhuimu",
+                    ModRoles.ZHUIMU.color(),
                     true
                 );
             }

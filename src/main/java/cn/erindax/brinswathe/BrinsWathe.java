@@ -27,6 +27,7 @@ import cn.erindax.brinswathe.component.StuntDoubleComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
+import cn.erindax.brinswathe.component.ZhuimuComponent;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 import cn.erindax.brinswathe.musicbox.MusicBox;
@@ -147,6 +148,7 @@ public class BrinsWathe implements ModInitializer {
 		KnifeSkins.scanAndRegister();
 		StaminaComponent.loadPersistedOverrides();
 		ModItems.init();
+		ModEntities.init();
 		ModSounds.init();
 		ModRoles.init();
 		SecretMurder.init();
@@ -206,6 +208,7 @@ public class BrinsWathe implements ModInitializer {
 		ArchivistWitness.init();
 		Funeral.init();
 		Disarm.init();
+		Zhuimu.init();
 		registerConfigSync();
 		registerCommands();
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
@@ -752,6 +755,9 @@ public class BrinsWathe implements ModInitializer {
                     case AbilityC2SPacket.ABILITY_GAMBLER_BET_KILLER -> handleGamblerBet(player, gameWorld, Faction.KILLER);
                     case AbilityC2SPacket.ABILITY_GAMBLER_BET_CIVILIAN -> handleGamblerBet(player, gameWorld, Faction.CIVILIAN);
                     case AbilityC2SPacket.ABILITY_INSPECTOR_DISARM -> handleInspectorDisarm(player, gameWorld);
+                    case AbilityC2SPacket.ABILITY_ZHUIMU_BOAT -> handleZhuimuBoat(player, gameWorld);
+                    case AbilityC2SPacket.ABILITY_ZHUIMU_STRUGGLE_LEFT -> Zhuimu.struggle(player, false);
+                    case AbilityC2SPacket.ABILITY_ZHUIMU_STRUGGLE_RIGHT -> Zhuimu.struggle(player, true);
                 }
 			}
 		);
@@ -1142,6 +1148,19 @@ public class BrinsWathe implements ModInitializer {
         if (!spendAbilityCost(player, "inspector")) return;
         inspector.markUsed();
         Disarm.start(player.serverLevel(), ModConfig.skillDurationSeconds("inspector"));
+    }
+    private static void handleZhuimuBoat(ServerPlayer player, GameWorldComponent gameWorld) {
+        if (!gameWorld.isRole(player, ModRoles.ZHUIMU) || !GameFunctions.isPlayerAliveAndSurvival(player)) return;
+        ZhuimuComponent zhuimu = ZhuimuComponent.KEY.get(player);
+        if (zhuimu == null || zhuimu.used()) return;
+        if (!Zhuimu.hasFreeHotbarSlot(player)) {
+            player.displayClientMessage(Component.translatable("message.brinswathe.zhuimu.hotbar_full"), true);
+            return;
+        }
+        if (!spendAbilityCost(player, "zhuimu")) return;
+        zhuimu.markUsed();
+        ShopEntry.insertStackInFreeSlot(player, ModItems.ZHUIMU_BOAT.getDefaultInstance());
+        player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
     private static void brinPayTrapperCatchReward(ServerPlayer trapper) {
         int reward = ModConfig.trapperCatchReward();

@@ -4,6 +4,7 @@ import cn.erindax.brinswathe.item.BombItem;
 import cn.erindax.brinswathe.item.BoneKnifeItem;
 import cn.erindax.brinswathe.item.MineItem;
 import cn.erindax.brinswathe.item.XueziItem;
+import cn.erindax.brinswathe.item.ZhuimuBoatItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -37,6 +38,18 @@ public final class ModItems {
     public static final Item EXTRA_TRAP = Registry.register(
         BuiltInRegistries.ITEM,
         ResourceLocation.fromNamespaceAndPath(BrinsWathe.MOD_ID, "extra_trap"),
+        new Item(new Item.Properties().stacksTo(1))
+    );
+
+    public static final Item ZHUIMU_BOAT = Registry.register(
+        BuiltInRegistries.ITEM,
+        ResourceLocation.fromNamespaceAndPath(BrinsWathe.MOD_ID, "zhuimu_boat"),
+        new ZhuimuBoatItem(new Item.Properties().stacksTo(1))
+    );
+
+    public static final Item ZHUIMU_AXE = Registry.register(
+        BuiltInRegistries.ITEM,
+        ResourceLocation.fromNamespaceAndPath(BrinsWathe.MOD_ID, "zhuimu_axe"),
         new Item(new Item.Properties().stacksTo(1))
     );
 

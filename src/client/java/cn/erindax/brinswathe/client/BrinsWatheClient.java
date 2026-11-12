@@ -19,6 +19,7 @@ import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.SubverterComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
+import cn.erindax.brinswathe.component.ZhuimuComponent;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.client.gui.EventLogScreen;
 import cn.erindax.brinswathe.client.gui.FactionScreen;
@@ -226,6 +227,7 @@ public class BrinsWatheClient implements ClientModInitializer {
         RpsHud.init();
         FuneralClient.init();
         DisarmClient.init();
+        ZhuimuClient.init();
         rpsBind = KeyBindingHelper.registerKeyBinding(new KeyMapping(
             "key.brinswathe.rps",
             InputConstants.Type.KEYSYM,
@@ -689,6 +691,14 @@ public class BrinsWatheClient implements ClientModInitializer {
             if (GameFunctions.isPlayerAliveAndSurvival(player) && inspector != null && !inspector.used()) {
                 ClientPlayNetworking.send(new AbilityC2SPacket(
                     AbilityC2SPacket.ABILITY_INSPECTOR_DISARM, null));
+            }
+            return;
+        }
+        if (gameWorld.isRole(player, ModRoles.ZHUIMU)) {
+            ZhuimuComponent zhuimu = ZhuimuComponent.KEY.get(player);
+            if (GameFunctions.isPlayerAliveAndSurvival(player) && zhuimu != null && !zhuimu.used()) {
+                ClientPlayNetworking.send(new AbilityC2SPacket(
+                    AbilityC2SPacket.ABILITY_ZHUIMU_BOAT, null));
             }
             return;
         }

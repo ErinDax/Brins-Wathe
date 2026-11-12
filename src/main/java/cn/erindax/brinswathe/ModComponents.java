@@ -32,6 +32,7 @@ import cn.erindax.brinswathe.component.TrapperComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.WatchmanComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
+import cn.erindax.brinswathe.component.ZhuimuComponent;
 import net.minecraft.world.entity.player.Player;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
@@ -120,6 +121,9 @@ public class ModComponents implements EntityComponentInitializer, WorldComponent
         registry.beginRegistration(Player.class, InspectorComponent.KEY)
             .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
             .end(InspectorComponent::new);
+        registry.beginRegistration(Player.class, ZhuimuComponent.KEY)
+            .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
+            .end(ZhuimuComponent::new);
         registry.beginRegistration(Player.class, MuzzlerAbilityComponent.KEY)
             .respawnStrategy(RespawnCopyStrategy.NEVER_COPY)
             .end(MuzzlerAbilityComponent::new);

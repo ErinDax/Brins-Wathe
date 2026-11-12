@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:zhuimu",
+  "subtitle": "guidebook.role.title.brin:zhuimu",
+  "keywords": ["guidebook.role.brin:zhuimu"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:zhuimu"
+  }]
+}

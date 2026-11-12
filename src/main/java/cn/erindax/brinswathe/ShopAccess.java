@@ -73,7 +73,8 @@ public final class ShopAccess {
         return canUseShopAndEconomy(game, player)
             || isRole(game, player, NoelleAccess.CONDUCTOR_ID)
             || game.isRole(player, WatheRoles.VIGILANTE)
-            || game.isRole(player, ModRoles.INSPECTOR);
+            || game.isRole(player, ModRoles.INSPECTOR)
+            || game.isRole(player, ModRoles.ZHUIMU);
     }
     public static boolean hasNoShop(GameWorldComponent game, Player player) {
         return isRole(game, player, STUPID_EXPRESS_ARSONIST_ID)
@@ -177,7 +178,7 @@ public final class ShopAccess {
                     ShopEntry.Type.TOOL
                 ))
             ).toList();
-            case "avenger", "medium", "stalker", "terrorist", "cowboy", "valentina", "subverter", "inspector" -> List.of();
+            case "avenger", "medium", "stalker", "terrorist", "cowboy", "valentina", "subverter", "inspector", "zhuimu" -> List.of();
             default -> null;
         };
         if (entries == null) return null;

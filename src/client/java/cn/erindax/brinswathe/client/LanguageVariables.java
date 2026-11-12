@@ -54,7 +54,8 @@ public final class LanguageVariables {
             .replace("{extra_trap_price}", Integer.toString(ModConfig.trapperExtraTrapPrice()))
             .replace("{trap_catch_reward}", Integer.toString(ModConfig.trapperCatchReward()))
             .replace("{duel_timeout_seconds}", Integer.toString(ModConfig.cowboyDuelTimeoutSeconds()))
-            .replace("{duel_countdown_seconds}", Integer.toString(ModConfig.cowboyDuelCountdownSeconds()));
+            .replace("{duel_countdown_seconds}", Integer.toString(ModConfig.cowboyDuelCountdownSeconds()))
+            .replace("{struggle_presses}", Integer.toString(ModConfig.zhuimuStrugglePresses()));
     }
 
     public static List<String> aliases(String key) {

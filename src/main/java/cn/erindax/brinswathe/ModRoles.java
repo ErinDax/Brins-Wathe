@@ -26,6 +26,7 @@ import cn.erindax.brinswathe.component.TrapperComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.WatchmanComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
+import cn.erindax.brinswathe.component.ZhuimuComponent;
 import cn.erindax.brinswathe.config.ModConfig;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.Role.MoodType;
@@ -354,6 +355,18 @@ public class ModRoles {
         )
     );
 
+    public static Role ZHUIMU = registerRole(
+        new Role(
+            ResourceLocation.fromNamespaceAndPath("brin", "zhuimu"),
+            0x5F9EA0,
+            true,
+            false,
+            MoodType.REAL,
+            WatheRoles.CIVILIAN.getMaxSprintTime(),
+            false
+        )
+    );
+
     public static HashMap<String, Role> getRoles() {
         return ROLES;
     }
@@ -384,6 +397,7 @@ public class ModRoles {
         Harpymodloader.setRoleMaximum(VALENTINA, 1);
         Harpymodloader.setRoleMaximum(SUBVERTER, 1);
         Harpymodloader.setRoleMaximum(INSPECTOR, 1);
+        Harpymodloader.setRoleMaximum(ZHUIMU, 1);
 
         ModdedRoleAssigned.EVENT.register((player, role) -> {
             if (NoelleAccess.EXECUTIONER_ID.equals(role.identifier())) {
@@ -433,6 +447,10 @@ public class ModRoles {
             }
             if (role.equals(INSPECTOR)) {
                 InspectorComponent component = InspectorComponent.KEY.get(player);
+                if (component != null) component.reset();
+            }
+            if (role.equals(ZHUIMU)) {
+                ZhuimuComponent component = ZhuimuComponent.KEY.get(player);
                 if (component != null) component.reset();
             }
             if (role.equals(WATCHMAN) && player instanceof ServerPlayer serverPlayer) {
@@ -495,6 +513,8 @@ public class ModRoles {
             if (subverterComp != null) subverterComp.reset();
             InspectorComponent inspectorComp = InspectorComponent.KEY.get(player);
             if (inspectorComp != null) inspectorComp.reset();
+            ZhuimuComponent zhuimuComp = ZhuimuComponent.KEY.get(player);
+            if (zhuimuComp != null) zhuimuComp.reset();
         });
     }
 
