@@ -6,7 +6,9 @@ import cn.erindax.brinswathe.Zhuimu;
 import cn.erindax.brinswathe.CowboyDuel;
 import cn.erindax.brinswathe.config.ModConfig;
 import dev.doctor4t.wathe.game.GameFunctions;
+import java.util.List;
 import java.util.UUID;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -19,10 +21,14 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class ZhuimuBoat extends Boat {
@@ -35,6 +41,8 @@ public class ZhuimuBoat extends Boat {
     private UUID ownerId;
     @Nullable
     private UUID victimId;
+    @Nullable
+    private Vec3 captureOrigin;
     private int hits;
 
     public ZhuimuBoat(EntityType<? extends Boat> type, Level level) {
@@ -85,7 +93,20 @@ public class ZhuimuBoat extends Boat {
         int required = ModConfig.zhuimuStrugglePresses();
         EntityDataAccessor<Integer> presses = right ? DATA_RIGHT_PRESSES : DATA_LEFT_PRESSES;
         this.entityData.set(presses, Math.min(required, this.entityData.get(presses) + 1));
-        if (this.leftPresses() >= required && this.rightPresses() >= required) this.release(player);
+        if (this.leftPresses() >= required && this.rightPresses() >= required) this.release();
+    }
+
+    public void dissolve() {
+        ServerPlayer owner = this.owner();
+        List<Entity> passengers = List.copyOf(this.getPassengers());
+        passengers.forEach(Entity::stopRiding);
+        this.discard();
+        for (Entity passenger : passengers) {
+            if (passenger instanceof ServerPlayer player) {
+                player.connection.teleport(player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot());
+            }
+        }
+        if (owner != null) Zhuimu.removeAxe(owner);
     }
 
     @Override
@@ -97,14 +118,12 @@ public class ZhuimuBoat extends Boat {
     private void serverTick() {
         if (CowboyDuel.isActive()) return;
         ServerPlayer owner = this.owner();
-        if (owner == null || !Zhuimu.ownsBoat(owner, this)) {
-            this.discard();
+        if (owner == null || !Zhuimu.ownsBoat(owner, this)
+            || (this.victimId != null && this.trappedPlayer() == null)) {
+            this.dissolve();
             return;
         }
-        if (this.victimId != null) {
-            if (this.trappedPlayer() == null) this.discard();
-            return;
-        }
+        if (this.victimId != null) return;
         ServerPlayer target = Zhuimu.findCaptureTarget(this, owner);
         if (target != null) this.capture(target, owner);
     }
@@ -112,15 +131,18 @@ public class ZhuimuBoat extends Boat {
     private void capture(ServerPlayer victim, ServerPlayer owner) {
         Funeral.putDown(victim);
         victim.stopUsingItem();
+        if (victim.isSleeping()) victim.stopSleepInBed(true, true);
+        victim.stopRiding();
+        Vec3 origin = victim.position();
         if (!victim.startRiding(this, true)) return;
         this.victimId = victim.getUUID();
+        this.captureOrigin = origin;
         Zhuimu.onCaptured(owner);
     }
 
-    private void release(ServerPlayer victim) {
+    private void release() {
         ServerPlayer owner = this.owner();
-        victim.stopRiding();
-        this.discard();
+        this.dissolve();
         if (owner != null) Zhuimu.onEscaped(owner);
     }
 
@@ -128,6 +150,30 @@ public class ZhuimuBoat extends Boat {
     private ServerPlayer owner() {
         MinecraftServer server = this.getServer();
         return server == null || this.ownerId == null ? null : server.getPlayerList().getPlayer(this.ownerId);
+    }
+
+    @Override
+    public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
+        Vec3 spot = this.dismountSpot(passenger, this.captureOrigin);
+        if (spot == null) spot = this.dismountSpot(passenger, this.position());
+        return spot != null ? spot : new Vec3(this.getX(), this.getBoundingBox().maxY, this.getZ());
+    }
+
+    @Nullable
+    private Vec3 dismountSpot(LivingEntity passenger, @Nullable Vec3 spot) {
+        if (spot == null) return null;
+        for (Pose pose : passenger.getDismountPoses()) {
+            if (DismountHelper.canDismountTo(this.level(), spot, passenger, pose)) {
+                passenger.setPose(pose);
+                return spot;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected void checkFallDamage(double y, boolean onGround, BlockState state, BlockPos pos) {
+        this.resetFallDistance();
     }
 
     @Override

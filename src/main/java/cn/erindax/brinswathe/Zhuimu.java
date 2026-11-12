@@ -3,9 +3,14 @@ package cn.erindax.brinswathe;
 import cn.erindax.brinswathe.component.ZhuimuComponent;
 import cn.erindax.brinswathe.entity.ZhuimuBoat;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
+import dev.doctor4t.wathe.cca.MapVariablesWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.util.ShopEntry;
+import java.util.Optional;
+import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -14,9 +19,20 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.CollisionGetter;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import org.jetbrains.annotations.Nullable;
 
 public final class Zhuimu {
@@ -24,6 +40,8 @@ public final class Zhuimu {
     private static final int AXE_COOLDOWN_TICKS = 10;
     private static final double CAPTURE_RADIUS = 1.0D;
     private static final double CAPTURE_HEIGHT = 1.5D;
+    private static final double SIGHT_HEIGHT = 1.0D;
+    private static final double PLACE_TOLERANCE = 1.0E-5D;
     private static final ResourceLocation AXE_DEATH =
         ResourceLocation.fromNamespaceAndPath(BrinsWathe.MOD_ID, "zhuimu_axe");
 
@@ -38,6 +56,14 @@ public final class Zhuimu {
             chop(zhuimu, entity);
             return InteractionResult.FAIL;
         });
+        EntitySleepEvents.ALLOW_SLEEPING.register((player, pos) ->
+            player.getVehicle() instanceof ZhuimuBoat ? Player.BedSleepingProblem.OTHER_PROBLEM : null);
+    }
+
+    public static boolean allowsFallDeath(Player player) {
+        if (!(player.getVehicle() instanceof ZhuimuBoat boat)) return true;
+        AABB playArea = MapVariablesWorldComponent.KEY.get(player.level()).getPlayArea();
+        return playArea == null || boat.getY() < playArea.minY;
     }
 
     public static boolean hasFreeHotbarSlot(ServerPlayer player) {
@@ -47,7 +73,7 @@ public final class Zhuimu {
         return false;
     }
 
-    public static boolean placeBoat(ServerPlayer player, Vec3 position) {
+    public static boolean placeBoat(ServerPlayer player, BlockHitResult hitResult) {
         ZhuimuComponent component = ZhuimuComponent.KEY.get(player);
         GameWorldComponent game = GameWorldComponent.KEY.get(player.level());
         if (CowboyDuel.isActive() || component == null || component.hasBoat()
@@ -57,13 +83,44 @@ public final class Zhuimu {
         ServerLevel level = player.serverLevel();
         ZhuimuBoat boat = ModEntities.ZHUIMU_BOAT.create(level);
         if (boat == null) return false;
-        boat.moveTo(position.x, position.y, position.z, player.getYRot(), 0.0F);
-        if (!level.noBlockCollision(boat, boat.getBoundingBox())) return false;
+        Vec3 spot = hitResult.getDirection() == Direction.UP
+            ? findBoatSpot(level, boat, boat.getType().getDimensions(), groundTarget(hitResult))
+            : null;
+        if (spot == null) {
+            player.displayClientMessage(
+                Component.translatable("message.brinswathe.zhuimu.no_space").withColor(ModRoles.ZHUIMU.color()),
+                true
+            );
+            return false;
+        }
+        boat.moveTo(spot.x, spot.y, spot.z, player.getYRot(), 0.0F);
         boat.setOwner(player.getUUID());
         if (!level.addFreshEntity(boat)) return false;
         component.trackBoat(boat);
         player.playNotifySound(SoundEvents.WOOD_PLACE, SoundSource.PLAYERS, 1.0F, 1.0F);
         return true;
+    }
+
+    private static Vec3 groundTarget(BlockHitResult hitResult) {
+        BlockPos pos = hitResult.getBlockPos();
+        return new Vec3(pos.getX() + 0.5D, hitResult.getLocation().y, pos.getZ() + 0.5D);
+    }
+
+    @Nullable
+    public static Vec3 findBoatSpot(CollisionGetter level, @Nullable Entity boat, EntityDimensions size, Vec3 target) {
+        if (fits(level, boat, size, target)) return target;
+        double halfHeight = size.height() / 2.0D;
+        Vec3 center = target.add(0.0D, halfHeight, 0.0D);
+        AABB area = AABB.ofSize(center, size.width(), 0.0D, size.width()).inflate(1.0E-6D);
+        Optional<Vec3> nudged = level.findFreePosition(boat, Shapes.create(area), center, size.width(), size.height(), size.width())
+            .map(free -> free.subtract(0.0D, halfHeight, 0.0D))
+            .filter(free -> fits(level, boat, size, free));
+        if (nudged.isPresent()) return nudged.get();
+        return fits(level, boat, EntityDimensions.scalable(1.0F, size.height()), target) ? target : null;
+    }
+
+    private static boolean fits(CollisionGetter level, @Nullable Entity boat, EntityDimensions size, Vec3 position) {
+        return level.noBlockCollision(boat, size.makeBoundingBox(position).deflate(PLACE_TOLERANCE));
     }
 
     public static boolean ownsBoat(ServerPlayer owner, ZhuimuBoat boat) {
@@ -82,19 +139,26 @@ public final class Zhuimu {
         ServerPlayer target = null;
         double closest = Double.MAX_VALUE;
         for (ServerPlayer player : owner.serverLevel().players()) {
-            if (player == owner || player.isPassenger() || player.isSleeping()
+            Entity vehicle = player.getVehicle();
+            if (player == owner || vehicle instanceof ZhuimuBoat || vehicle instanceof LivingEntity
                 || !GameFunctions.isPlayerAliveAndSurvival(player)) continue;
             double dx = player.getX() - boat.getX();
             double dz = player.getZ() - boat.getZ();
             if (Math.abs(dx) > CAPTURE_RADIUS || Math.abs(dz) > CAPTURE_RADIUS
                 || Math.abs(player.getY() - boat.getY()) > CAPTURE_HEIGHT) continue;
             double distance = dx * dx + dz * dz;
-            if (distance < closest) {
+            if (distance < closest && inSight(boat.level(), boat.position(), player.getEyePosition())) {
                 closest = distance;
                 target = player;
             }
         }
         return target;
+    }
+
+    public static boolean inSight(BlockGetter level, Vec3 boat, Vec3 eye) {
+        Vec3 from = boat.add(0.0D, SIGHT_HEIGHT, 0.0D);
+        ClipContext context = new ClipContext(from, eye, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty());
+        return level.clip(context).getType() == HitResult.Type.MISS;
     }
 
     public static void onCaptured(ServerPlayer owner) {

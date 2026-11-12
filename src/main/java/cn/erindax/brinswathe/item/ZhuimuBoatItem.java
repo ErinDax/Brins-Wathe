@@ -23,7 +23,7 @@ public class ZhuimuBoatItem extends Item {
         BlockHitResult hitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
         if (hitResult.getType() != HitResult.Type.BLOCK) return InteractionResultHolder.pass(stack);
         if (!(player instanceof ServerPlayer zhuimu)) return InteractionResultHolder.success(stack);
-        if (!Zhuimu.placeBoat(zhuimu, hitResult.getLocation())) return InteractionResultHolder.fail(stack);
+        if (!Zhuimu.placeBoat(zhuimu, hitResult)) return InteractionResultHolder.fail(stack);
         stack.consume(1, zhuimu);
         return InteractionResultHolder.success(stack);
     }

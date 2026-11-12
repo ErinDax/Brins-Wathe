@@ -11,6 +11,7 @@ import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.StuntDoubleComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.entity.ZhuimuBoat;
 import cn.erindax.brinswathe.network.BlindFlashS2CPacket;
 import cn.erindax.brinswathe.network.CowboyShowdownMusicS2CPacket;
 import cn.erindax.brinswathe.network.CowboyDuelHideS2CPacket;
@@ -459,6 +460,7 @@ public final class CowboyDuel {
             if (stuntDouble != null && stuntDouble.isMimicking()) stuntDouble.reset();
             FuneralComponent funeral = FuneralComponent.KEY.get(player);
             if (funeral != null) funeral.putDown();
+            if (player.getVehicle() instanceof ZhuimuBoat boat) boat.dissolve();
         }
     }
 
