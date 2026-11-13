@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe.mixin;
 
+import cn.erindax.brinswathe.ModModifiers;
 import cn.erindax.brinswathe.NoelleAccess;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.SecretMurder;
@@ -33,6 +34,9 @@ public abstract class TaskRewardMixin {
     private static final ResourceLocation BRIN_STARSTRUCK_ID =
         ResourceLocation.fromNamespaceAndPath("starexpress", "starstruck");
 
+    @Unique
+    private static final int BRIN_TASKMASTER_REWARD = 50;
+
     @Shadow
     @Final
     private Player player;
@@ -62,12 +66,16 @@ public abstract class TaskRewardMixin {
     @Unique
     private Map<UUID, Integer> brin$killerBalancesBefore;
 
+    @Unique
+    private boolean brin$taskmaster;
+
     @Inject(method = "setMood(F)V", at = @At("HEAD"))
     private void brinCaptureTaskBalance(float mood, CallbackInfo callback) {
         this.brin$taskReward = 0;
         this.brin$restoreTaskTimer = false;
         this.brin$taskCompleted = false;
         this.brin$killerBalancesBefore = null;
+        this.brin$taskmaster = false;
         if (this.player.level().isClientSide || mood <= this.getMood()) return;
         this.brin$taskCompleted = true;
 
@@ -94,6 +102,7 @@ public abstract class TaskRewardMixin {
                 this.brin$taskReward = 50 + this.player.getRandom().nextInt(31);
             }
         } else if (role != null && !game.isInnocent(this.player) && role.canUseKiller()) {
+            this.brin$taskmaster = ModModifiers.hasModifier(this.player, ModModifiers.TASKMASTER);
             this.brin$killerBalancesBefore = new HashMap<>();
             List<UUID> team = SecretMurder.isActive(game)
                 ? List.of(this.player.getUUID())
@@ -136,9 +145,14 @@ public abstract class TaskRewardMixin {
                 if (killer == null) continue;
                 PlayerShopComponent shop = PlayerShopComponent.KEY.get(killer);
                 if (shop == null) continue;
-                shop.setBalance(entry.getValue() + 5);
+                boolean taskmaster = this.brin$taskmaster
+                    && entry.getKey().equals(this.player.getUUID());
+                shop.setBalance(entry.getValue() + (taskmaster ? BRIN_TASKMASTER_REWARD : 5));
                 killer.displayClientMessage(
-                    Component.literal("杀手完成任务，全队 +5 金币").withStyle(ChatFormatting.GOLD),
+                    Component.literal(taskmaster
+                        ? "任务大师完成任务，+" + BRIN_TASKMASTER_REWARD + " 金币"
+                        : "杀手完成任务，全队 +5 金币"
+                    ).withStyle(ChatFormatting.GOLD),
                     true
                 );
             }

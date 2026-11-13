@@ -37,6 +37,8 @@ public final class ModModifiers {
         ResourceLocation.fromNamespaceAndPath("brinswathe", "funeral");
     public static final ResourceLocation VAGRANT =
         ResourceLocation.fromNamespaceAndPath("brinswathe", "vagrant");
+    public static final ResourceLocation TASKMASTER =
+        ResourceLocation.fromNamespaceAndPath("kinswathe", "taskmaster");
     private ModModifiers() {
     }
 

@@ -4,6 +4,7 @@ import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import java.util.ArrayList;
 import java.util.List;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.resources.ResourceLocation;
 import org.agmas.harpymodloader.modifiers.HMLModifiers;
 import org.agmas.harpymodloader.modifiers.Modifier;
@@ -132,6 +133,17 @@ public final class IcModifiers {
             false,
             false
         ));
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> restrictTaskmasterToKillers());
+    }
+
+    private static void restrictTaskmasterToKillers() {
+        Modifier taskmaster = findRegistered(ModModifiers.TASKMASTER);
+        if (taskmaster == null) return;
+        ArrayList<Role> killers = new ArrayList<>();
+        for (Role role : WatheRoles.ROLES) {
+            if (role.canUseKiller()) killers.add(role);
+        }
+        taskmaster.setCanOnlyBeAppliedTo(killers);
     }
 
     private static Modifier registerIfAbsent(Modifier modifier) {
