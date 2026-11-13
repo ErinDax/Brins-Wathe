@@ -22,23 +22,28 @@ public final class PersonalSettingsScreen extends Screen {
     protected void init() {
         int center = this.width / 2;
         boolean admin = AdminClient.canOpen(this.minecraft);
-        this.top = this.height / 2 - (admin ? 46 : 34);
+        this.top = this.height / 2 - (admin ? 58 : 46);
         this.addRenderableWidget(Button.builder(
                 Component.translatable("gui.brinswathe.settings.buy_slot"),
                 button -> this.minecraft.setScreen(new BuySlotScreen(this)))
             .bounds(center - 100, this.top, 200, 20)
             .build());
         this.addRenderableWidget(Button.builder(
-                Component.translatable("gui.brinswathe.settings.music_box"),
-                button -> MusicBoxClient.openScreen(this.minecraft, this))
+                Component.translatable("gui.brinswathe.settings.item_slots"),
+                button -> this.minecraft.setScreen(new ItemSlotScreen(this)))
             .bounds(center - 100, this.top + 24, 200, 20)
             .build());
-        int doneTop = this.top + 56;
+        this.addRenderableWidget(Button.builder(
+                Component.translatable("gui.brinswathe.settings.music_box"),
+                button -> MusicBoxClient.openScreen(this.minecraft, this))
+            .bounds(center - 100, this.top + 48, 200, 20)
+            .build());
+        int doneTop = this.top + 80;
         if (admin) {
             this.addRenderableWidget(Button.builder(
                     Component.translatable("gui.brinswathe.settings.admin"),
                     button -> AdminClient.open())
-                .bounds(center - 100, this.top + 48, 200, 20)
+                .bounds(center - 100, this.top + 72, 200, 20)
                 .build());
             doneTop += 24;
         }

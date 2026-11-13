@@ -47,6 +47,7 @@ import cn.erindax.brinswathe.network.WelcomeS2CPacket;
 import cn.erindax.brinswathe.network.IcNightVisionS2CPacket;
 import cn.erindax.brinswathe.network.InstinctC2SPacket;
 import cn.erindax.brinswathe.network.InstinctSnapshotS2CPacket;
+import cn.erindax.brinswathe.network.ItemSlotsC2SPacket;
 import cn.erindax.brinswathe.network.KnifeSkinListS2CPacket;
 import cn.erindax.brinswathe.network.MusicBoxRequestC2SPacket;
 import cn.erindax.brinswathe.network.MusicBoxStatusS2CPacket;
@@ -196,6 +197,7 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playC2S().register(DraftChoiceC2SPacket.TYPE, DraftChoiceC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(DraftCloseS2CPacket.TYPE, DraftCloseS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(BuySlotC2SPacket.TYPE, BuySlotC2SPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(ItemSlotsC2SPacket.TYPE, ItemSlotsC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(AdminSnapshotS2CPacket.TYPE, AdminSnapshotS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(AdminSaveC2SPacket.TYPE, AdminSaveC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(AdminActionC2SPacket.TYPE, AdminActionC2SPacket.STREAM_CODEC);
@@ -1173,7 +1175,12 @@ public class BrinsWathe implements ModInitializer {
         }
         if (!spendAbilityCost(player, "zhuimu")) return;
         zhuimu.markUsed();
-        ShopEntry.insertStackInFreeSlot(player, ModItems.ZHUIMU_BOAT.getDefaultInstance());
+        BuySlots.beginPurchase(player);
+        try {
+            ShopEntry.insertStackInFreeSlot(player, ModItems.ZHUIMU_BOAT.getDefaultInstance());
+        } finally {
+            BuySlots.endPurchase();
+        }
         player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
     private static void handleGrapplerHook(ServerPlayer player, GameWorldComponent gameWorld,
