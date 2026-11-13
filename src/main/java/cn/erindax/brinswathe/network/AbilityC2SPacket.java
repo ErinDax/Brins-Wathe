@@ -50,8 +50,7 @@ public record AbilityC2SPacket(
     public static final int ABILITY_FUNERAL_PUT_DOWN = 30;
     public static final int ABILITY_SUBVERT_KILLER = 31;
     public static final int ABILITY_SUBVERT_CIVILIAN = 32;
-    public static final int ABILITY_GAMBLER_BET_KILLER = 33;
-    public static final int ABILITY_GAMBLER_BET_CIVILIAN = 34;
+    public static final int ABILITY_GAMBLER_BET = 33;
     public static final int ABILITY_INSPECTOR_DISARM = 35;
     public static final int ABILITY_ZHUIMU_BOAT = 36;
     public static final int ABILITY_ZHUIMU_STRUGGLE_LEFT = 37;

@@ -160,13 +160,10 @@ public abstract class AbilityHudMixin {
             renderArchivistCorpseInfo(context, font, player);
         } else if (gameWorld.isRole(player, ModRoles.GAMBLER)) {
             GamblerComponent gambler = GamblerComponent.KEY.get(player);
-            Faction bet = gambler == null ? null : gambler.bet();
-            if (bet == null) {
+            if (gambler == null || gambler.betTarget() == null) {
                 renderConfiguredRoleAbilityHud(context, font, ability, player, "gambler", ModRoles.GAMBLER.color());
             } else {
-                Component line = Component.translatable(
-                    bet == Faction.KILLER ? "tip.brinswathe.gambler.killer_bet" : "tip.brinswathe.gambler.civilian_bet"
-                );
+                Component line = Component.translatable("tip.brinswathe.gambler.bet", gambler.betName());
                 int y = context.guiHeight() - font.lineHeight - 2;
                 context.drawString(font, line, context.guiWidth() - font.width(line) - 2, y, ModRoles.GAMBLER.color());
             }

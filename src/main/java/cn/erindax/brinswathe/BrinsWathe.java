@@ -255,7 +255,7 @@ public class BrinsWathe implements ModInitializer {
 					ShopEntry.insertStackInFreeSlot(serverPlayer, WatheItems.LOCKPICK.getDefaultInstance());
 				}
 			}
-			GamblerBonus.pay(recapPlayers);
+			GamblerSettlement.apply(gameWorld, recapPlayers);
 			IcRoundStart.apply(world, gameWorld);
 			Conspirator.announce(world, gameWorld);
 			RoundRecapComponent recap = RoundRecapComponent.KEY.get(world);
@@ -752,8 +752,7 @@ public class BrinsWathe implements ModInitializer {
                         Subversion.subvert(player, gameWorld, payload.targetId(), Faction.KILLER);
                     case AbilityC2SPacket.ABILITY_SUBVERT_CIVILIAN ->
                         Subversion.subvert(player, gameWorld, payload.targetId(), Faction.CIVILIAN);
-                    case AbilityC2SPacket.ABILITY_GAMBLER_BET_KILLER -> handleGamblerBet(player, gameWorld, Faction.KILLER);
-                    case AbilityC2SPacket.ABILITY_GAMBLER_BET_CIVILIAN -> handleGamblerBet(player, gameWorld, Faction.CIVILIAN);
+                    case AbilityC2SPacket.ABILITY_GAMBLER_BET -> handleGamblerBet(player, gameWorld, payload);
                     case AbilityC2SPacket.ABILITY_INSPECTOR_DISARM -> handleInspectorDisarm(player, gameWorld);
                     case AbilityC2SPacket.ABILITY_ZHUIMU_BOAT -> handleZhuimuBoat(player, gameWorld);
                     case AbilityC2SPacket.ABILITY_ZHUIMU_STRUGGLE_LEFT -> Zhuimu.struggle(player, false);
@@ -1133,12 +1132,15 @@ public class BrinsWathe implements ModInitializer {
         if (valentina == null || !valentina.foresee()) return;
         player.playNotifySound(SoundEvents.ENDER_EYE_LAUNCH, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
-    private static void handleGamblerBet(ServerPlayer player, GameWorldComponent gameWorld, Faction faction) {
-        if (!gameWorld.isRole(player, ModRoles.GAMBLER)) return;
+    private static void handleGamblerBet(ServerPlayer player, GameWorldComponent gameWorld, AbilityC2SPacket payload) {
+        if (!gameWorld.isRole(player, ModRoles.GAMBLER) || payload.targetId() == null) return;
         GamblerComponent gambler = GamblerComponent.KEY.get(player);
-        if (gambler == null || gambler.bet() != null) return;
+        if (gambler == null || gambler.betTarget() != null) return;
+        ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
+        if (target == null || target == player || target.level() != player.level()) return;
+        if (!GameFunctions.isPlayerAliveAndSurvival(target) || gameWorld.getRole(target) == null) return;
         if (!spendAbilityCost(player, "gambler")) return;
-        gambler.placeBet(faction);
+        gambler.placeBet(target.getUUID(), target.getName().getString());
         player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
     private static void handleInspectorDisarm(ServerPlayer player, GameWorldComponent gameWorld) {

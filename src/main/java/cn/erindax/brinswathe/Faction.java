@@ -1,6 +1,5 @@
 package cn.erindax.brinswathe;
 
-import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.SubverterComponent;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -37,10 +36,6 @@ public enum Faction {
         if (game.isRole(player, ModRoles.SUBVERTER)) {
             SubverterComponent subverter = SubverterComponent.KEY.get(player);
             return subverter == null ? null : subverter.side();
-        }
-        if (game.isRole(player, ModRoles.GAMBLER)) {
-            GamblerComponent gambler = GamblerComponent.KEY.get(player);
-            return gambler == null ? null : gambler.bet();
         }
         return null;
     }

@@ -1,7 +1,6 @@
 package cn.erindax.brinswathe.client.gui;
 
 import cn.erindax.brinswathe.ModRoles;
-import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.SubverterComponent;
 import cn.erindax.brinswathe.network.AbilityC2SPacket;
 import java.util.UUID;
@@ -59,21 +58,6 @@ public final class FactionScreen extends Screen {
             player -> {
                 SubverterComponent subverter = SubverterComponent.KEY.get(player);
                 return subverter != null && subverter.isPending();
-            }
-        );
-    }
-
-    public static FactionScreen bet() {
-        return new FactionScreen(
-            Component.translatable("screen.brinswathe.gambler"),
-            ModRoles.GAMBLER.color(),
-            "gui.brinswathe.gambler",
-            AbilityC2SPacket.ABILITY_GAMBLER_BET_KILLER,
-            AbilityC2SPacket.ABILITY_GAMBLER_BET_CIVILIAN,
-            null,
-            player -> {
-                GamblerComponent gambler = GamblerComponent.KEY.get(player);
-                return gambler != null && gambler.bet() == null;
             }
         );
     }

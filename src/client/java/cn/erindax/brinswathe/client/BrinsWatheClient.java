@@ -726,8 +726,10 @@ public class BrinsWatheClient implements ClientModInitializer {
             }
         } else if (gameWorld.isRole(player, ModRoles.GAMBLER)) {
             GamblerComponent gambler = GamblerComponent.KEY.get(player);
-            if (gambler != null && gambler.bet() == null) {
-                Minecraft.getInstance().setScreen(FactionScreen.bet());
+            UUID targetId = gambler != null && gambler.betTarget() == null ? findPlayerInCrosshair(player) : null;
+            if (targetId != null) {
+                ClientPlayNetworking.send(new AbilityC2SPacket(
+                    AbilityC2SPacket.ABILITY_GAMBLER_BET, targetId));
             }
         } else if (gameWorld.isRole(player, ModRoles.ZHANGSHI)) {
             ClientPlayNetworking.send(new AbilityC2SPacket(

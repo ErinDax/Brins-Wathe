@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.component;
 
-import cn.erindax.brinswathe.Faction;
+import java.util.UUID;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -19,27 +19,34 @@ public class GamblerComponent implements AutoSyncedComponent {
 
     private final Player player;
     @Nullable
-    private Faction bet;
+    private UUID betTarget;
+    private String betName = "";
 
     public GamblerComponent(Player player) {
         this.player = player;
     }
 
     @Nullable
-    public Faction bet() {
-        return this.bet;
+    public UUID betTarget() {
+        return this.betTarget;
     }
 
-    public boolean placeBet(Faction faction) {
-        if (this.bet != null) return false;
-        this.bet = faction;
+    public String betName() {
+        return this.betName;
+    }
+
+    public boolean placeBet(UUID targetId, String targetName) {
+        if (this.betTarget != null) return false;
+        this.betTarget = targetId;
+        this.betName = targetName;
         this.sync();
         return true;
     }
 
     public void reset() {
-        if (this.bet == null) return;
-        this.bet = null;
+        if (this.betTarget == null) return;
+        this.betTarget = null;
+        this.betName = "";
         this.sync();
     }
 
@@ -49,11 +56,14 @@ public class GamblerComponent implements AutoSyncedComponent {
 
     @Override
     public void readFromNbt(@NotNull CompoundTag tag, HolderLookup.Provider registryAccess) {
-        this.bet = tag.contains("bet") ? Faction.valueOf(tag.getString("bet")) : null;
+        this.betTarget = tag.hasUUID("betTarget") ? tag.getUUID("betTarget") : null;
+        this.betName = tag.getString("betName");
     }
 
     @Override
     public void writeToNbt(@NotNull CompoundTag tag, HolderLookup.Provider registryAccess) {
-        if (this.bet != null) tag.putString("bet", this.bet.name());
+        if (this.betTarget == null) return;
+        tag.putUUID("betTarget", this.betTarget);
+        tag.putString("betName", this.betName);
     }
 }
