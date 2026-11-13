@@ -56,7 +56,6 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
     private static final int GLOW_TICKS = 200;
     private static final int KILLED_SLOWNESS_TICKS = 300;
     private static final int PARTICLE_INTERVAL_TICKS = 8;
-    private static final double SELF_DESTRUCT_SIZE = 4.0D;
     private static final double SUMMON_OFFSET = 1.0D;
     private static final int SELF_DESTRUCT_GRACE_TICKS = 20;
     private static final String PUPPET_GEAR_NBT = "BrinPuppetGear";
@@ -436,7 +435,8 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
             && GameConstants.DeathReasons.GRENADE.equals(deathReason);
     }
     private static AABB selfDestructBounds(Vec3 center) {
-        return AABB.ofSize(center, SELF_DESTRUCT_SIZE, SELF_DESTRUCT_SIZE, SELF_DESTRUCT_SIZE);
+        double size = ModConfig.puppeteerSelfDestructRange() * 2.0D;
+        return AABB.ofSize(center, size, size, size);
     }
     public static boolean isPuppet(PlayerBodyEntity entity) {
         return ((PuppetEntity) entity).brin$isPuppet();

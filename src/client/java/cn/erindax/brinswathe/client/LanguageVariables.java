@@ -36,6 +36,8 @@ public final class LanguageVariables {
             .replace("{xuezi_cooldown_seconds}", Integer.toString(ModConfig.xueziCooldownSeconds()))
             .replace("{xuezi_shield_layers}", Integer.toString(ModConfig.xueziShieldLayers()))
             .replace("{self_destruct_price}", Integer.toString(ModConfig.puppeteerSelfDestructPrice()))
+            .replace("{self_destruct_range}", Integer.toString(ModConfig.puppeteerSelfDestructRange()))
+            .replace("{self_destruct_size}", Integer.toString(ModConfig.puppeteerSelfDestructRange() * 2))
             .replace("{return_cooldown_seconds}", Integer.toString(ModConfig.puppeteerReturnCooldownSeconds()))
             .replace("{grenade_price}", Integer.toString(ModConfig.bomberGrenadePrice()))
             .replace("{bomb_price}", Integer.toString(ModConfig.bomberBombPrice()))

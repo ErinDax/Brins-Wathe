@@ -25,7 +25,7 @@ public final class ModConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 51;
+    private static final int CONFIG_VERSION = 52;
     private static final int ROLE_BALANCE_MIGRATION_VERSION = 39;
     private static final int AVENGER_INSTINCT_MIGRATION_VERSION = 40;
     private static final int PUPPETEER_KNIFE_MIGRATION_VERSION = 41;
@@ -329,6 +329,10 @@ public final class ModConfig {
     public static int puppeteerParticleDelaySeconds() {
         Integer delay = settings("puppeteer").particle_delay_seconds;
         return delay == null ? 45 : delay;
+    }
+    public static int puppeteerSelfDestructRange() {
+        Integer range = settings("puppeteer").explosion_range;
+        return range == null ? 2 : range;
     }
     public static int terroristExplosionRange() {
         Integer range = settings("terrorist").explosion_range;
@@ -668,10 +672,10 @@ public final class ModConfig {
                 ),
                 configurableOptionalInt(
                     role,
-                    "explosion_range",
+                    "puppeteer".equals(roleId) ? "self_destruct_range" : "explosion_range",
                     fallback.explosion_range,
                     roleId,
-                    "terrorist".equals(roleId)
+                    "terrorist".equals(roleId) || "puppeteer".equals(roleId)
                 ),
                 configurableOptionalInt(
                     role,
@@ -1194,7 +1198,8 @@ public final class ModConfig {
         LinkedHashMap<String, RoleSettings> roles = new LinkedHashMap<>();
         roles.put("puppeteer", role(0, 200, null, 150, 300, 300)
             .withSkillDuration(60)
-            .withPuppeteer(350, 60, 45));
+            .withPuppeteer(350, 60, 45)
+            .withPuppeteerSelfDestructRange(2));
         roles.put("civilian", civilianRole(0, 0, 350, true));
         roles.put("vigilante", civilianRole(200, 90, 350, false));
         roles.put("stunt_double", civilianRole(0, 30, 350, false).withSkillDuration(30));
@@ -1451,6 +1456,7 @@ public final class ModConfig {
                 role.addProperty("skill_duration_seconds", settings.skill_duration_seconds);
                 role.addProperty("return_cooldown_seconds", settings.return_cooldown_seconds);
                 role.addProperty("self_destruct_price", settings.self_destruct_price);
+                role.addProperty("self_destruct_range", settings.explosion_range);
                 role.addProperty("particle_delay_seconds", settings.particle_delay_seconds);
             }
             case "sniper" -> {
@@ -2026,6 +2032,21 @@ public final class ModConfig {
                 this.bone_knife_cooldown_seconds,
                 range,
                 survivalKills,
+                this.trap_limit,
+                this.identity_hint_price,
+                this.antidote_price,
+                this.revolver_shop_enabled
+            );
+        }
+        private RoleSettings withPuppeteerSelfDestructRange(int range) {
+            return copy(
+                this.skill_duration_seconds,
+                this.initial_balance,
+                this.forced_sleep_task_cooldown_seconds,
+                this.bone_knife_price,
+                this.bone_knife_cooldown_seconds,
+                range,
+                this.explosion_survival_kills,
                 this.trap_limit,
                 this.identity_hint_price,
                 this.antidote_price,
