@@ -16,6 +16,7 @@ import cn.erindax.brinswathe.component.InspectorComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import cn.erindax.brinswathe.component.SniperComponent;
+import cn.erindax.brinswathe.component.SpyComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.SubverterComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
@@ -23,6 +24,7 @@ import cn.erindax.brinswathe.component.ZhuimuComponent;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.client.gui.EventLogScreen;
 import cn.erindax.brinswathe.client.gui.FactionScreen;
+import cn.erindax.brinswathe.client.gui.SpyGuessScreen;
 import cn.erindax.brinswathe.client.musicbox.MusicBoxClient;
 import cn.erindax.brinswathe.entity.PuppetEntity;
 import cn.erindax.brinswathe.network.ArchivistWitnessS2CPacket;
@@ -700,6 +702,17 @@ public class BrinsWatheClient implements ClientModInitializer {
             if (GameFunctions.isPlayerAliveAndSurvival(player) && zhuimu != null && !zhuimu.used()) {
                 ClientPlayNetworking.send(new AbilityC2SPacket(
                     AbilityC2SPacket.ABILITY_ZHUIMU_BOAT, null));
+            }
+            return;
+        }
+        if (gameWorld.isRole(player, ModRoles.SPY)) {
+            SpyComponent spy = SpyComponent.KEY.get(player);
+            if (GameFunctions.isPlayerAliveAndSurvival(player)
+                && ability.cooldown <= 0
+                && spy != null
+                && spy.required() > 0
+                && !spy.completed()) {
+                Minecraft.getInstance().setScreen(new SpyGuessScreen());
             }
             return;
         }

@@ -14,6 +14,7 @@ import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.MuzzlerAbilityComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import cn.erindax.brinswathe.component.SniperComponent;
+import cn.erindax.brinswathe.component.SpyComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.SubverterComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
@@ -26,6 +27,7 @@ import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
+import dev.doctor4t.wathe.game.GameFunctions;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
@@ -257,6 +259,11 @@ public abstract class AbilityHudMixin {
                     true
                 );
             }
+        } else if (gameWorld.isRole(player, ModRoles.SPY)) {
+            SpyComponent spy = SpyComponent.KEY.get(player);
+            if (spy != null && spy.required() > 0 && GameFunctions.isPlayerAliveAndSurvival(player)) {
+                renderSpyHud(context, font, ModRoles.SPY.color(), ability, spy);
+            }
         } else if (gameWorld.isRole(player, WatheRoles.VIGILANTE)) {
             renderConfiguredRoleAbilityHud(context, font, ability, player, "vigilante", WatheRoles.VIGILANTE.color());
         }
@@ -466,6 +473,35 @@ public abstract class AbilityHudMixin {
             line = Component.translatable("tip.brinswathe.subverter.civilian_side");
         } else {
             return;
+        }
+        int y = context.guiHeight() - font.lineHeight - 2;
+        context.drawString(font, line, context.guiWidth() - font.width(line) - 2, y, color);
+    }
+    private void renderSpyHud(GuiGraphics context, Font font, int color, AbilityPlayerComponent ability,
+                              SpyComponent component) {
+        Component line;
+        if (ability.cooldown > 0) {
+            line = Component.translatable(
+                "tip.brinswathe.spy.cooldown",
+                (ability.cooldown + 19) / 20,
+                component.correct(),
+                component.required(),
+                component.wrong(),
+                SpyComponent.MAX_WRONG
+            );
+        } else {
+            KeyMapping abilityBind = BrinsWatheClient.getAbilityBind();
+            Component keyName = abilityBind == null
+                ? Component.literal("G")
+                : abilityBind.getTranslatedKeyMessage();
+            line = Component.translatable(
+                "tip.brinswathe.spy.ready",
+                keyName,
+                component.correct(),
+                component.required(),
+                component.wrong(),
+                SpyComponent.MAX_WRONG
+            );
         }
         int y = context.guiHeight() - font.lineHeight - 2;
         context.drawString(font, line, context.guiWidth() - font.width(line) - 2, y, color);

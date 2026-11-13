@@ -63,6 +63,7 @@ import cn.erindax.brinswathe.network.SkinPickResultS2CPacket;
 import cn.erindax.brinswathe.network.SkinSoundS2CPacket;
 import cn.erindax.brinswathe.network.SkinUploadC2SPacket;
 import cn.erindax.brinswathe.network.SkinUploadPromptS2CPacket;
+import cn.erindax.brinswathe.network.SpyGuessC2SPacket;
 import cn.erindax.brinswathe.network.CowboyShowdownMusicS2CPacket;
 import cn.erindax.brinswathe.network.CowboyDuelHideS2CPacket;
 import cn.erindax.brinswathe.network.CowboyDuelIdentityS2CPacket;
@@ -198,6 +199,7 @@ public class BrinsWathe implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(AdminSnapshotS2CPacket.TYPE, AdminSnapshotS2CPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(AdminSaveC2SPacket.TYPE, AdminSaveC2SPacket.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(AdminActionC2SPacket.TYPE, AdminActionC2SPacket.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(SpyGuessC2SPacket.TYPE, SpyGuessC2SPacket.STREAM_CODEC);
 		registerPackets();
 		MusicBox.init();
 		SkinPicks.init();
@@ -761,6 +763,15 @@ public class BrinsWathe implements ModInitializer {
 			}
 		);
 		ServerPlayNetworking.registerGlobalReceiver(
+			SpyGuessC2SPacket.TYPE,
+			(payload, context) -> {
+				ServerPlayer player = context.player();
+				if (Spy.guess(player, payload.targetId(), payload.roleId())) {
+					endWithCustomWinner(player, "spy", ModRoles.SPY.color());
+				}
+			}
+		);
+		ServerPlayNetworking.registerGlobalReceiver(
 			RpsActionC2SPacket.TYPE,
 			(payload, context) -> {
 				ServerPlayer player = context.player();
@@ -1201,7 +1212,7 @@ public class BrinsWathe implements ModInitializer {
         Role targetRole = gameWorld.getRole(target);
         if (targetRole == null) return;
         if (!spendAbilityCost(player, "vigilante")) return;
-        if (targetRole.isInnocent()) {
+        if (targetRole.isInnocent() || ModRoles.SPY.equals(targetRole)) {
             player.displayClientMessage(
                 Component.translatable("tip.kinswathe.detective.innocent", target.getName().getString())
                     .withColor(WatheRoles.CIVILIAN.color()),

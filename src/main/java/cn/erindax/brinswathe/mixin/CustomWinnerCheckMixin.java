@@ -40,6 +40,10 @@ public abstract class CustomWinnerCheckMixin {
 
         GameRoundEndComponent roundEnd = (GameRoundEndComponent) (Object) this;
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(this.world);
+        if (gameWorld.isRole(playerId, ModRoles.SPY)) {
+            cir.setReturnValue(false);
+            return;
+        }
         if (roundEnd.getWinStatus() != GameFunctions.WinStatus.KILLERS) return;
 
         if (gameWorld.isRole(playerId, ModRoles.PENITENT) || brinIsThief(gameWorld, playerId)) {

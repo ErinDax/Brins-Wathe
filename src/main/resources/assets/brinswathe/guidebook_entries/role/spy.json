@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:spy",
+  "subtitle": "guidebook.role.title.brin:spy",
+  "keywords": ["guidebook.role.brin:spy"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:spy"
+  }]
+}

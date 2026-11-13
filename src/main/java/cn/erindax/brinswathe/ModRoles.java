@@ -18,6 +18,7 @@ import cn.erindax.brinswathe.component.NightmareComponent;
 import cn.erindax.brinswathe.component.PenitentComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import cn.erindax.brinswathe.component.SniperComponent;
+import cn.erindax.brinswathe.component.SpyComponent;
 import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.component.StuntDoubleComponent;
@@ -367,6 +368,18 @@ public class ModRoles {
         )
     );
 
+    public static Role SPY = registerRole(
+        new Role(
+            ResourceLocation.fromNamespaceAndPath("brin", "spy"),
+            0x9ACD32,
+            false,
+            false,
+            MoodType.FAKE,
+            WatheRoles.CIVILIAN.getMaxSprintTime(),
+            true
+        )
+    );
+
     public static HashMap<String, Role> getRoles() {
         return ROLES;
     }
@@ -398,6 +411,7 @@ public class ModRoles {
         Harpymodloader.setRoleMaximum(SUBVERTER, 1);
         Harpymodloader.setRoleMaximum(INSPECTOR, 1);
         Harpymodloader.setRoleMaximum(ZHUIMU, 1);
+        Harpymodloader.setRoleMaximum(SPY, 1);
 
         ModdedRoleAssigned.EVENT.register((player, role) -> {
             if (NoelleAccess.EXECUTIONER_ID.equals(role.identifier())) {
@@ -451,6 +465,10 @@ public class ModRoles {
             }
             if (role.equals(ZHUIMU)) {
                 ZhuimuComponent component = ZhuimuComponent.KEY.get(player);
+                if (component != null) component.reset();
+            }
+            if (role.equals(SPY)) {
+                SpyComponent component = SpyComponent.KEY.get(player);
                 if (component != null) component.reset();
             }
             if (role.equals(WATCHMAN) && player instanceof ServerPlayer serverPlayer) {
@@ -515,6 +533,8 @@ public class ModRoles {
             if (inspectorComp != null) inspectorComp.reset();
             ZhuimuComponent zhuimuComp = ZhuimuComponent.KEY.get(player);
             if (zhuimuComp != null) zhuimuComp.reset();
+            SpyComponent spyComp = SpyComponent.KEY.get(player);
+            if (spyComp != null) spyComp.reset();
         });
     }
 

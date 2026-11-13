@@ -178,7 +178,7 @@ public final class ShopAccess {
                     ShopEntry.Type.TOOL
                 ))
             ).toList();
-            case "avenger", "medium", "stalker", "terrorist", "cowboy", "valentina", "subverter", "inspector", "zhuimu" -> List.of();
+            case "avenger", "medium", "stalker", "terrorist", "cowboy", "valentina", "subverter", "inspector", "zhuimu", "spy" -> List.of();
             default -> null;
         };
         if (entries == null) return null;
