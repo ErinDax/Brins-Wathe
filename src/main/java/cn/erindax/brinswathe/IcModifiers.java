@@ -20,6 +20,7 @@ public final class IcModifiers {
     public static Modifier SPEED;
     public static Modifier PUNISHMENT;
     public static Modifier FUNERAL;
+    public static Modifier VAGRANT;
 
     private IcModifiers() {
     }
@@ -118,6 +119,14 @@ public final class IcModifiers {
         FUNERAL = HMLModifiers.registerModifier(new Modifier(
             ModModifiers.FUNERAL,
             Funeral.COLOR,
+            null,
+            null,
+            false,
+            false
+        ));
+        VAGRANT = HMLModifiers.registerModifier(new Modifier(
+            ModModifiers.VAGRANT,
+            Vagrant.COLOR,
             null,
             null,
             false,

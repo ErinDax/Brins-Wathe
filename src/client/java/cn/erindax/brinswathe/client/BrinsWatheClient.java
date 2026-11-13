@@ -228,6 +228,7 @@ public class BrinsWatheClient implements ClientModInitializer {
         FuneralClient.init();
         DisarmClient.init();
         ZhuimuClient.init();
+        VagrantClient.init();
         rpsBind = KeyBindingHelper.registerKeyBinding(new KeyMapping(
             "key.brinswathe.rps",
             InputConstants.Type.KEYSYM,
