@@ -118,7 +118,7 @@ public final class SkinPicks {
     public static MutableComponent nothingStatus(String type, String name) {
         String kind = "gun".equalsIgnoreCase(type) ? "gun" : "knife";
         return Component.translatable("message.brinswathe.skin_pick.nothing." + kind, name)
-            .withStyle("gun".equals(kind) ? ChatFormatting.YELLOW : ChatFormatting.GREEN);
+            .withStyle(ChatFormatting.GREEN);
     }
 
     private static void notifySender(ServerPlayer player, Pick pick, MutableComponent message) {

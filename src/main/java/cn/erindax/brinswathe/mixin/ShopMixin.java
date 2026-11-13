@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.BuySlots;
+import cn.erindax.brinswathe.KnifeSkins;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.ShopAccess;
 import cn.erindax.brinswathe.CowboyDuel;
@@ -87,7 +88,7 @@ public abstract class ShopMixin {
                 boolean skipOwnedCheck = ShopAccess.ignoresOwnedCheck(entry);
                 purchased = this.balance >= entry.price()
                     && !this.player.getCooldowns().isOnCooldown(entry.stack().getItem())
-                    && (skipOwnedCheck || !this.player.getInventory().contains(entry.stack()))
+                    && (skipOwnedCheck || !KnifeSkins.ownsIgnoringGunSkin(this.player, entry.stack()))
                     && entry.onBuy(this.player);
             }
 

@@ -636,6 +636,7 @@ public final class CowboyDuel {
         }
         ItemStack revolver = WatheItems.REVOLVER.getDefaultInstance();
         CustomData.update(DataComponents.CUSTOM_DATA, revolver, tag -> tag.putBoolean(DUEL_GUN_TAG, true));
+        KnifeSkins.stampGunSkin(duelist, revolver);
         Integer lockedSlot = LOCKED_SLOTS.get(duelist.getUUID());
         if (lockedSlot != null) {
             ItemStack occupant = inventory.getItem(lockedSlot);

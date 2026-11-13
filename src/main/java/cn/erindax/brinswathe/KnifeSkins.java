@@ -33,6 +33,8 @@ import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.Nullable;
@@ -44,9 +46,12 @@ public final class KnifeSkins {
     public static final int MAX_TEXTURE_BYTES = 512_000;
     public static final int MAX_SOUND_BYTES = 512_000;
     private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("brinswathe-knife-skins.json");
+    private static final Path GUN_PATH = FabricLoader.getInstance().getConfigDir().resolve("brinswathe-gun-skins.json");
+    private static final String DEFAULT_GUN_SKIN = "default";
     private static final ResourceLocation FAKE_KNIFE_ID =
         ResourceLocation.fromNamespaceAndPath("noellesroles", "fake_knife");
     private static final Map<UUID, String> KNIFE_SKINS = new ConcurrentHashMap<>();
+    private static final Map<UUID, String> GUN_SKINS = new ConcurrentHashMap<>();
     private static final Map<String, String> DYNAMIC_SKINS = new LinkedHashMap<>();
     private static final Map<String, String> DYNAMIC_GUNS = new LinkedHashMap<>();
     private static final Set<String> DYNAMIC_SOUNDS = new LinkedHashSet<>();
@@ -80,30 +85,12 @@ public final class KnifeSkins {
     }
 
     public static void load() {
-        KNIFE_SKINS.clear();
-        if (!Files.isRegularFile(PATH)) return;
-        try {
-            JsonObject root = JsonParser.parseString(Files.readString(PATH, StandardCharsets.UTF_8)).getAsJsonObject();
-            for (Map.Entry<String, JsonElement> entry : root.entrySet()) {
-                try {
-                    KNIFE_SKINS.put(UUID.fromString(entry.getKey()), entry.getValue().getAsString());
-                } catch (IllegalArgumentException ignored) {
-                }
-            }
-        } catch (Exception ignored) {
-        }
+        loadSkins(PATH, KNIFE_SKINS);
+        loadSkins(GUN_PATH, GUN_SKINS);
     }
 
     public static void save() {
-        JsonObject root = new JsonObject();
-        for (Map.Entry<UUID, String> entry : KNIFE_SKINS.entrySet()) {
-            root.addProperty(entry.getKey().toString(), entry.getValue());
-        }
-        try {
-            Files.createDirectories(PATH.getParent());
-            Files.writeString(PATH, root.toString(), StandardCharsets.UTF_8);
-        } catch (IOException ignored) {
-        }
+        saveSkins(PATH, KNIFE_SKINS);
     }
 
     public static void setKnifeSkin(UUID playerId, String skinName) {
@@ -119,6 +106,19 @@ public final class KnifeSkins {
         return KNIFE_SKINS.get(playerId);
     }
 
+    public static void setGunSkin(UUID playerId, String skinName) {
+        if (skinName == null || skinName.isBlank()) {
+            GUN_SKINS.remove(playerId);
+        } else {
+            GUN_SKINS.put(playerId, skinName);
+        }
+        saveSkins(GUN_PATH, GUN_SKINS);
+    }
+
+    public static String gunSkin(UUID playerId) {
+        return GUN_SKINS.get(playerId);
+    }
+
     public static int applyHeldSkin(ServerPlayer target, String type, String skinName) {
         boolean gun = "gun".equalsIgnoreCase(type);
         String itemName = gun ? "gun" : "knife";
@@ -131,7 +131,11 @@ public final class KnifeSkins {
         }
         target.getInventory().setChanged();
         target.containerMenu.broadcastChanges();
-        if (!gun) setKnifeSkin(target.getUUID(), skinName);
+        if (gun) {
+            setGunSkin(target.getUUID(), skinName);
+        } else {
+            setKnifeSkin(target.getUUID(), skinName);
+        }
         syncHeldSkins(target);
         return applied;
     }
@@ -198,16 +202,43 @@ public final class KnifeSkins {
         });
     }
 
+    public static void stampGunSkin(ServerPlayer player, ItemStack stack) {
+        if (!stack.is(WatheItems.REVOLVER)) return;
+        String skin = GUN_SKINS.get(player.getUUID());
+        if (skin == null) return;
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> {
+            nbt.putString("wathe_skin", skin);
+            nbt.putString("wathe_skin_owner", player.getUUID().toString());
+        });
+    }
+
+    public static boolean ownsIgnoringGunSkin(Player player, ItemStack wanted) {
+        Inventory inventory = player.getInventory();
+        if (!(wanted.getItem() instanceof dev.doctor4t.wathe.item.RevolverItem)) return inventory.contains(wanted);
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (!stack.is(wanted.getItem())) continue;
+            ItemStack plain = stack.copy();
+            CustomData.update(DataComponents.CUSTOM_DATA, plain, nbt -> {
+                nbt.remove("wathe_skin");
+                nbt.remove("wathe_skin_owner");
+            });
+            if (ItemStack.isSameItemSameComponents(plain, wanted)) return true;
+        }
+        return false;
+    }
+
     public static void tick(MinecraftServer server) {
         if (server.getTickCount() % 20 != 0) return;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             String desired = KNIFE_SKINS.get(player.getUUID());
+            String desiredGun = GUN_SKINS.get(player.getUUID());
             boolean dirty = false;
             for (ItemStack stack : player.getInventory().items) {
-                if (syncStack(stack, player, desired)) dirty = true;
+                if (syncStack(stack, player, desired, desiredGun)) dirty = true;
             }
             for (ItemStack stack : player.getInventory().offhand) {
-                if (syncStack(stack, player, desired)) dirty = true;
+                if (syncStack(stack, player, desired, desiredGun)) dirty = true;
             }
             if (dirty) {
                 player.getInventory().setChanged();
@@ -307,7 +338,7 @@ public final class KnifeSkins {
     }
 
     public static String knownGunNamesText() {
-        return DYNAMIC_GUNS.isEmpty() ? "-" : String.join(" / ", DYNAMIC_GUNS.keySet());
+        return String.join(" / ", allKnownGunNames());
     }
 
     public static List<String> dynamicSkinNames() {
@@ -369,6 +400,15 @@ public final class KnifeSkins {
         return new ArrayList<>(DYNAMIC_GUNS.keySet());
     }
 
+    public static List<String> allKnownGunNames() {
+        List<String> names = new ArrayList<>();
+        names.add(DEFAULT_GUN_SKIN);
+        for (String name : DYNAMIC_GUNS.keySet()) {
+            if (!names.contains(name)) names.add(name);
+        }
+        return names;
+    }
+
     public static String tooltipGunName(String name) {
         if (name == null) return "";
         return DYNAMIC_GUNS.getOrDefault(name, name);
@@ -394,7 +434,14 @@ public final class KnifeSkins {
 
     public static boolean isKnownGunSkin(String name) {
         if (name == null || name.isBlank()) return false;
-        return DYNAMIC_GUNS.containsKey(resolveGunSkinName(name));
+        return allKnownGunNames().contains(resolveGunSkinName(name));
+    }
+
+    public static String nextGunName(String current) {
+        List<String> names = allKnownGunNames();
+        String resolved = resolveGunSkinName(current);
+        int index = Math.max(0, names.indexOf(resolved));
+        return names.get((index + 1) % names.size());
     }
 
     public static boolean hasSound(String type, String name) {
@@ -550,6 +597,33 @@ public final class KnifeSkins {
         }
     }
 
+    private static void loadSkins(Path path, Map<UUID, String> skins) {
+        skins.clear();
+        if (!Files.isRegularFile(path)) return;
+        try {
+            JsonObject root = JsonParser.parseString(Files.readString(path, StandardCharsets.UTF_8)).getAsJsonObject();
+            for (Map.Entry<String, JsonElement> entry : root.entrySet()) {
+                try {
+                    skins.put(UUID.fromString(entry.getKey()), entry.getValue().getAsString());
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    private static void saveSkins(Path path, Map<UUID, String> skins) {
+        JsonObject root = new JsonObject();
+        for (Map.Entry<UUID, String> entry : skins.entrySet()) {
+            root.addProperty(entry.getKey().toString(), entry.getValue());
+        }
+        try {
+            Files.createDirectories(path.getParent());
+            Files.writeString(path, root.toString(), StandardCharsets.UTF_8);
+        } catch (IOException ignored) {
+        }
+    }
+
     private static List<String> scanFolder(
         String type,
         Path dir,
@@ -669,8 +743,16 @@ public final class KnifeSkins {
         return resolveDynamic(name);
     }
 
-    private static boolean syncStack(ItemStack stack, ServerPlayer player, String desiredSkin) {
-        if (!stack.is(WatheItems.KNIFE)) return false;
+    private static boolean syncStack(ItemStack stack, ServerPlayer player, String desiredKnife, String desiredGun) {
+        String desiredSkin;
+        if (stack.is(WatheItems.KNIFE)) {
+            desiredSkin = desiredKnife;
+        } else if (stack.is(WatheItems.REVOLVER)) {
+            if (CowboyDuel.isDuelGun(stack)) return false;
+            desiredSkin = desiredGun;
+        } else {
+            return false;
+        }
         CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         CompoundTag nbt = data.copyTag();
         boolean hasSkin = nbt.contains("wathe_skin");
