@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:half_spirit",
+  "subtitle": "guidebook.role.title.brin:half_spirit",
+  "keywords": ["guidebook.role.brin:half_spirit"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:half_spirit"
+  }]
+}

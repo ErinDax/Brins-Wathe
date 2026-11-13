@@ -392,6 +392,18 @@ public class ModRoles {
         )
     );
 
+    public static Role HALF_SPIRIT = registerRole(
+        new Role(
+            ResourceLocation.fromNamespaceAndPath("brin", "half_spirit"),
+            0x7FFFD4,
+            false,
+            true,
+            MoodType.FAKE,
+            WatheRoles.KILLER.getMaxSprintTime(),
+            true
+        )
+    );
+
     public static HashMap<String, Role> getRoles() {
         return ROLES;
     }
@@ -425,6 +437,7 @@ public class ModRoles {
         Harpymodloader.setRoleMaximum(ZHUIMU, 1);
         Harpymodloader.setRoleMaximum(SPY, 1);
         Harpymodloader.setRoleMaximum(GRAPPLER, 1);
+        Harpymodloader.setRoleMaximum(HALF_SPIRIT, 1);
 
         ModdedRoleAssigned.EVENT.register((player, role) -> {
             if (NoelleAccess.EXECUTIONER_ID.equals(role.identifier())) {

@@ -25,7 +25,7 @@ public final class ModConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 50;
+    private static final int CONFIG_VERSION = 51;
     private static final int ROLE_BALANCE_MIGRATION_VERSION = 39;
     private static final int AVENGER_INSTINCT_MIGRATION_VERSION = 40;
     private static final int PUPPETEER_KNIFE_MIGRATION_VERSION = 41;
@@ -1153,8 +1153,9 @@ public final class ModConfig {
     }
     private static boolean hasConfigurableSkillCooldown(String roleId) {
         return switch (roleId) {
-            case "archivist", "conspirator", "grappler", "illusionist", "medium", "mortician", "nightmare",
-                "puppeteer", "sniper", "stalker", "stunt_double", "vigilante", "watchman", "zhangshi" -> true;
+            case "archivist", "conspirator", "grappler", "half_spirit", "illusionist", "medium", "mortician",
+                "nightmare", "puppeteer", "sniper", "stalker", "stunt_double", "vigilante", "watchman",
+                "zhangshi" -> true;
             default -> false;
         };
     }
@@ -1168,7 +1169,7 @@ public final class ModConfig {
     private static boolean hasConfigurableShopPrice(String roleId, ShopItem item) {
         return switch (roleId) {
             case "berserker" -> item == ShopItem.PSYCHO_MODE;
-            case "boneharvester", "grappler", "illusionist", "mortician" ->
+            case "boneharvester", "grappler", "half_spirit", "illusionist", "mortician" ->
                 item == ShopItem.KNIFE || item == ShopItem.PSYCHO_MODE;
             case "beast_trapper", "penitent", "puppeteer" -> item == ShopItem.KNIFE;
             case "sniper" -> item == ShopItem.REVOLVER;
@@ -1229,6 +1230,7 @@ public final class ModConfig {
             .withRevolverShopEnabled(false));
         roles.put("mortician", role(0, 100, null, 100, 300, 300).withSkillDuration(5));
         roles.put("grappler", role(0, 90, null, 100, 300, 300).withSkillDuration(2));
+        roles.put("half_spirit", role(0, 120, null, 100, 300, 300));
         roles.put("zhangshi", role(0, 90, null, 100, 300, 300)
             .withSkillDuration(10)
             .withXuezi(150, 200, 1)
@@ -1325,6 +1327,7 @@ public final class ModConfig {
             "conspirator",
             "gambler",
             "grappler",
+            "half_spirit",
             "illusionist",
             "inspector",
             "medium",
@@ -1405,6 +1408,11 @@ public final class ModConfig {
                 shopPrices.addProperty("psycho_mode", settings.shop_prices.psycho_mode);
                 role.addProperty("skill_cooldown_seconds", settings.skill_cooldown_seconds);
                 role.addProperty("skill_duration_seconds", settings.skill_duration_seconds);
+            }
+            case "half_spirit" -> {
+                shopPrices.addProperty("knife", settings.shop_prices.knife);
+                shopPrices.addProperty("psycho_mode", settings.shop_prices.psycho_mode);
+                role.addProperty("skill_cooldown_seconds", settings.skill_cooldown_seconds);
             }
             case "illusionist" -> {
                 shopPrices.addProperty("knife", settings.shop_prices.knife);

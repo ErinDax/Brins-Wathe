@@ -151,7 +151,7 @@ public final class ShopAccess {
                 new ShopEntry(WatheItems.LOCKPICK.getDefaultInstance(), 50, ShopEntry.Type.TOOL),
                 new ShopEntry(WatheItems.CROWBAR.getDefaultInstance(), 25, ShopEntry.Type.TOOL)
             );
-            case "illusionist", "mortician", "grappler" -> GameConstants.SHOP_ENTRIES;
+            case "illusionist", "mortician", "grappler", "half_spirit" -> GameConstants.SHOP_ENTRIES;
             case "zhangshi" -> Stream.concat(
                 GameConstants.SHOP_ENTRIES.stream(),
                 Stream.of(new ShopEntry(

@@ -765,6 +765,9 @@ public class BrinsWatheClient implements ClientModInitializer {
         } else if (gameWorld.isRole(player, ModRoles.MEDIUM)) {
             ClientPlayNetworking.send(new AbilityC2SPacket(
                 AbilityC2SPacket.ABILITY_MEDIUM_JOIN_VOICE, null));
+        } else if (gameWorld.isRole(player, ModRoles.HALF_SPIRIT)) {
+            ClientPlayNetworking.send(new AbilityC2SPacket(
+                AbilityC2SPacket.ABILITY_HALF_SPIRIT_PHASE, null));
         }
     }
     private static void tickInstinctSnapshot(Minecraft client) {

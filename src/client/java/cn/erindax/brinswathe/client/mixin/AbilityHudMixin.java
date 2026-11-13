@@ -266,6 +266,8 @@ public abstract class AbilityHudMixin {
             }
         } else if (gameWorld.isRole(player, ModRoles.GRAPPLER)) {
             renderConfiguredRoleAbilityHud(context, font, ability, player, "grappler", ModRoles.GRAPPLER.color());
+        } else if (gameWorld.isRole(player, ModRoles.HALF_SPIRIT)) {
+            renderConfiguredRoleAbilityHud(context, font, ability, player, "half_spirit", ModRoles.HALF_SPIRIT.color());
         } else if (gameWorld.isRole(player, WatheRoles.VIGILANTE)) {
             renderConfiguredRoleAbilityHud(context, font, ability, player, "vigilante", WatheRoles.VIGILANTE.color());
         }

@@ -762,6 +762,7 @@ public class BrinsWathe implements ModInitializer {
                     case AbilityC2SPacket.ABILITY_ZHUIMU_STRUGGLE_LEFT -> Zhuimu.struggle(player, false);
                     case AbilityC2SPacket.ABILITY_ZHUIMU_STRUGGLE_RIGHT -> Zhuimu.struggle(player, true);
                     case AbilityC2SPacket.ABILITY_GRAPPLER_HOOK -> handleGrapplerHook(player, gameWorld, ability, payload);
+                    case AbilityC2SPacket.ABILITY_HALF_SPIRIT_PHASE -> handleHalfSpiritPhase(player, gameWorld, ability);
                 }
 			}
 		);
@@ -1192,6 +1193,15 @@ public class BrinsWathe implements ModInitializer {
         if (!spendAbilityCost(player, "grappler")) return;
         Grappler.hook(player, target);
         ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("grappler"));
+    }
+    private static void handleHalfSpiritPhase(ServerPlayer player, GameWorldComponent gameWorld,
+                                              AbilityPlayerComponent ability) {
+        if (!gameWorld.isRole(player, ModRoles.HALF_SPIRIT) || ability.cooldown > 0) return;
+        var landing = HalfSpirit.findLanding(player);
+        if (landing == null) return;
+        if (!spendAbilityCost(player, "half_spirit")) return;
+        HalfSpirit.phase(player, landing);
+        ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("half_spirit"));
     }
     private static void brinPayTrapperCatchReward(ServerPlayer trapper) {
         int reward = ModConfig.trapperCatchReward();
