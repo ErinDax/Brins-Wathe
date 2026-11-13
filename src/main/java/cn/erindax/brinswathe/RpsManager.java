@@ -91,6 +91,12 @@ public final class RpsManager {
         cancelFor(player, "message.brinswathe.rps.left");
         inviteCooldowns.remove(player.getUUID());
     }
+    public static void reanchor(ServerPlayer player) {
+        Match match = matches.get(player.getUUID());
+        if (match == null || match.resultTicks >= 0) return;
+        if (player.getUUID().equals(match.playerA)) match.anchorA = copyPos(player);
+        else match.anchorB = copyPos(player);
+    }
     private static void invite(ServerPlayer challenger, @Nullable UUID targetId) {
         if (targetId == null || targetId.equals(challenger.getUUID())) return;
         if (!isPlayable(challenger)) return;
@@ -406,8 +412,8 @@ public final class RpsManager {
     private static final class Match {
         private final UUID playerA;
         private final UUID playerB;
-        private final Vec3 anchorA;
-        private final Vec3 anchorB;
+        private Vec3 anchorA;
+        private Vec3 anchorB;
         private int pickTicksLeft;
         private int choiceA = -1;
         private int choiceB = -1;

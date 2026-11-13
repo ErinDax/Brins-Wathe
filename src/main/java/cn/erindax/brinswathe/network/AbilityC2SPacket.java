@@ -55,6 +55,7 @@ public record AbilityC2SPacket(
     public static final int ABILITY_ZHUIMU_BOAT = 36;
     public static final int ABILITY_ZHUIMU_STRUGGLE_LEFT = 37;
     public static final int ABILITY_ZHUIMU_STRUGGLE_RIGHT = 38;
+    public static final int ABILITY_GRAPPLER_HOOK = 39;
 
     private static void write(RegistryFriendlyByteBuf buf, AbilityC2SPacket packet) {
         buf.writeVarInt(packet.abilityType);

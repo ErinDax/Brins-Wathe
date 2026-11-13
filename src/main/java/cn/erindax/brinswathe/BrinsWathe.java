@@ -759,6 +759,7 @@ public class BrinsWathe implements ModInitializer {
                     case AbilityC2SPacket.ABILITY_ZHUIMU_BOAT -> handleZhuimuBoat(player, gameWorld);
                     case AbilityC2SPacket.ABILITY_ZHUIMU_STRUGGLE_LEFT -> Zhuimu.struggle(player, false);
                     case AbilityC2SPacket.ABILITY_ZHUIMU_STRUGGLE_RIGHT -> Zhuimu.struggle(player, true);
+                    case AbilityC2SPacket.ABILITY_GRAPPLER_HOOK -> handleGrapplerHook(player, gameWorld, ability, payload);
                 }
 			}
 		);
@@ -1174,6 +1175,16 @@ public class BrinsWathe implements ModInitializer {
         zhuimu.markUsed();
         ShopEntry.insertStackInFreeSlot(player, ModItems.ZHUIMU_BOAT.getDefaultInstance());
         player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0F, 1.0F);
+    }
+    private static void handleGrapplerHook(ServerPlayer player, GameWorldComponent gameWorld,
+                                           AbilityPlayerComponent ability, AbilityC2SPacket payload) {
+        if (!gameWorld.isRole(player, ModRoles.GRAPPLER)) return;
+        if (ability.cooldown > 0 || payload.targetId() == null) return;
+        ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
+        if (!Grappler.canHook(player, target)) return;
+        if (!spendAbilityCost(player, "grappler")) return;
+        Grappler.hook(player, target);
+        ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("grappler"));
     }
     private static void brinPayTrapperCatchReward(ServerPlayer trapper) {
         int reward = ModConfig.trapperCatchReward();

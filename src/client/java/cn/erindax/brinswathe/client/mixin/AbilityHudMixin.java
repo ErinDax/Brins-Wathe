@@ -264,6 +264,8 @@ public abstract class AbilityHudMixin {
             if (spy != null && spy.required() > 0 && GameFunctions.isPlayerAliveAndSurvival(player)) {
                 renderSpyHud(context, font, ModRoles.SPY.color(), ability, spy);
             }
+        } else if (gameWorld.isRole(player, ModRoles.GRAPPLER)) {
+            renderConfiguredRoleAbilityHud(context, font, ability, player, "grappler", ModRoles.GRAPPLER.color());
         } else if (gameWorld.isRole(player, WatheRoles.VIGILANTE)) {
             renderConfiguredRoleAbilityHud(context, font, ability, player, "vigilante", WatheRoles.VIGILANTE.color());
         }

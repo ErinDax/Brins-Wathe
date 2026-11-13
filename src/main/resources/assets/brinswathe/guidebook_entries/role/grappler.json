@@ -1,0 +1,10 @@
+{
+  "title": "guidebook.role.brin:grappler",
+  "subtitle": "guidebook.role.title.brin:grappler",
+  "keywords": ["guidebook.role.brin:grappler"],
+  "description": [{
+    "id": "description",
+    "type": "text",
+    "text": "guidebook.role.description.brin:grappler"
+  }]
+}

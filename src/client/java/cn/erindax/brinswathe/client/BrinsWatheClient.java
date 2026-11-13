@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.client;
 
 import cn.erindax.brinswathe.ModRoles;
+import cn.erindax.brinswathe.Grappler;
 import cn.erindax.brinswathe.ModItems;
 import cn.erindax.brinswathe.NoelleAccess;
 import cn.erindax.brinswathe.ModSounds;
@@ -716,6 +717,20 @@ public class BrinsWatheClient implements ClientModInitializer {
             }
             return;
         }
+        if (gameWorld.isRole(player, ModRoles.GRAPPLER)) {
+            if (!GameFunctions.isPlayerAliveAndSurvival(player) || ability.cooldown > 0) return;
+            UUID targetId = findGrapplerTarget(player);
+            if (targetId != null) {
+                ClientPlayNetworking.send(new AbilityC2SPacket(
+                    AbilityC2SPacket.ABILITY_GRAPPLER_HOOK, targetId));
+            } else {
+                player.displayClientMessage(
+                    Component.translatable("message.brinswathe.grappler.no_target", (int) Grappler.RANGE),
+                    true
+                );
+            }
+            return;
+        }
         if (ability.cooldown > 0) return;
         if (gameWorld.isRole(player, ModRoles.TRAPPER)) {
             ClientPlayNetworking.send(new AbilityC2SPacket(AbilityC2SPacket.ABILITY_TRAPPER_PLACE_TRAP, null));
@@ -1060,6 +1075,19 @@ public class BrinsWatheClient implements ClientModInitializer {
         if (hitResult instanceof EntityHitResult entityHit
             && entityHit.getEntity() instanceof Player targetPlayer
             && StalkerComponent.isAimedAt(localPlayer, targetPlayer)) {
+            return targetPlayer.getUUID();
+        }
+        return null;
+    }
+    @Nullable
+    private static UUID findGrapplerTarget(Player localPlayer) {
+        HitResult hitResult = ProjectileUtil.getHitResultOnViewVector(
+            localPlayer,
+            entity -> entity instanceof Player target && Grappler.canTarget(localPlayer, target),
+            Grappler.RANGE
+        );
+        if (hitResult instanceof EntityHitResult entityHit
+            && entityHit.getEntity() instanceof Player targetPlayer) {
             return targetPlayer.getUUID();
         }
         return null;
