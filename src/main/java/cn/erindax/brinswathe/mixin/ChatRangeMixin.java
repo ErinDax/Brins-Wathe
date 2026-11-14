@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.ModRoles;
+import cn.erindax.brinswathe.config.Tunable;
 
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -22,8 +23,6 @@ import java.util.List;
 
 @Mixin(PlayerList.class)
 public abstract class ChatRangeMixin {
-    @Unique
-    private static final double LIVING_CHAT_RANGE = 12.0;
     @Shadow
     public abstract List<ServerPlayer> getPlayers();
     @Inject(method = "broadcastChatMessage(Lnet/minecraft/network/chat/PlayerChatMessage;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/network/chat/ChatType$Bound;)V",
@@ -58,6 +57,7 @@ public abstract class ChatRangeMixin {
         if (senderSpectating) return false;
         if (isMedium) return false;
         if (recipient.level() != sender.level()) return false;
-        return sender.distanceToSqr(recipient) <= LIVING_CHAT_RANGE * LIVING_CHAT_RANGE;
+        double range = Tunable.LIVING_CHAT_RANGE.doubleValue();
+        return sender.distanceToSqr(recipient) <= range * range;
     }
 }

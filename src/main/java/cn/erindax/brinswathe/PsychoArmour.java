@@ -1,12 +1,11 @@
 package cn.erindax.brinswathe;
 
+import cn.erindax.brinswathe.config.Tunable;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 public final class PsychoArmour {
-    private static final double RANGE = 24.0;
-
     private PsychoArmour() {
     }
 
@@ -21,8 +20,9 @@ public final class PsychoArmour {
     private static int nearbyPlayers(Player player) {
         if (!(player.level() instanceof ServerLevel level)) return 1;
         int count = 0;
+        double range = Tunable.PSYCHO_ARMOUR_RANGE.doubleValue();
         for (ServerPlayer other : level.players()) {
-            if (other == player || player.position().distanceTo(other.position()) <= RANGE) {
+            if (other == player || player.position().distanceTo(other.position()) <= range) {
                 count++;
             }
         }

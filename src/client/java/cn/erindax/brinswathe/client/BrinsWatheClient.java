@@ -33,6 +33,7 @@ import cn.erindax.brinswathe.network.BlindFlashS2CPacket;
 import cn.erindax.brinswathe.network.AbilityC2SPacket;
 import cn.erindax.brinswathe.network.ConfigS2CPacket;
 import cn.erindax.brinswathe.IcFlags;
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.network.IcNightVisionS2CPacket;
 import cn.erindax.brinswathe.network.InstinctC2SPacket;
 import cn.erindax.brinswathe.network.InstinctSnapshotS2CPacket;
@@ -501,7 +502,7 @@ public class BrinsWatheClient implements ClientModInitializer {
     private static void tryInviteRps(Minecraft client) {
         LocalPlayer player = client.player;
         if (player == null || !RpsManager.canPlay(player)) return;
-        HitResult hit = findRpsTarget(player, RpsManager.RANGE);
+        HitResult hit = findRpsTarget(player, Tunable.RPS_RANGE.doubleValue());
         if (!(hit instanceof EntityHitResult entityHit)
             || !(entityHit.getEntity() instanceof Player target)
             || !RpsManager.canPlayTogether(player, target)) {
@@ -725,7 +726,10 @@ public class BrinsWatheClient implements ClientModInitializer {
                     AbilityC2SPacket.ABILITY_GRAPPLER_HOOK, targetId));
             } else {
                 player.displayClientMessage(
-                    Component.translatable("message.brinswathe.grappler.no_target", (int) Grappler.RANGE),
+                    Component.translatable(
+                        "message.brinswathe.grappler.no_target",
+                        Tunable.GRAPPLER_HOOK_RANGE.intValue()
+                    ),
                     true
                 );
             }
@@ -1073,7 +1077,7 @@ public class BrinsWatheClient implements ClientModInitializer {
             entity -> entity instanceof Player target
                 && target != localPlayer
                 && GameFunctions.isPlayerAliveAndSurvival(target),
-            StalkerComponent.AIM_RANGE
+            Tunable.STALKER_AIM_RANGE.doubleValue()
         );
         if (hitResult instanceof EntityHitResult entityHit
             && entityHit.getEntity() instanceof Player targetPlayer
@@ -1087,7 +1091,7 @@ public class BrinsWatheClient implements ClientModInitializer {
         HitResult hitResult = ProjectileUtil.getHitResultOnViewVector(
             localPlayer,
             entity -> entity instanceof Player target && Grappler.canTarget(localPlayer, target),
-            Grappler.RANGE
+            Tunable.GRAPPLER_HOOK_RANGE.doubleValue()
         );
         if (hitResult instanceof EntityHitResult entityHit
             && entityHit.getEntity() instanceof Player targetPlayer) {

@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.component;
 
 import cn.erindax.brinswathe.ModRoles;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +25,6 @@ public final class SpyComponent implements AutoSyncedComponent, ServerTickingCom
         ResourceLocation.fromNamespaceAndPath("brinswathe", "spy"),
         SpyComponent.class
     );
-    public static final int MAX_WRONG = 2;
 
     private final Player player;
     private final Set<UUID> guessed = new HashSet<>();
@@ -81,7 +81,11 @@ public final class SpyComponent implements AutoSyncedComponent, ServerTickingCom
             || !gameWorld.isRole(serverPlayer, ModRoles.SPY)) {
             return;
         }
-        this.required = Math.max(1, gameWorld.getRoles().size() / 2 - 1);
+        this.required = Math.max(
+            1,
+            gameWorld.getRoles().size() / Tunable.SPY_REQUIRED_DIVISOR.intValue()
+                - Tunable.SPY_REQUIRED_REDUCTION.intValue()
+        );
         this.sync();
     }
 

@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe;
 
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import java.util.HashMap;
@@ -10,8 +11,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 public final class GamblerSettlement {
-    public static final int WIN_BONUS = 200;
-    public static final int LOSS_PENALTY = 75;
     private static final Map<UUID, Boolean> PENDING = new HashMap<>();
 
     private GamblerSettlement() {
@@ -27,7 +26,9 @@ public final class GamblerSettlement {
             if (game.getRole(player) == null) continue;
             Boolean won = PENDING.remove(player.getUUID());
             if (won == null) continue;
-            int amount = won ? WIN_BONUS : LOSS_PENALTY;
+            int amount = won
+                ? Tunable.GAMBLER_WIN_BONUS.intValue()
+                : Tunable.GAMBLER_LOSS_PENALTY.intValue();
             PlayerShopComponent.KEY.get(player).addToBalance(won ? amount : -amount);
             player.displayClientMessage(
                 Component.translatable(

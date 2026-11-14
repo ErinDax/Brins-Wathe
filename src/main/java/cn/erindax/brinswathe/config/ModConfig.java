@@ -25,7 +25,7 @@ public final class ModConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 52;
+    private static final int CONFIG_VERSION = 55;
     private static final int ROLE_BALANCE_MIGRATION_VERSION = 39;
     private static final int AVENGER_INSTINCT_MIGRATION_VERSION = 40;
     private static final int PUPPETEER_KNIFE_MIGRATION_VERSION = 41;
@@ -150,7 +150,8 @@ public final class ModConfig {
             current.announcement,
             new AfkKickSettings(enabled, settings.idle_seconds, settings.countdown_seconds),
             current.roles,
-            current.harpy
+            current.harpy,
+            current.tunables
         );
         if (configPath == null) {
             configPath = FabricLoader.getInstance().getConfigDir().resolve(FILE_NAME);
@@ -267,7 +268,8 @@ public final class ModConfig {
                 kind == HarpyCountKind.KILLER ? value : harpy.killer_role_count,
                 kind == HarpyCountKind.VIGILANTE ? value : harpy.vigilante_role_count,
                 copyBlacklist(harpy.role_modifier_blacklist)
-            )
+            ),
+            current.tunables
         );
         if (configPath == null) {
             configPath = FabricLoader.getInstance().getConfigDir().resolve(FILE_NAME);
@@ -292,7 +294,8 @@ public final class ModConfig {
                 current.harpy.killer_role_count,
                 current.harpy.vigilante_role_count,
                 blacklist
-            )
+            ),
+            current.tunables
         );
         if (configPath == null) {
             configPath = FabricLoader.getInstance().getConfigDir().resolve(FILE_NAME);
@@ -462,6 +465,9 @@ public final class ModConfig {
             case REVOLVER -> prices.revolver;
             case PSYCHO_MODE -> prices.psycho_mode;
         };
+    }
+    static double tunable(Tunable tunable) {
+        return current.tunables[tunable.ordinal()];
     }
     private static RoleSettings settings(String roleId) {
         RoleSettings settings = current.roles.get(roleId);
@@ -745,7 +751,25 @@ public final class ModConfig {
                 , configurableOptionalInt(role, "struggle_presses", fallback.struggle_presses, roleId, "zhuimu".equals(roleId))
             ));
         }
-        return new Data(CONFIG_VERSION, announcement, afkKick, parsedRoles, harpy);
+        return new Data(CONFIG_VERSION, announcement, afkKick, parsedRoles, harpy, parseTunables(root));
+    }
+    private static double[] parseTunables(JsonObject root) {
+        double[] values = Tunable.defaults();
+        for (Tunable tunable : Tunable.values()) {
+            JsonObject section = root;
+            for (String parent : tunable.parents()) section = objectOrEmpty(section, parent);
+            if (!section.has(tunable.key())) continue;
+            JsonElement element = section.get(tunable.key());
+            if (!element.isJsonPrimitive() || !element.getAsJsonPrimitive().isNumber()) {
+                throw new IllegalArgumentException(tunable.path() + " must be " + tunable.requirement());
+            }
+            double value = element.getAsDouble();
+            if (!tunable.accepts(value)) {
+                throw new IllegalArgumentException(tunable.path() + " must be " + tunable.requirement());
+            }
+            values[tunable.ordinal()] = value;
+        }
+        return values;
     }
     private static int sourceVersion(String json) {
         JsonElement rootElement = parseJson5(json);
@@ -1245,7 +1269,8 @@ public final class ModConfig {
             List.of(),
             new AfkKickSettings(true, 60, 60),
             roles,
-            HarpyAssignmentSettings.defaults()
+            HarpyAssignmentSettings.defaults(),
+            Tunable.defaults()
         );
     }
     private static boolean brinRoleStartsBroke(String roleId) {
@@ -1320,6 +1345,15 @@ public final class ModConfig {
         }
         harpy.add("role_modifier_blacklist", blacklist);
         root.add("harpy", harpy);
+        for (Tunable tunable : Tunable.values()) {
+            if (tunable.roleId() != null) continue;
+            JsonObject section = root;
+            for (String parent : tunable.parents()) {
+                if (!section.has(parent)) section.add(parent, new JsonObject());
+                section = section.getAsJsonObject(parent);
+            }
+            addTunable(section, tunable, data);
+        }
 
         JsonObject roles = new JsonObject();
         String[] configurableRoles = {
@@ -1328,24 +1362,37 @@ public final class ModConfig {
             "berserker",
             "bomber",
             "boneharvester",
+            "compensator",
+            "conductor",
             "cowboy",
             "conspirator",
+            "executioner",
             "gambler",
             "grappler",
             "half_spirit",
             "illusionist",
+            "insane_killer",
             "inspector",
             "medium",
+            "mimic",
+            "morphling",
             "mortician",
+            "muzzler",
+            "necromancer",
             "nightmare",
+            "noisemaker",
             "penitent",
             "puppeteer",
             "sniper",
+            "spy",
             "stalker",
             "stunt_double",
+            "subverter",
             "terrorist",
             "beast_trapper",
             "valentina",
+            "vigilante",
+            "voodoo",
             "watchman",
             "zhangshi",
             "zhuimu"
@@ -1483,6 +1530,10 @@ public final class ModConfig {
                 role.addProperty("trap_catch_reward", settings.trap_catch_reward);
             }
             case "valentina" -> role.addProperty("skill_duration_seconds", settings.skill_duration_seconds);
+            case "vigilante" -> {
+                role.addProperty("skill_cost", settings.skill_cost);
+                role.addProperty("skill_cooldown_seconds", settings.skill_cooldown_seconds);
+            }
             case "watchman" -> {
                 role.addProperty("skill_cost", settings.skill_cost);
                 role.addProperty("skill_cooldown_seconds", settings.skill_cooldown_seconds);
@@ -1503,11 +1554,22 @@ public final class ModConfig {
             default -> {
             }
         }
-        if (settings.initial_balance != null) {
+        for (Tunable tunable : Tunable.values()) {
+            if (roleId.equals(tunable.roleId())) addTunable(role, tunable, data);
+        }
+        if (settings != null && settings.initial_balance != null) {
             role.addProperty("initial_balance", settings.initial_balance);
         }
         if (shopPrices.size() > 0) role.add("shop_prices", shopPrices);
         return role;
+    }
+    private static void addTunable(JsonObject section, Tunable tunable, Data data) {
+        double value = data.tunables[tunable.ordinal()];
+        if (tunable.decimal()) {
+            section.addProperty(tunable.key(), value);
+        } else {
+            section.addProperty(tunable.key(), (int) Math.round(value));
+        }
     }
     public enum ShopItem {
         KNIFE,
@@ -1520,19 +1582,22 @@ public final class ModConfig {
         public final AfkKickSettings afk_kick;
         public final Map<String, RoleSettings> roles;
         public final HarpyAssignmentSettings harpy;
+        private final double[] tunables;
 
         private Data(
             int configVersion,
             List<String> announcement,
             AfkKickSettings afkKick,
             Map<String, RoleSettings> roles,
-            HarpyAssignmentSettings harpy
+            HarpyAssignmentSettings harpy,
+            double[] tunables
         ) {
             this.config_version = configVersion;
             this.announcement = announcement;
             this.afk_kick = afkKick;
             this.roles = roles;
             this.harpy = harpy;
+            this.tunables = tunables;
         }
     }
     public static final class HarpyAssignmentSettings {

@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe;
 
 import cn.erindax.brinswathe.component.ArchivistComponent;
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 import cn.erindax.brinswathe.network.ArchivistWitnessS2CPacket;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -18,7 +19,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 
 public final class ArchivistWitness {
-    public static final int HIGHLIGHT_TICKS = 10 * 20;
     private static final ResourceLocation INTERACT_PHASE =
         ResourceLocation.fromNamespaceAndPath("brinswathe", "archivist_witness");
 
@@ -43,6 +43,7 @@ public final class ArchivistWitness {
         GameWorldComponent game = GameWorldComponent.KEY.get(player.level());
         if (game.getGameStatus() != GameWorldComponent.GameStatus.ACTIVE) return;
         UUID bodyId = body.getUUID();
+        int glowTicks = Tunable.ARCHIVIST_WITNESS_GLOW_SECONDS.ticks();
         for (ServerPlayer archivist : player.server.getPlayerList().getPlayers()) {
             if (archivist == player || archivist.level() != player.level()) continue;
             if (!game.isRole(archivist, ModRoles.ARCHIVIST)) continue;
@@ -54,7 +55,9 @@ public final class ArchivistWitness {
                     .withColor(ModRoles.ARCHIVIST.color()),
                 true
             );
-            ServerPlayNetworking.send(archivist, new ArchivistWitnessS2CPacket(player.getUUID(), HIGHLIGHT_TICKS));
+            if (glowTicks > 0) {
+                ServerPlayNetworking.send(archivist, new ArchivistWitnessS2CPacket(player.getUUID(), glowTicks));
+            }
         }
     }
 }

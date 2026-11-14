@@ -10,6 +10,7 @@ import cn.erindax.brinswathe.RoleWeights;
 import cn.erindax.brinswathe.admin.Remark;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.musicbox.MusicBox;
 import cn.erindax.brinswathe.network.IcNightVisionS2CPacket;
 import com.mojang.authlib.GameProfile;
@@ -612,7 +613,7 @@ public final class AdminCommands {
     }
 
     private static String earlyFallStatus() {
-        return "开局 " + Punishment.EARLY_FALL_SECONDS + " 秒内掉出列车, 下一局受惩罚: "
+        return "开局 " + Tunable.EARLY_FALL_SECONDS.intValue() + " 秒内掉出列车, 下一局受惩罚: "
             + (IcFlags.punishEarlyFall ? "开启" : "关闭");
     }
 

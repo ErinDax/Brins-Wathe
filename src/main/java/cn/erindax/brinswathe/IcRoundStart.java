@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe;
 
 import cn.erindax.brinswathe.component.ResurrectedComponent;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -83,6 +84,7 @@ public final class IcRoundStart {
         if (!hasNecromancer(game, world) && !hasInsane) {
             return;
         }
+        int teamReward = Tunable.BAD_GUESSER_TEAM_REWARD.intValue();
         for (UUID guesserId : guessers) {
             modifiers.getModifiers(guesserId).remove(guesser);
             Player guesserPlayer = world.getPlayerByUUID(guesserId);
@@ -90,12 +92,14 @@ public final class IcRoundStart {
             ModifierRemoved.EVENT.invoker().removeModifier(guesserPlayer, guesser);
             modifiers.addModifier(guesserId, IcModifiers.GUESSER2);
             ModifierAssigned.EVENT.invoker().assignModifier(guesserPlayer, IcModifiers.GUESSER2);
-            guesserPlayer.sendSystemMessage(Component.literal("你的猜测者能力已被禁用,替换为全队资金50！").withStyle(ChatFormatting.GOLD));
+            guesserPlayer.sendSystemMessage(
+                Component.literal("你的猜测者能力已被禁用,替换为全队资金" + teamReward + "！").withStyle(ChatFormatting.GOLD)
+            );
             for (UUID killerId : game.getAllKillerTeamPlayers()) {
                 Player killer = world.getPlayerByUUID(killerId);
                 if (killer == null) continue;
                 PlayerShopComponent shop = PlayerShopComponent.KEY.get(killer);
-                if (shop != null) shop.addToBalance(50);
+                if (shop != null) shop.addToBalance(teamReward);
             }
         }
     }

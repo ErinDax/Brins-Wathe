@@ -7,6 +7,7 @@ import cn.erindax.brinswathe.component.NightmareComponent;
 import cn.erindax.brinswathe.component.PenitentComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import cn.erindax.brinswathe.component.ResurrectedComponent;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -38,7 +39,6 @@ import org.agmas.harpymodloader.component.WorldModifierComponent;
 import org.agmas.harpymodloader.events.ModifierAssigned;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 public final class ShopAccess {
-    private static final int GAMBLER_LOCKPICK_PRICE = 75;
     private static final ResourceLocation MASTER_KEY_ID =
         ResourceLocation.fromNamespaceAndPath("noellesroles", "master_key");
     private static final ResourceLocation STUPID_EXPRESS_THIEF_ID =
@@ -131,7 +131,7 @@ public final class ShopAccess {
                 .filter(entry -> entry.stack().is(WatheItems.FIRECRACKER)
                     || entry.stack().is(WatheItems.LOCKPICK))
                 .map(entry -> entry.stack().is(WatheItems.LOCKPICK)
-                    ? new RepricedShopEntry(entry, GAMBLER_LOCKPICK_PRICE)
+                    ? new RepricedShopEntry(entry, Tunable.GAMBLER_LOCKPICK_PRICE.intValue())
                     : entry)
                 .toList();
             case "penitent" -> Stream.concat(
@@ -148,8 +148,16 @@ public final class ShopAccess {
                     ModConfig.shopPrice(roleId, ShopItem.PSYCHO_MODE),
                     ShopEntry.Type.TOOL
                 ),
-                new ShopEntry(WatheItems.LOCKPICK.getDefaultInstance(), 50, ShopEntry.Type.TOOL),
-                new ShopEntry(WatheItems.CROWBAR.getDefaultInstance(), 25, ShopEntry.Type.TOOL)
+                new ShopEntry(
+                    WatheItems.LOCKPICK.getDefaultInstance(),
+                    Tunable.BERSERKER_LOCKPICK_PRICE.intValue(),
+                    ShopEntry.Type.TOOL
+                ),
+                new ShopEntry(
+                    WatheItems.CROWBAR.getDefaultInstance(),
+                    Tunable.BERSERKER_CROWBAR_PRICE.intValue(),
+                    ShopEntry.Type.TOOL
+                )
             );
             case "illusionist", "mortician", "grappler", "half_spirit" -> GameConstants.SHOP_ENTRIES;
             case "zhangshi" -> Stream.concat(
@@ -368,7 +376,11 @@ public final class ShopAccess {
         return stack;
     }
     private static List<ShopEntry> voodooShop() {
-        return List.of(new ShopEntry(voodooNightVisionStack(), 300, ShopEntry.Type.TOOL));
+        return List.of(new ShopEntry(
+            voodooNightVisionStack(),
+            Tunable.VOODOO_NIGHT_VISION_PRICE.intValue(),
+            ShopEntry.Type.TOOL
+        ));
     }
     private static ItemStack voodooNightVisionStack() {
         ItemStack stack = new ItemStack(Items.SPLASH_POTION);
@@ -377,7 +389,11 @@ public final class ShopAccess {
             new PotionContents(
                 java.util.Optional.empty(),
                 java.util.Optional.empty(),
-                List.of(new MobEffectInstance(MobEffects.NIGHT_VISION, 1200, 0, false, true, true))
+                List.of(new MobEffectInstance(
+                    MobEffects.NIGHT_VISION,
+                    Tunable.VOODOO_NIGHT_VISION_SECONDS.ticks(),
+                    0, false, true, true
+                ))
             )
         );
         stack.set(DataComponents.CUSTOM_NAME, Component.literal("夜视药水瓶"));
@@ -385,13 +401,16 @@ public final class ShopAccess {
     }
     private static List<ShopEntry> mimicShop() {
         return List.of(
-            new ShopEntry(WatheItems.LOCKPICK.getDefaultInstance(), 50, ShopEntry.Type.TOOL),
-            new ShopEntry(delusionVialStack(), 30, ShopEntry.Type.POISON),
-            new ShopEntry(WatheItems.FIRECRACKER.getDefaultInstance(), 5, ShopEntry.Type.TOOL),
-            new ShopEntry(WatheItems.NOTE.getDefaultInstance(), 5, ShopEntry.Type.TOOL),
-            new ShopEntry(WatheItems.REVOLVER.getDefaultInstance(), 300, ShopEntry.Type.WEAPON),
+            entry(WatheItems.LOCKPICK.getDefaultInstance(), Tunable.MIMIC_LOCKPICK_PRICE, ShopEntry.Type.TOOL),
+            entry(delusionVialStack(), Tunable.MIMIC_DELUSION_VIAL_PRICE, ShopEntry.Type.POISON),
+            entry(WatheItems.FIRECRACKER.getDefaultInstance(), Tunable.MIMIC_FIRECRACKER_PRICE, ShopEntry.Type.TOOL),
+            entry(WatheItems.NOTE.getDefaultInstance(), Tunable.MIMIC_NOTE_PRICE, ShopEntry.Type.TOOL),
+            entry(WatheItems.REVOLVER.getDefaultInstance(), Tunable.MIMIC_REVOLVER_PRICE, ShopEntry.Type.WEAPON),
             new MiceyesShopEntry()
         );
+    }
+    private static ShopEntry entry(ItemStack stack, Tunable price, ShopEntry.Type type) {
+        return new ShopEntry(stack, price.intValue(), type);
     }
     private static List<ShopEntry> noisemakerShop() {
         return List.of(
@@ -419,20 +438,21 @@ public final class ShopAccess {
         ItemStack stack = WatheItems.FIRECRACKER.getDefaultInstance();
         stack.set(DataComponents.CUSTOM_NAME, Component.literal("大叫").withStyle(ChatFormatting.YELLOW));
         stack.set(DataComponents.LORE, new ItemLore(List.of(
-            Component.literal("自身与标记目标发光 30 秒").withColor(0xAAAAAA)
+            Component.literal("自身与标记目标发光 " + Tunable.NOISEMAKER_SHOUT_GLOW_SECONDS.text() + " 秒")
+                .withColor(0xAAAAAA)
         )));
         return stack;
     }
     private static List<ShopEntry> necromancerShop() {
         return List.of(
             new NecromancerRefreshShopEntry(),
-            new ShopEntry(WatheItems.KNIFE.getDefaultInstance(), 200, ShopEntry.Type.WEAPON),
-            new ShopEntry(WatheItems.GRENADE.getDefaultInstance(), 350, ShopEntry.Type.WEAPON),
-            new ShopEntry(WatheItems.FIRECRACKER.getDefaultInstance(), 10, ShopEntry.Type.TOOL),
-            new ShopEntry(WatheItems.LOCKPICK.getDefaultInstance(), 50, ShopEntry.Type.TOOL),
-            new ShopEntry(WatheItems.CROWBAR.getDefaultInstance(), 25, ShopEntry.Type.TOOL),
-            new ShopEntry(WatheItems.BODY_BAG.getDefaultInstance(), 200, ShopEntry.Type.TOOL),
-            new ShopEntry(new ItemStack(WatheItems.NOTE, 4), 10, ShopEntry.Type.TOOL)
+            entry(WatheItems.KNIFE.getDefaultInstance(), Tunable.NECROMANCER_KNIFE_PRICE, ShopEntry.Type.WEAPON),
+            entry(WatheItems.GRENADE.getDefaultInstance(), Tunable.NECROMANCER_GRENADE_PRICE, ShopEntry.Type.WEAPON),
+            entry(WatheItems.FIRECRACKER.getDefaultInstance(), Tunable.NECROMANCER_FIRECRACKER_PRICE, ShopEntry.Type.TOOL),
+            entry(WatheItems.LOCKPICK.getDefaultInstance(), Tunable.NECROMANCER_LOCKPICK_PRICE, ShopEntry.Type.TOOL),
+            entry(WatheItems.CROWBAR.getDefaultInstance(), Tunable.NECROMANCER_CROWBAR_PRICE, ShopEntry.Type.TOOL),
+            entry(WatheItems.BODY_BAG.getDefaultInstance(), Tunable.NECROMANCER_BODY_BAG_PRICE, ShopEntry.Type.TOOL),
+            entry(new ItemStack(WatheItems.NOTE, 4), Tunable.NECROMANCER_NOTE_PRICE, ShopEntry.Type.TOOL)
         );
     }
     private static ItemStack necromancerRefreshStack() {
@@ -477,7 +497,7 @@ public final class ShopAccess {
     }
     static final class NecromancerRefreshShopEntry extends ShopEntry {
         private NecromancerRefreshShopEntry() {
-            super(necromancerRefreshStack(), 350, Type.WEAPON);
+            super(necromancerRefreshStack(), Tunable.NECROMANCER_REFRESH_PRICE.intValue(), Type.WEAPON);
         }
         @Override
         public boolean onBuy(Player player) {
@@ -486,7 +506,11 @@ public final class ShopAccess {
     }
     static final class NoisemakerFirecrackerShopEntry extends ShopEntry {
         private NoisemakerFirecrackerShopEntry() {
-            super(WatheItems.FIRECRACKER.getDefaultInstance(), 75, Type.TOOL);
+            super(
+                WatheItems.FIRECRACKER.getDefaultInstance(),
+                Tunable.NOISEMAKER_FIRECRACKER_PRICE.intValue(),
+                Type.TOOL
+            );
         }
         @Override
         public boolean onBuy(Player player) {
@@ -495,7 +519,7 @@ public final class ShopAccess {
     }
     static final class NoisemakerShoutShopEntry extends ShopEntry {
         private NoisemakerShoutShopEntry() {
-            super(noisemakerShoutStack(), 100, Type.TOOL);
+            super(noisemakerShoutStack(), Tunable.NOISEMAKER_SHOUT_PRICE.intValue(), Type.TOOL);
         }
         @Override
         public boolean onBuy(Player player) {
@@ -507,13 +531,30 @@ public final class ShopAccess {
             PlayerShopComponent shop = PlayerShopComponent.KEY.get(player);
             if (shop == null) return false;
             if (shop.balance >= 0) {
-                shop.balance -= 100;
+                int price = Tunable.NOISEMAKER_SHOUT_PRICE.intValue();
+                shop.balance -= price;
                 shop.sync();
-                player.displayClientMessage(Component.literal("购买成功！花费 100 金币").withStyle(ChatFormatting.GREEN), true);
-                player.getCooldowns().addCooldown(WatheItems.FIRECRACKER, 800);
+                player.displayClientMessage(
+                    Component.literal("购买成功！花费 " + price + " 金币").withStyle(ChatFormatting.GREEN),
+                    true
+                );
+                player.getCooldowns().addCooldown(
+                    WatheItems.FIRECRACKER,
+                    Tunable.NOISEMAKER_SHOUT_COOLDOWN_SECONDS.ticks()
+                );
             } else {
-                player.getCooldowns().addCooldown(WatheItems.FIRECRACKER, 2400);
-                player.displayClientMessage(Component.literal("金币不足！赊账购买，物品进入120秒冷却").withStyle(ChatFormatting.DARK_PURPLE), true);
+                player.getCooldowns().addCooldown(
+                    WatheItems.FIRECRACKER,
+                    Tunable.NOISEMAKER_SHOUT_CREDIT_COOLDOWN_SECONDS.ticks()
+                );
+                player.displayClientMessage(
+                    Component.literal(
+                        "金币不足！赊账购买，物品进入"
+                            + Tunable.NOISEMAKER_SHOUT_CREDIT_COOLDOWN_SECONDS.text()
+                            + "秒冷却"
+                    ).withStyle(ChatFormatting.DARK_PURPLE),
+                    true
+                );
             }
             applyNoisemakerGlow(serverPlayer);
             return true;
@@ -521,7 +562,7 @@ public final class ShopAccess {
     }
     static final class MiceyesShopEntry extends ShopEntry {
         private MiceyesShopEntry() {
-            super(miceyesStack(), 350, Type.TOOL);
+            super(miceyesStack(), Tunable.MIMIC_MICEYES_PRICE.intValue(), Type.TOOL);
         }
         @Override
         public boolean onBuy(Player player) {
@@ -537,12 +578,14 @@ public final class ShopAccess {
         }
     }
     private static void applyNoisemakerGlow(ServerPlayer player) {
-        player.addEffect(new MobEffectInstance(MobEffects.GLOWING, 600, 0, false, false));
+        int glowTicks = Tunable.NOISEMAKER_SHOUT_GLOW_SECONDS.ticks();
+        if (glowTicks <= 0) return;
+        player.addEffect(new MobEffectInstance(MobEffects.GLOWING, glowTicks, 0, false, false));
         UUID targetId = NoelleAccess.voodooTarget(player);
         if (targetId == null) return;
         Player target = player.level().getPlayerByUUID(targetId);
         if (target != null && GameFunctions.isPlayerAliveAndSurvival(target) && target != player) {
-            target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 600, 0, false, false));
+            target.addEffect(new MobEffectInstance(MobEffects.GLOWING, glowTicks, 0, false, false));
         }
     }
     private static final class RepricedShopEntry extends ShopEntry {

@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe;
 
 import cn.erindax.brinswathe.component.CompensatorComponent;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -18,7 +19,6 @@ import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 
 public final class CompensatorPassive {
-    private static final int SWITCH_GRANT = 150;
     private static boolean resolvingRetaliation;
 
     private CompensatorPassive() {
@@ -58,7 +58,7 @@ public final class CompensatorPassive {
 
         ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
         PlayerShopComponent shop = PlayerShopComponent.KEY.get(player);
-        if (shop != null) shop.addToBalance(SWITCH_GRANT);
+        if (shop != null) shop.addToBalance(Tunable.COMPENSATOR_SWITCH_REWARD.intValue());
         gameWorld.sync();
         player.setHealth(player.getMaxHealth());
         player.playNotifySound(

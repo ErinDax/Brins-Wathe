@@ -4,6 +4,7 @@ import cn.erindax.brinswathe.Faction;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.Subversion;
 import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.core.HolderLookup;
@@ -25,7 +26,6 @@ public final class SubverterComponent implements AutoSyncedComponent, ServerTick
         ResourceLocation.fromNamespaceAndPath("brinswathe", "subverter"),
         SubverterComponent.class
     );
-    public static final int DEADLINE_TICKS = 30 * 20;
 
     private final Player player;
     private int deadlineTicks;
@@ -51,7 +51,7 @@ public final class SubverterComponent implements AutoSyncedComponent, ServerTick
 
     public void start() {
         this.side = null;
-        this.deadlineTicks = DEADLINE_TICKS;
+        this.deadlineTicks = Tunable.SUBVERTER_TIMEOUT_SECONDS.ticks();
         this.sync();
     }
 
@@ -86,7 +86,10 @@ public final class SubverterComponent implements AutoSyncedComponent, ServerTick
         this.deadlineTicks--;
         if (this.deadlineTicks > 0) return;
         this.sync();
-        serverPlayer.displayClientMessage(Component.translatable("message.brinswathe.subverter.timeout"), false);
+        serverPlayer.displayClientMessage(Component.translatable(
+            "message.brinswathe.subverter.timeout",
+            Tunable.SUBVERTER_TIMEOUT_SECONDS.intValue()
+        ), false);
         Subversion.punish(serverPlayer);
     }
 

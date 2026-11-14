@@ -3,6 +3,7 @@ package cn.erindax.brinswathe.component;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.CowboyDuel;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -81,7 +82,7 @@ public final class ZhangshiComponent implements AutoSyncedComponent, ServerTicki
         if (!this.xueziActive || this.endingTicks > 0) return;
         PlayerPoisonComponent poison = PlayerPoisonComponent.KEY.get(this.player);
         if (poison != null) poison.reset();
-        this.endingTicks = 100;
+        this.endingTicks = Tunable.ZHANGSHI_XUEZI_END_DELAY_SECONDS.ticks();
         sync();
         if (this.player instanceof ServerPlayer serverPlayer) {
             serverPlayer.playNotifySound(SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.8F, 1.2F);

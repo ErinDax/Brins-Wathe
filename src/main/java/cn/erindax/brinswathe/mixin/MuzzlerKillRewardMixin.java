@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.mixin;
 
-import cn.erindax.brinswathe.component.MuzzlerAbilityComponent;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -36,7 +36,7 @@ public abstract class MuzzlerKillRewardMixin {
         if (!game.isRole(silencer, StarryExpressRoles.MUZZLER)) return;
         PlayerShopComponent shop = PlayerShopComponent.KEY.get(silencer);
         if (shop == null) return;
-        shop.addToBalance(MuzzlerAbilityComponent.SILENCE_KILL_REWARD);
+        shop.addToBalance(Tunable.MUZZLER_SILENCE_KILL_REWARD.intValue());
         shop.sync();
     }
 }

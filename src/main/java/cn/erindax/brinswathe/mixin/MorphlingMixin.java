@@ -1,9 +1,9 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.NoelleAccess;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
-import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import java.util.UUID;
 import net.minecraft.network.chat.Component;
@@ -50,7 +50,7 @@ public abstract class MorphlingMixin {
             return;
         }
         this.disguise = id;
-        this.setMorphTicks(GameConstants.getInTicks(0, 120));
+        this.setMorphTicks(Tunable.MORPHLING_MORPH_SECONDS.ticks());
         GameWorldComponent game = GameWorldComponent.KEY.get(this.player.level());
         Role role = game.getRole(id);
         if (role != null) {

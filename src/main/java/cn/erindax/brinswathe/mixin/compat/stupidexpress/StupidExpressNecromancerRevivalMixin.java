@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe.mixin.compat.stupidexpress;
 
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 import cn.erindax.brinswathe.entity.BoneharvestedCorpse;
 import cn.erindax.brinswathe.voice.ModVoiceChatPlugin;
@@ -47,9 +48,11 @@ public abstract class StupidExpressNecromancerRevivalMixin {
                 && level instanceof ServerLevel serverLevel) {
                 ServerPlayer revived = (ServerPlayer) serverLevel.getPlayerByUUID(body.getPlayerUuid());
                 if (revived != null) {
-                    MobEffectInstance glow = new MobEffectInstance(MobEffects.GLOWING, 300, 0, false, false);
-                    revived.addEffect(glow);
-                    necromancer.addEffect(new MobEffectInstance(MobEffects.GLOWING, 300, 0, false, false));
+                    int glowTicks = Tunable.NECROMANCER_REVIVE_GLOW_SECONDS.ticks();
+                    if (glowTicks > 0) {
+                        revived.addEffect(new MobEffectInstance(MobEffects.GLOWING, glowTicks, 0, false, false));
+                        necromancer.addEffect(new MobEffectInstance(MobEffects.GLOWING, glowTicks, 0, false, false));
+                    }
                     ModVoiceChatPlugin.addPlayer(necromancer.getUUID());
                     ModVoiceChatPlugin.addPlayer(revived.getUUID());
                 }

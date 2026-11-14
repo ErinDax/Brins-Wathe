@@ -5,6 +5,7 @@ import cn.erindax.brinswathe.Spy;
 import cn.erindax.brinswathe.client.RoleLabels;
 import cn.erindax.brinswathe.component.RoundRecapComponent;
 import cn.erindax.brinswathe.component.SpyComponent;
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.network.SpyGuessC2SPacket;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
@@ -122,7 +123,7 @@ public final class SpyGuessScreen extends Screen {
                 spy.correct(),
                 spy.required(),
                 spy.wrong(),
-                SpyComponent.MAX_WRONG
+                Tunable.SPY_MAX_WRONG_GUESSES.intValue()
             ),
             this.width / 2,
             24,

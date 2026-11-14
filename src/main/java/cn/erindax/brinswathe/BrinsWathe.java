@@ -29,6 +29,7 @@ import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
 import cn.erindax.brinswathe.component.ZhuimuComponent;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 import cn.erindax.brinswathe.musicbox.MusicBox;
 import cn.erindax.brinswathe.network.ArchivistWitnessS2CPacket;
@@ -136,8 +137,6 @@ import java.util.*;
 public class BrinsWathe implements ModInitializer {
 	public static final String MOD_ID = "brinswathe";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	private static final int LOW_MOOD_DEATH_DELAY_TICKS = 60 * 20;
-	private static final float VIGILANTE_DETECT_RANGE = 2.5F;
 	private static final Map<UUID, Integer> LOW_MOOD_DEATH_TIMERS = new HashMap<>();
 
 	@Override
@@ -478,7 +477,7 @@ public class BrinsWathe implements ModInitializer {
 			LOW_MOOD_DEATH_TIMERS.remove(playerId);
 			return;
 		}
-		int remainingTicks = LOW_MOOD_DEATH_TIMERS.getOrDefault(playerId, LOW_MOOD_DEATH_DELAY_TICKS);
+		int remainingTicks = LOW_MOOD_DEATH_TIMERS.getOrDefault(playerId, Tunable.LOW_MOOD_DEATH_SECONDS.ticks());
 		if (remainingTicks <= 1) {
 			LOW_MOOD_DEATH_TIMERS.remove(playerId);
 			GameFunctions.killPlayer(player, true, null, GameConstants.DeathReasons.GENERIC);
@@ -1062,7 +1061,7 @@ public class BrinsWathe implements ModInitializer {
 		ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("nightmare"));
 		player.playNotifySound(SoundEvents.SCULK_CLICKING, SoundSource.PLAYERS, 1.0f, 0.5f);
 		player.displayClientMessage(
-			Component.literal("已播种 " + target.getName().getString() + "  护盾 " + comp.getShieldLayers() + "/" + NightmareComponent.MAX_SHIELD_LAYERS),
+			Component.literal("已播种 " + target.getName().getString() + "  护盾 " + comp.getShieldLayers() + "/" + Tunable.NIGHTMARE_MAX_SHIELD_LAYERS.intValue()),
 			true);
 	}
 	private void handleIllusionistClones(ServerPlayer player, GameWorldComponent gameWorld,
@@ -1223,11 +1222,12 @@ public class BrinsWathe implements ModInitializer {
         MuzzlerAbilityComponent muzzler = MuzzlerAbilityComponent.KEY.get(player);
         if (muzzler == null || muzzler.getTicks() > 0) return;
         PlayerShopComponent shop = PlayerShopComponent.KEY.get(player);
-        if (shop == null || shop.balance < MuzzlerAbilityComponent.ABILITY_COST) return;
-        shop.balance -= MuzzlerAbilityComponent.ABILITY_COST;
+        int cost = Tunable.MUZZLER_SILENCE_COST.intValue();
+        if (shop == null || shop.balance < cost) return;
+        shop.balance -= cost;
         shop.sync();
-        ability.setCooldown(MuzzlerAbilityComponent.ABILITY_COOLDOWN_TICKS);
-        muzzler.setTicks(MuzzlerAbilityComponent.ABILITY_DURATION_TICKS);
+        ability.setCooldown(Tunable.MUZZLER_SILENCE_COOLDOWN_SECONDS.ticks());
+        muzzler.setTicks(Tunable.MUZZLER_SILENCE_DURATION_SECONDS.ticks());
     }
     private static void handleVigilanteDetect(ServerPlayer player, GameWorldComponent gameWorld,
                                               AbilityPlayerComponent ability, AbilityC2SPacket payload) {
@@ -1236,7 +1236,7 @@ public class BrinsWathe implements ModInitializer {
         if (ability == null || ability.cooldown > 0 || payload.targetId() == null) return;
         ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
         if (target == null || target == player || !GameFunctions.isPlayerAliveAndSurvival(target)) return;
-        if (target.distanceTo(player) > VIGILANTE_DETECT_RANGE) return;
+        if (target.distanceTo(player) > Tunable.VIGILANTE_DETECT_RANGE.doubleValue()) return;
         Role targetRole = gameWorld.getRole(target);
         if (targetRole == null) return;
         if (!spendAbilityCost(player, "vigilante")) return;
@@ -1261,11 +1261,12 @@ public class BrinsWathe implements ModInitializer {
         if (!NoelleAccess.isRole(gameWorld, player, NoelleAccess.CONDUCTOR_ID)) return;
         if (NoelleAccess.noelleAbilityCooldown(player) > 0) return;
         PlayerShopComponent shop = PlayerShopComponent.KEY.get(player);
-        if (shop == null || shop.balance < NoelleAccess.CONDUCTOR_ARMOR_COST) return;
+        int cost = Tunable.CONDUCTOR_ARMOR_COST.intValue();
+        if (shop == null || shop.balance < cost) return;
         if (!NoelleAccess.addBartenderArmor(player)) return;
-        shop.balance -= NoelleAccess.CONDUCTOR_ARMOR_COST;
+        shop.balance -= cost;
         shop.sync();
-        NoelleAccess.setNoelleAbilityCooldown(player, NoelleAccess.CONDUCTOR_ARMOR_COOLDOWN_TICKS);
+        NoelleAccess.setNoelleAbilityCooldown(player, Tunable.CONDUCTOR_ARMOR_COOLDOWN_SECONDS.ticks());
     }
     private static void handleMorphlingMorph(ServerPlayer player, GameWorldComponent gameWorld, AbilityC2SPacket payload) {
         if (!NoelleAccess.isRole(gameWorld, player, NoelleAccess.MORPHLING_ID)) return;
@@ -1288,12 +1289,13 @@ public class BrinsWathe implements ModInitializer {
         if (target == null || target.equals(player) || target.level() != player.level()) return;
         if (!GameFunctions.isPlayerAliveAndSurvival(target)) return;
         if (!NoelleAccess.setVoodooTarget(player, target.getUUID())) return;
-        NoelleAccess.setNoelleAbilityCooldown(player, 30 * 20);
+        NoelleAccess.setNoelleAbilityCooldown(player, Tunable.NOISEMAKER_MARK_COOLDOWN_SECONDS.ticks());
     }
 
     private static void handleInsaneRevive(ServerPlayer player, GameWorldComponent gameWorld, AbilityC2SPacket payload) {
         if (!NoelleAccess.isRole(gameWorld, player, NoelleAccess.INSANE_KILLER_ID)) return;
-        player.addEffect(new MobEffectInstance(MobEffects.GLOWING, 300, 0, false, false));
+        int glowTicks = Tunable.INSANE_KILLER_REVIVE_GLOW_SECONDS.ticks();
+        if (glowTicks > 0) player.addEffect(new MobEffectInstance(MobEffects.GLOWING, glowTicks, 0, false, false));
         if (payload.targetId() == null) return;
         if (NoelleAccess.noelleAbilityCooldown(player) > 0) return;
         ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
@@ -1304,7 +1306,7 @@ public class BrinsWathe implements ModInitializer {
         }
         ResurrectedComponent resurrected = ResurrectedComponent.KEY.get(target);
         if (resurrected == null || !resurrected.resurrect(player.getUUID())) return;
-        NoelleAccess.setNoelleAbilityCooldown(player, 120 * 20);
+        NoelleAccess.setNoelleAbilityCooldown(player, Tunable.INSANE_KILLER_REVIVE_COOLDOWN_SECONDS.ticks());
     }
     private static boolean spendAbilityCost(ServerPlayer player, String roleId) {
         int cost = ModConfig.skillCost(roleId);

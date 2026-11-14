@@ -4,6 +4,7 @@ import cn.erindax.brinswathe.ModModifiers;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.CowboyDuel;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -27,8 +28,6 @@ public class SniperComponent implements AutoSyncedComponent, ServerTickingCompon
         ResourceLocation.fromNamespaceAndPath("brinswathe", "sniper"),
         SniperComponent.class
     );
-    public static final double MAX_RANGE = 300.0D;
-    public static final int OPENING_TASKS_REQUIRED = 2;
 
     private final Player player;
     private boolean aiming;
@@ -88,7 +87,7 @@ public class SniperComponent implements AutoSyncedComponent, ServerTickingCompon
     }
 
     public int getTasksRequired(int configured) {
-        return this.openingLock ? OPENING_TASKS_REQUIRED : configured;
+        return this.openingLock ? Tunable.SNIPER_OPENING_TASKS.intValue() : configured;
     }
 
     public void startShotCooldown(int seconds) {
@@ -200,7 +199,7 @@ public class SniperComponent implements AutoSyncedComponent, ServerTickingCompon
         }
 
         ServerLevel level = sniper.serverLevel();
-        Vec3 end = origin.add(direction.normalize().scale(MAX_RANGE));
+        Vec3 end = origin.add(direction.normalize().scale(Tunable.SNIPER_MAX_RANGE.doubleValue()));
         AABB searchBox = new AABB(origin, end);
         ServerPlayer nearestTarget = null;
         double nearestDistance = Double.MAX_VALUE;

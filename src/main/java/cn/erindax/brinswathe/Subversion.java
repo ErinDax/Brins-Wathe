@@ -1,9 +1,11 @@
 package cn.erindax.brinswathe;
 
 import cn.erindax.brinswathe.component.SubverterComponent;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
+import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import java.util.ArrayList;
@@ -22,7 +24,6 @@ import org.jetbrains.annotations.Nullable;
 
 public final class Subversion {
     private static final double MAX_TARGET_DISTANCE = 80.0D;
-    private static final int GLOW_TICKS = 3 * 20;
     private static UUID punishing;
 
     private Subversion() {
@@ -65,9 +66,12 @@ public final class Subversion {
         Role newRole = drawRole(game, killerPool);
         game.addRole(target, newRole);
         ModdedRoleAssigned.EVENT.invoker().assignModdedRole(target, newRole);
+        PlayerShopComponent shop = PlayerShopComponent.KEY.get(target);
+        if (shop != null) shop.addToBalance(Tunable.SUBVERTER_REWARD.intValue());
         game.sync();
         Welcome.announceRoleChange(target, game, newRole, killerPool);
-        target.addEffect(new MobEffectInstance(MobEffects.GLOWING, GLOW_TICKS, 0, false, false));
+        int glowTicks = Tunable.SUBVERTER_GLOW_SECONDS.ticks();
+        if (glowTicks > 0) target.addEffect(new MobEffectInstance(MobEffects.GLOWING, glowTicks, 0, false, false));
         subverter.settle(side);
         player.playNotifySound(SoundEvents.EVOKER_PREPARE_WOLOLO, SoundSource.PLAYERS, 1.0F, 1.0F);
         player.displayClientMessage(Component.translatable(

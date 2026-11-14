@@ -17,11 +17,6 @@ public class MuzzlerAbilityComponent implements AutoSyncedComponent, ServerTicki
         MuzzlerAbilityComponent.class
     );
 
-    public static final int ABILITY_COST = 100;
-    public static final int ABILITY_COOLDOWN_TICKS = 60 * 20;
-    public static final int ABILITY_DURATION_TICKS = 30 * 20;
-    public static final int SILENCE_KILL_REWARD = 50;
-
     private final Player player;
     private int ticks;
 

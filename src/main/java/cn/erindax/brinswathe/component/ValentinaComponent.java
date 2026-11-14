@@ -3,6 +3,7 @@ package cn.erindax.brinswathe.component;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.CowboyDuel;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.core.HolderLookup;
@@ -24,9 +25,6 @@ public final class ValentinaComponent implements AutoSyncedComponent, ServerTick
         ResourceLocation.fromNamespaceAndPath("brinswathe", "valentina"),
         ValentinaComponent.class
     );
-    public static final int MAX_EYES = 2;
-    public static final int TASKS_PER_EYE = 4;
-    public static final int FORESIGHT_COST = 2;
 
     private final Player player;
     private int eyes;
@@ -51,13 +49,13 @@ public final class ValentinaComponent implements AutoSyncedComponent, ServerTick
     }
 
     public boolean canForesee() {
-        return this.eyes >= FORESIGHT_COST;
+        return this.eyes >= Tunable.VALENTINA_FORESIGHT_COST.intValue();
     }
 
     public void recordTask() {
-        if (this.eyes >= MAX_EYES) return;
+        if (this.eyes >= Tunable.VALENTINA_MAX_EYES.intValue()) return;
         this.taskProgress++;
-        if (this.taskProgress >= TASKS_PER_EYE) {
+        if (this.taskProgress >= Tunable.VALENTINA_TASKS_PER_EYE.intValue()) {
             this.taskProgress = 0;
             this.eyes++;
         }
@@ -73,7 +71,7 @@ public final class ValentinaComponent implements AutoSyncedComponent, ServerTick
 
     public boolean foresee() {
         if (!this.canForesee()) return false;
-        this.eyes -= FORESIGHT_COST;
+        this.eyes -= Tunable.VALENTINA_FORESIGHT_COST.intValue();
         this.slownessLevel++;
         this.instinctTicks = Math.max(0, ModConfig.skillDurationSeconds("valentina")) * 20;
         this.applySlowness();

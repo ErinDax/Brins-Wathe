@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe;
 
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.api.GameMode;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheGameModes;
@@ -33,8 +34,6 @@ import org.agmas.harpymodloader.modifiers.Modifier;
 import org.jetbrains.annotations.Nullable;
 
 public final class Punishment {
-    public static final int EARLY_FALL_SECONDS = 45;
-    private static final int SWAP_GRACE_SECONDS = 10;
     private static final String SWAPPER_HANDLER = "org.agmas.noellesroles.Noellesroles";
     private static final int GLOW_TICKS = 60;
     private static final Map<UUID, String> QUEUED = new LinkedHashMap<>();
@@ -101,10 +100,10 @@ public final class Punishment {
         if (!GameConstants.DeathReasons.FELL_OUT_OF_TRAIN.equals(deathReason)) return;
         if (killer != null && !killer.getUUID().equals(player.getUUID())) return;
         int now = player.server.getTickCount();
-        if (roundStartTick < 0 || now - roundStartTick > EARLY_FALL_SECONDS * 20) return;
+        if (roundStartTick < 0 || now - roundStartTick > Tunable.EARLY_FALL_SECONDS.ticks()) return;
         if (!ROUND_PLAYERS.contains(player.getUUID())) return;
         Integer swappedAt = SWAPPED.get(player.getUUID());
-        if (swappedAt != null && now - swappedAt <= SWAP_GRACE_SECONDS * 20) return;
+        if (swappedAt != null && now - swappedAt <= Tunable.SWAP_GRACE_SECONDS.ticks()) return;
         if (GameFunctions.isPlayerAliveAndSurvival(player)) return;
         if (!GameWorldComponent.KEY.get(player.level()).isRunning()) return;
         if (!queue(player)) return;
@@ -112,7 +111,7 @@ public final class Punishment {
         player.sendSystemMessage(Component.translatableWithFallback(
             "tip.brinswathe.punishment_queued",
             "你在开局 %s 秒内掉出了列车，下一局将受到惩罚",
-            EARLY_FALL_SECONDS
+            Tunable.EARLY_FALL_SECONDS.intValue()
         ).withStyle(ChatFormatting.DARK_RED));
     }
 

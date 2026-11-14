@@ -4,6 +4,7 @@ import cn.erindax.brinswathe.ModModifiers;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.CowboyDuel;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import java.util.UUID;
@@ -31,7 +32,6 @@ public class StalkerComponent implements AutoSyncedComponent, ServerTickingCompo
         ResourceLocation.fromNamespaceAndPath("brinswathe", "stalker"),
         StalkerComponent.class
     );
-    public static final double AIM_RANGE = 8.0D;
     private static final int POSITION_SYNC_INTERVAL_TICKS = 10;
     private final Player player;
     @Nullable
@@ -87,12 +87,13 @@ public class StalkerComponent implements AutoSyncedComponent, ServerTickingCompo
 
     public static boolean isAimedAt(Player stalker, Player target) {
         if (stalker.level() != target.level()) return false;
+        double range = Tunable.STALKER_AIM_RANGE.doubleValue();
         Vec3 eye = stalker.getEyePosition();
-        Vec3 end = eye.add(stalker.getViewVector(1.0F).scale(AIM_RANGE));
+        Vec3 end = eye.add(stalker.getViewVector(1.0F).scale(range));
         HitResult blockHit = stalker.level().clip(new ClipContext(
             eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, stalker));
         double maxDistSqr = blockHit.getType() == HitResult.Type.MISS
-            ? AIM_RANGE * AIM_RANGE
+            ? range * range
             : eye.distanceToSqr(blockHit.getLocation());
         var clip = target.getBoundingBox().inflate(0.1D).clip(eye, end);
         return clip.isPresent() && eye.distanceToSqr(clip.get()) <= maxDistSqr;

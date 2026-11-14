@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.CowboyDuel;
-import cn.erindax.brinswathe.component.TrapperComponent;
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.entity.TrapperFangs;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -35,7 +35,7 @@ public abstract class TrapperFangsEntityMixin implements TrapperFangs {
         ci.cancel();
         EvokerFangs self = (EvokerFangs) (Object) this;
         if (self.level().isClientSide() || CowboyDuel.isActive()) return;
-        if (++this.brin$trapAge >= TrapperComponent.TRAP_LIFETIME_TICKS) self.discard();
+        if (++this.brin$trapAge >= Tunable.TRAPPER_TRAP_LIFETIME_SECONDS.ticks()) self.discard();
     }
 
     @Inject(method = "getAnimationProgress", at = @At("HEAD"), cancellable = true)

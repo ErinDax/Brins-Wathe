@@ -7,6 +7,7 @@ import cn.erindax.brinswathe.Subversion;
 import cn.erindax.brinswathe.CowboyDuel;
 import cn.erindax.brinswathe.component.RoundRecapComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
+import cn.erindax.brinswathe.config.Tunable;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.doctor4t.wathe.api.Role;
@@ -59,7 +60,7 @@ public abstract class IcDeathMixin {
         if (killer != null && game.isRole(victim, WatheRoles.KILLER)) {
             Role killerRole = game.getRole(killer);
             if (killerRole != null && !killerRole.canUseKiller()) {
-                brinAddGold(killer, 50);
+                brinAddGold(killer, Tunable.KILL_KILLER_REWARD.intValue());
             }
         }
 
@@ -71,7 +72,7 @@ public abstract class IcDeathMixin {
         if (pierce && !allowed) {
             NoelleAccess.setBartenderArmor(victim, armor);
         } else if (armor > NoelleAccess.bartenderArmor(victim)) {
-            if (!pierce && killer != null) brinAddGold(killer, 50);
+            if (!pierce && killer != null) brinAddGold(killer, Tunable.SHIELD_BREAK_REWARD.intValue());
             RoundRecapComponent.onShieldBroken(victim, killer, deathReason);
         }
         return allowed;

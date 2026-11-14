@@ -8,6 +8,7 @@ import cn.erindax.brinswathe.SkinEditors;
 import cn.erindax.brinswathe.SkinPicks;
 import cn.erindax.brinswathe.admin.AdminPanel;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.musicbox.MusicBox;
 import cn.erindax.brinswathe.network.ConfigS2CPacket;
 import cn.erindax.brinswathe.network.IcNightVisionS2CPacket;
@@ -224,7 +225,11 @@ public final class ConfigCommands {
         line(source, "/brinswathe musicbox stop", "停止当前结算音乐");
         line(source, "/brinswathe allergic <玩家> food|drink", "改过敏类型");
         line(source, "/brinswathe setnow <玩家> set|remove <职业>", "当场设置或移除职业");
-        line(source, "/brinswathe error [true|false]", "查看惩罚名单, 或开关开局 45 秒内掉出列车下一局受惩罚");
+        line(
+            source,
+            "/brinswathe error [true|false]",
+            "查看惩罚名单, 或开关开局 " + Tunable.EARLY_FALL_SECONDS.intValue() + " 秒内掉出列车下一局受惩罚"
+        );
         line(source, "/brinswathe error <玩家> [cancel]", "让该玩家下一局当制毒师并全场高亮, cancel 取消");
         line(source, "/brinswathe roleRoundsclear", "清空角色轮次权重和防连任记录");
         line(source, "/brinswathe PrintRounds", "打印角色轮次权重记录");

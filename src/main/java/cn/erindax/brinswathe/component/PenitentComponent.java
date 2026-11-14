@@ -3,6 +3,7 @@ package cn.erindax.brinswathe.component;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.CowboyDuel;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -164,7 +165,9 @@ public class PenitentComponent implements AutoSyncedComponent, ServerTickingComp
 
         this.initialized = true;
         this.completedTargetKills = 0;
-        this.requiredTargetKills = participantCount > 8 ? 3 : 2;
+        this.requiredTargetKills = participantCount >= Tunable.PENITENT_LARGE_GAME_MIN_PLAYERS.intValue()
+            ? Tunable.PENITENT_LARGE_GAME_TARGET_KILLS.intValue()
+            : Tunable.PENITENT_TARGET_KILLS.intValue();
         this.targetPlayerId = null;
         this.targetRoleId = null;
         this.actionBarRefreshTicks = 0;

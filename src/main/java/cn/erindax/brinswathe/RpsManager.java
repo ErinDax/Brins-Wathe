@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe;
 
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.network.RpsActionC2SPacket;
 import cn.erindax.brinswathe.network.RpsStateS2CPacket;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -23,10 +24,6 @@ public final class RpsManager {
     public static final int ROCK = 0;
     public static final int SCISSORS = 1;
     public static final int PAPER = 2;
-    public static final double RANGE = 12.0D;
-    private static final int INVITE_TICKS = 15 * 20;
-    private static final int PICK_TICKS = 20 * 20;
-    private static final int RESULT_TICKS = 5 * 20;
     private static final int INVITE_COOLDOWN_TICKS = 40;
     private static final Map<UUID, Invite> invitesByTarget = new HashMap<>();
     private static final Map<UUID, Invite> invitesByChallenger = new HashMap<>();
@@ -111,7 +108,8 @@ public final class RpsManager {
             challenger.displayClientMessage(Component.translatable("message.brinswathe.rps.no_target"), true);
             return;
         }
-        if (challenger.distanceToSqr(target) > RANGE * RANGE) {
+        double range = Tunable.RPS_RANGE.doubleValue();
+        if (challenger.distanceToSqr(target) > range * range) {
             challenger.displayClientMessage(Component.translatable("message.brinswathe.rps.too_far"), true);
             return;
         }
@@ -119,14 +117,15 @@ public final class RpsManager {
             challenger.displayClientMessage(Component.translatable("message.brinswathe.rps.busy_other"), true);
             return;
         }
-        Invite invite = new Invite(challenger.getUUID(), target.getUUID(), INVITE_TICKS);
+        int inviteTicks = Tunable.RPS_INVITE_SECONDS.ticks();
+        Invite invite = new Invite(challenger.getUUID(), target.getUUID(), inviteTicks);
         invitesByTarget.put(target.getUUID(), invite);
         invitesByChallenger.put(challenger.getUUID(), invite);
         inviteCooldowns.put(challenger.getUUID(), INVITE_COOLDOWN_TICKS);
         send(challenger, new RpsStateS2CPacket(
-            RpsStateS2CPacket.PENDING, name(target), seconds(INVITE_TICKS), -1, -1, 0));
+            RpsStateS2CPacket.PENDING, name(target), seconds(inviteTicks), -1, -1, 0));
         send(target, new RpsStateS2CPacket(
-            RpsStateS2CPacket.INVITE, name(challenger), seconds(INVITE_TICKS), -1, -1, 0));
+            RpsStateS2CPacket.INVITE, name(challenger), seconds(inviteTicks), -1, -1, 0));
         target.playNotifySound(SoundEvents.NOTE_BLOCK_PLING.value(), SoundSource.PLAYERS, 0.8F, 1.3F);
         challenger.displayClientMessage(
             Component.translatable("message.brinswathe.rps.sent", name(target)), true);
@@ -146,7 +145,7 @@ public final class RpsManager {
             target.getUUID(),
             copyPos(challenger),
             copyPos(target),
-            PICK_TICKS);
+            Tunable.RPS_PICK_SECONDS.ticks());
         matches.put(challenger.getUUID(), match);
         matches.put(target.getUUID(), match);
         hold(challenger, match.anchorA);
@@ -181,7 +180,7 @@ public final class RpsManager {
             return;
         }
         if (match.choiceA >= 0 && match.choiceB >= 0) {
-            match.resultTicks = RESULT_TICKS;
+            match.resultTicks = Tunable.RPS_RESULT_SECONDS.ticks();
             announceResult(player.server, match);
         }
         syncMatch(player.server, match);

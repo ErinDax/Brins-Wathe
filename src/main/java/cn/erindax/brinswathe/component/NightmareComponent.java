@@ -6,6 +6,7 @@ import java.util.UUID;
 import cn.erindax.brinswathe.ModModifiers;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -23,8 +24,6 @@ public class NightmareComponent implements AutoSyncedComponent {
         ResourceLocation.fromNamespaceAndPath("brinswathe", "nightmare"),
         NightmareComponent.class
     );
-
-    public static final int MAX_SHIELD_LAYERS = 2;
 
     private final Player player;
     public Set<UUID> markedPlayers = new HashSet<>();
@@ -57,7 +56,7 @@ public class NightmareComponent implements AutoSyncedComponent {
         this.sync();
     }
     public boolean addShieldLayer() {
-        if (this.shieldLayers >= MAX_SHIELD_LAYERS) return false;
+        if (this.shieldLayers >= Tunable.NIGHTMARE_MAX_SHIELD_LAYERS.intValue()) return false;
         this.shieldLayers++;
         this.sync();
         return true;

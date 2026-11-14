@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe.component;
 
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -32,7 +33,6 @@ public class ResurrectedComponent implements AutoSyncedComponent, ServerTickingC
         ResurrectedComponent.class
     );
 
-    private static final int MAX_LIFE_TICKS = 600;
     private static final ResourceLocation VOODOO_DEATH =
         ResourceLocation.fromNamespaceAndPath("noellesroles", "voodoo");
 
@@ -74,11 +74,11 @@ public class ResurrectedComponent implements AutoSyncedComponent, ServerTickingC
 
         this.isResurrected = true;
         this.resurrectedBy = casterUuid;
-        this.lifeTicks = MAX_LIFE_TICKS;
+        this.lifeTicks = Tunable.INSANE_KILLER_REVIVED_LIFE_SECONDS.ticks();
         PlayerShopComponent shop = PlayerShopComponent.KEY.get(this.player);
         if (shop != null) shop.reset();
         performResurrection();
-        this.player.getCooldowns().addCooldown(WatheItems.PSYCHO_MODE, MAX_LIFE_TICKS);
+        this.player.getCooldowns().addCooldown(WatheItems.PSYCHO_MODE, this.lifeTicks);
         this.sync();
         return true;
     }
@@ -129,7 +129,11 @@ public class ResurrectedComponent implements AutoSyncedComponent, ServerTickingC
     }
 
     private void performResurrection() {
-        this.player.displayClientMessage(Component.literal("§c§l你被复活了！但将在 30 秒后再次死亡..."), true);
+        String lifeSeconds = Tunable.INSANE_KILLER_REVIVED_LIFE_SECONDS.text();
+        this.player.displayClientMessage(
+            Component.literal("§c§l你被复活了！但将在 " + lifeSeconds + " 秒后再次死亡..."),
+            true
+        );
         if (this.player instanceof ServerPlayer serverPlayer && this.player.isSpectator()) {
             serverPlayer.setGameMode(GameType.ADVENTURE);
         }
@@ -138,7 +142,9 @@ public class ResurrectedComponent implements AutoSyncedComponent, ServerTickingC
             if (caster != null && this.player instanceof ServerPlayer revived) {
                 revived.connection.teleport(caster.getX(), caster.getY(), caster.getZ(), revived.getYRot(), revived.getXRot());
                 caster.displayClientMessage(
-                    Component.literal("§a成功复活 " + this.player.getName().getString() + "，30秒后其将再次死亡"),
+                    Component.literal(
+                        "§a成功复活 " + this.player.getName().getString() + "，" + lifeSeconds + "秒后其将再次死亡"
+                    ),
                     true
                 );
             }

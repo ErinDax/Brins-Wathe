@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe;
 
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -35,9 +36,6 @@ public final class NoelleAccess {
         ResourceLocation.fromNamespaceAndPath("noellesroles", "voodoo");
     public static final ResourceLocation INITIATE_ID =
         ResourceLocation.fromNamespaceAndPath("stupid_express", "initiate");
-
-    public static final int CONDUCTOR_ARMOR_COST = 200;
-    public static final int CONDUCTOR_ARMOR_COOLDOWN_TICKS = 100 * 20;
 
     private static boolean bartenderLookupAttempted;
     private static ComponentKey<?> bartenderKey;
@@ -153,7 +151,7 @@ public final class NoelleAccess {
             Object component = bartenderKey.get(player);
             if (component == null) return false;
             int armor = bartenderArmorField.getInt(component);
-            if (armor >= 3) return false;
+            if (armor >= Tunable.CONDUCTOR_MAX_ARMOR_LAYERS.intValue()) return false;
             bartenderArmorField.setInt(component, armor + 1);
             try {
                 component.getClass().getMethod("sync").invoke(component);

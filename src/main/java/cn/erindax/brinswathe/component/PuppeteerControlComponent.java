@@ -3,6 +3,7 @@ package cn.erindax.brinswathe.component;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.ModModifiers;
 import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.entity.PuppetEntity;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -53,8 +54,6 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
 
     public static final EntityDimensions PUPPET_MODEL_DIMENSIONS = EntityDimensions.scalable(0.6F, 1.8F);
 
-    private static final int GLOW_TICKS = 200;
-    private static final int KILLED_SLOWNESS_TICKS = 300;
     private static final int PARTICLE_INTERVAL_TICKS = 8;
     private static final double SUMMON_OFFSET = 1.0D;
     private static final int SELF_DESTRUCT_GRACE_TICKS = 20;
@@ -221,9 +220,10 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
         }
         if (hadPuppet && survives) {
             this.startGlow(serverPlayer);
-            if (reason == ControlEnd.KILLED) {
+            int slownessTicks = Tunable.PUPPETEER_KILLED_SLOWNESS_SECONDS.ticks();
+            if (reason == ControlEnd.KILLED && slownessTicks > 0) {
                 serverPlayer.addEffect(new MobEffectInstance(
-                    MobEffects.MOVEMENT_SLOWDOWN, KILLED_SLOWNESS_TICKS, 1, false, true, true));
+                    MobEffects.MOVEMENT_SLOWDOWN, slownessTicks, 1, false, true, true));
             }
             AbilityPlayerComponent ability = AbilityPlayerComponent.KEY.get(serverPlayer);
             if (ability != null) {
@@ -339,7 +339,9 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
             : null;
     }
     private void startGlow(ServerPlayer serverPlayer) {
-        this.glowTicks = GLOW_TICKS;
+        int ticks = Tunable.PUPPETEER_EXPOSED_GLOW_SECONDS.ticks();
+        if (ticks <= 0) return;
+        this.glowTicks = ticks;
         serverPlayer.setGlowingTag(true);
     }
     private void tickGlow(ServerPlayer serverPlayer) {

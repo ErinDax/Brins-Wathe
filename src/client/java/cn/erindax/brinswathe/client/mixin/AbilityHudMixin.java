@@ -20,6 +20,7 @@ import cn.erindax.brinswathe.component.SubverterComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.ZhuimuComponent;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 
 import dev.doctor4t.wathe.api.Role;
@@ -444,16 +445,16 @@ public abstract class AbilityHudMixin {
             line = Component.translatable(
                 "tip.brinswathe.valentina.ready",
                 component.eyes(),
-                ValentinaComponent.MAX_EYES,
+                Tunable.VALENTINA_MAX_EYES.intValue(),
                 keyName
             );
         } else {
             line = Component.translatable(
                 "tip.brinswathe.valentina.charging",
                 component.eyes(),
-                ValentinaComponent.MAX_EYES,
+                Tunable.VALENTINA_MAX_EYES.intValue(),
                 component.taskProgress(),
-                ValentinaComponent.TASKS_PER_EYE
+                Tunable.VALENTINA_TASKS_PER_EYE.intValue()
             );
         }
         int y = context.guiHeight() - font.lineHeight - 2;
@@ -491,7 +492,7 @@ public abstract class AbilityHudMixin {
                 component.correct(),
                 component.required(),
                 component.wrong(),
-                SpyComponent.MAX_WRONG
+                Tunable.SPY_MAX_WRONG_GUESSES.intValue()
             );
         } else {
             KeyMapping abilityBind = BrinsWatheClient.getAbilityBind();
@@ -504,7 +505,7 @@ public abstract class AbilityHudMixin {
                 component.correct(),
                 component.required(),
                 component.wrong(),
-                SpyComponent.MAX_WRONG
+                Tunable.SPY_MAX_WRONG_GUESSES.intValue()
             );
         }
         int y = context.guiHeight() - font.lineHeight - 2;
@@ -552,8 +553,9 @@ public abstract class AbilityHudMixin {
         PlayerShopComponent shop = PlayerShopComponent.KEY.get(player);
         int balance = shop == null ? 0 : shop.balance;
         Component line;
-        if (balance < NoelleAccess.CONDUCTOR_ARMOR_COST) {
-            line = Component.translatable("tip.brinswathe.conductor.not_enough_money");
+        int cost = Tunable.CONDUCTOR_ARMOR_COST.intValue();
+        if (balance < cost) {
+            line = Component.translatable("tip.brinswathe.conductor.not_enough_money", cost);
         } else if (cooldown > 0) {
             line = Component.translatable("tip.kinswathe.cooldown", cooldown / 20);
         } else {
@@ -561,7 +563,7 @@ public abstract class AbilityHudMixin {
             Component keyName = abilityBind == null
                 ? Component.literal("G")
                 : abilityBind.getTranslatedKeyMessage();
-            line = Component.translatable("tip.brinswathe.conductor.buy_armor", keyName);
+            line = Component.translatable("tip.brinswathe.conductor.buy_armor", keyName, cost);
         }
         if (armor > 0) {
             line = Component.translatable("tip.brinswathe.conductor.with_armor", armor, line);
@@ -603,7 +605,7 @@ public abstract class AbilityHudMixin {
             starryAbility == null ? 0 : starryAbility.cooldown,
             StarryExpressRoles.MUZZLER.color(),
             shop == null ? 0 : shop.balance,
-            MuzzlerAbilityComponent.ABILITY_COST,
+            Tunable.MUZZLER_SILENCE_COST.intValue(),
             true
         );
     }

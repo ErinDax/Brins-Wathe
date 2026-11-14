@@ -7,6 +7,7 @@ import cn.erindax.brinswathe.SecretMurder;
 import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
@@ -33,9 +34,6 @@ public abstract class TaskRewardMixin {
     @Unique
     private static final ResourceLocation BRIN_STARSTRUCK_ID =
         ResourceLocation.fromNamespaceAndPath("starexpress", "starstruck");
-
-    @Unique
-    private static final int BRIN_TASKMASTER_REWARD = 50;
 
     @Shadow
     @Final
@@ -90,16 +88,19 @@ public abstract class TaskRewardMixin {
             && "kinswathe".equals(role.identifier().getNamespace())) {
             this.nextTaskTimer = 0;
         }
-        if (game.isRole(this.player, ModRoles.BERSERKER)
-            || game.isRole(this.player, ModRoles.GAMBLER)) {
-            this.brin$taskReward = 50;
+        if (game.isRole(this.player, ModRoles.BERSERKER)) {
+            this.brin$taskReward = Tunable.BERSERKER_TASK_REWARD.intValue();
+        } else if (game.isRole(this.player, ModRoles.GAMBLER)) {
+            this.brin$taskReward = Tunable.GAMBLER_TASK_REWARD.intValue();
         } else if (game.isRole(this.player, ModRoles.PENITENT)) {
-            this.brin$taskReward = 50;
+            this.brin$taskReward = Tunable.PENITENT_TASK_REWARD.intValue();
         } else if (role != null && role.getMoodType() == Role.MoodType.REAL) {
             if (NoelleAccess.isRole(game, this.player, NoelleAccess.MIMIC_ID)) {
-                this.brin$taskReward = 25;
+                this.brin$taskReward = Tunable.MIMIC_TASK_REWARD.intValue();
             } else {
-                this.brin$taskReward = 50 + this.player.getRandom().nextInt(31);
+                int min = Tunable.TASK_REWARD_MIN.intValue();
+                int max = Math.max(min, Tunable.TASK_REWARD_MAX.intValue());
+                this.brin$taskReward = min + this.player.getRandom().nextInt(max - min + 1);
             }
         } else if (role != null && !game.isInnocent(this.player) && role.canUseKiller()) {
             this.brin$taskmaster = ModModifiers.hasModifier(this.player, ModModifiers.TASKMASTER);
@@ -147,11 +148,14 @@ public abstract class TaskRewardMixin {
                 if (shop == null) continue;
                 boolean taskmaster = this.brin$taskmaster
                     && entry.getKey().equals(this.player.getUUID());
-                shop.setBalance(entry.getValue() + (taskmaster ? BRIN_TASKMASTER_REWARD : 5));
+                int reward = taskmaster
+                    ? Tunable.TASKMASTER_TASK_REWARD.intValue()
+                    : Tunable.KILLER_TEAM_TASK_REWARD.intValue();
+                shop.setBalance(entry.getValue() + reward);
                 killer.displayClientMessage(
                     Component.literal(taskmaster
-                        ? "任务大师完成任务，+" + BRIN_TASKMASTER_REWARD + " 金币"
-                        : "杀手完成任务，全队 +5 金币"
+                        ? "任务大师完成任务，+" + reward + " 金币"
+                        : "杀手完成任务，全队 +" + reward + " 金币"
                     ).withStyle(ChatFormatting.GOLD),
                     true
                 );

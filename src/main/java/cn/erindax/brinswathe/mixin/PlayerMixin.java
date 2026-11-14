@@ -83,7 +83,7 @@ public abstract class PlayerMixin {
 				speed *= Math.max(0.0F, 1.0F - 0.15F * (slowness.getAmplifier() + 1));
 			}
 			if (Funeral.isCarrying(self)) {
-				speed *= (float) (1.0D + FuneralComponent.SLOWDOWN);
+				speed *= (float) (1.0D + FuneralComponent.slowdown());
 			}
 		}
 		if (IcFlags.size2speed) {

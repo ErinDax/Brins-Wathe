@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe;
 
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
@@ -26,8 +27,6 @@ import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 
 public final class Executioner {
-    private static final int CONVERSION_BALANCE = 200;
-    private static final int REVIVE_INVISIBILITY_TICKS = 600;
     private static final ResourceLocation MODDED_BACKFIRE =
         ResourceLocation.fromNamespaceAndPath("noellesroles", "modded_backfire");
     private static final Set<UUID> CONVERTING = ConcurrentHashMap.newKeySet();
@@ -111,7 +110,7 @@ public final class Executioner {
         game.addRole(executioner, newRole);
         ModdedRoleAssigned.EVENT.invoker().assignModdedRole(executioner, newRole);
         PlayerShopComponent shop = PlayerShopComponent.KEY.get(executioner);
-        if (shop != null) shop.setBalance(CONVERSION_BALANCE);
+        if (shop != null) shop.setBalance(Tunable.EXECUTIONER_CONVERSION_BALANCE.intValue());
         PlayerPoisonComponent poison = PlayerPoisonComponent.KEY.get(executioner);
         if (poison != null) poison.reset();
         game.sync();
@@ -121,7 +120,10 @@ public final class Executioner {
     private static void revive(ServerPlayer executioner, Vec3 deathPos) {
         executioner.setGameMode(GameType.ADVENTURE);
         executioner.connection.teleport(deathPos.x, deathPos.y, deathPos.z, executioner.getYRot(), executioner.getXRot());
-        executioner.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, REVIVE_INVISIBILITY_TICKS, 0, false, false, false));
+        int invisibilityTicks = Tunable.EXECUTIONER_REVIVE_INVISIBILITY_SECONDS.ticks();
+        if (invisibilityTicks > 0) {
+            executioner.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, invisibilityTicks, 0, false, false, false));
+        }
         for (int slot = 0; slot < 9; slot++) {
             if (executioner.getInventory().getItem(slot).isEmpty()) {
                 executioner.getInventory().selected = slot;

@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe;
 
 import cn.erindax.brinswathe.component.ZhuimuComponent;
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.entity.ZhuimuBoat;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.MapVariablesWorldComponent;
@@ -36,8 +37,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import org.jetbrains.annotations.Nullable;
 
 public final class Zhuimu {
-    public static final int HITS_TO_KILL = 3;
-    private static final int AXE_COOLDOWN_TICKS = 10;
     private static final double CAPTURE_RADIUS = 1.0D;
     private static final double CAPTURE_HEIGHT = 1.5D;
     private static final double SIGHT_HEIGHT = 1.0D;
@@ -166,7 +165,7 @@ public final class Zhuimu {
             ? "message.brinswathe.zhuimu.captured"
             : "message.brinswathe.zhuimu.captured_hotbar_full";
         owner.displayClientMessage(
-            Component.translatable(key, HITS_TO_KILL).withColor(ModRoles.ZHUIMU.color()),
+            Component.translatable(key, Tunable.ZHUIMU_AXE_HITS.intValue()).withColor(ModRoles.ZHUIMU.color()),
             true
         );
         owner.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0F, 1.0F);
@@ -206,18 +205,20 @@ public final class Zhuimu {
         if (!boat.isOwnedBy(zhuimu) || boat.trappedPlayer() != victim) return;
         if (!GameFunctions.isPlayerAliveAndSurvival(zhuimu)
             || zhuimu.getCooldowns().isOnCooldown(ModItems.ZHUIMU_AXE)) return;
-        zhuimu.getCooldowns().addCooldown(ModItems.ZHUIMU_AXE, AXE_COOLDOWN_TICKS);
+        int cooldownTicks = Tunable.ZHUIMU_AXE_COOLDOWN_SECONDS.ticks();
+        if (cooldownTicks > 0) zhuimu.getCooldowns().addCooldown(ModItems.ZHUIMU_AXE, cooldownTicks);
         zhuimu.serverLevel().playSound(
             null, victim.getX(), victim.getEyeY(), victim.getZ(),
             SoundEvents.PLAYER_ATTACK_STRONG, SoundSource.PLAYERS, 1.0F, 1.0F
         );
         int hits = boat.addHit();
+        int hitsToKill = Tunable.ZHUIMU_AXE_HITS.intValue();
         zhuimu.displayClientMessage(
-            Component.translatable("tip.brinswathe.zhuimu.chop", hits, HITS_TO_KILL)
+            Component.translatable("tip.brinswathe.zhuimu.chop", hits, hitsToKill)
                 .withColor(ModRoles.ZHUIMU.color()),
             true
         );
-        if (hits < HITS_TO_KILL) return;
+        if (hits < hitsToKill) return;
         boat.resetHits();
         GameFunctions.killPlayer(victim, true, zhuimu, AXE_DEATH);
     }

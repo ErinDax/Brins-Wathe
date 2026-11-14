@@ -2,6 +2,7 @@ package cn.erindax.brinswathe.client;
 
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.config.ModConfig.ShopItem;
+import cn.erindax.brinswathe.config.Tunable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -13,9 +14,9 @@ public final class LanguageVariables {
     public static String replace(String key, String translation) {
         if (translation == null || translation.indexOf('{') < 0) return translation;
         String roleId = configRoleId(roleId(key));
-        if (roleId == null) return translation;
+        if (roleId == null) return tunables(null, translation);
         Integer initialBalance = ModConfig.initialBalance(roleId);
-        return translation
+        return tunables(roleId, translation
             .replace("{skill_cost}", Integer.toString(ModConfig.skillCost(roleId)))
             .replace("{skill_cooldown_seconds}", Integer.toString(ModConfig.skillCooldownSeconds(roleId)))
             .replace("{skill_duration_seconds}", Integer.toString(ModConfig.skillDurationSeconds(roleId)))
@@ -57,7 +58,28 @@ public final class LanguageVariables {
             .replace("{trap_catch_reward}", Integer.toString(ModConfig.trapperCatchReward()))
             .replace("{duel_timeout_seconds}", Integer.toString(ModConfig.cowboyDuelTimeoutSeconds()))
             .replace("{duel_countdown_seconds}", Integer.toString(ModConfig.cowboyDuelCountdownSeconds()))
-            .replace("{struggle_presses}", Integer.toString(ModConfig.zhuimuStrugglePresses()));
+            .replace("{struggle_presses}", Integer.toString(ModConfig.zhuimuStrugglePresses())));
+    }
+
+    private static String tunables(String roleId, String text) {
+        int open = text.indexOf('{');
+        if (open < 0) return text;
+        StringBuilder result = new StringBuilder(text.length());
+        int cursor = 0;
+        while (open >= 0) {
+            int close = text.indexOf('}', open + 1);
+            if (close < 0) break;
+            Tunable tunable = Tunable.find(roleId, text.substring(open + 1, close));
+            if (tunable == null) {
+                open = text.indexOf('{', open + 1);
+                continue;
+            }
+            result.append(text, cursor, open).append(tunable.text());
+            cursor = close + 1;
+            open = text.indexOf('{', cursor);
+        }
+        if (cursor == 0) return text;
+        return result.append(text, cursor, text.length()).toString();
     }
 
     public static List<String> aliases(String key) {

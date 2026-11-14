@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe;
 
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.mixin.GameFunctionsInvoker;
 import cn.erindax.brinswathe.network.DraftChoiceC2SPacket;
 import cn.erindax.brinswathe.network.DraftCloseS2CPacket;
@@ -31,9 +32,7 @@ import org.BsXinQin.kinswathe.KinsWatheRoles;
 import org.agmas.harpymodloader.Harpymodloader;
 
 public final class Draft {
-    public static final int TURN_SECONDS = 15;
     private static final int END_TICKS = 60;
-    private static final int OFFER_SIZE = 3;
     private static final int INNOCENT = 0;
     private static final int KILLER = 1;
     private static final int NEUTRAL = 2;
@@ -225,7 +224,7 @@ public final class Draft {
             ticksLeft = END_TICKS;
         } else {
             offer = buildOffer(pending.world().getRandom());
-            ticksLeft = TURN_SECONDS * 20;
+            ticksLeft = Tunable.DRAFT_TURN_SECONDS.ticks();
         }
         broadcast(server, open);
     }
@@ -324,8 +323,9 @@ public final class Draft {
     }
 
     private static List<Role> buildOffer(RandomSource random) {
-        List<Role> roles = new ArrayList<>(OFFER_SIZE);
-        for (int i = 0; i < OFFER_SIZE; i++) {
+        int offerSize = Tunable.DRAFT_OFFER_SIZE.intValue();
+        List<Role> roles = new ArrayList<>(offerSize);
+        for (int i = 0; i < offerSize; i++) {
             Role role = draw(roles, false, random);
             if (role == null) break;
             roles.add(role);

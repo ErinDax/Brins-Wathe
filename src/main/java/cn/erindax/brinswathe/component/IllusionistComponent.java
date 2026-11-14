@@ -2,6 +2,7 @@ package cn.erindax.brinswathe.component;
 
 import cn.erindax.brinswathe.CowboyDuel;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.config.Tunable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +45,6 @@ public class IllusionistComponent implements AutoSyncedComponent, ServerTickingC
     );
 
     public static final int CLONE_COUNT = 2;
-    public static final int BLINDNESS_DURATION_TICKS = 100;
     public static final double CLONE_SPEED = 0.22;
 
     public static final EntityDimensions ILLUSION_MODEL_DIMENSIONS = EntityDimensions.scalable(0.6F, 1.8F);
@@ -334,7 +334,9 @@ public class IllusionistComponent implements AutoSyncedComponent, ServerTickingC
 
     public static void applyCloneKillBlindness(@Nullable Entity attacker) {
         if (!(attacker instanceof ServerPlayer serverPlayer)) return;
-        ServerPlayNetworking.send(serverPlayer, new BlindFlashS2CPacket(BLINDNESS_DURATION_TICKS));
+        int blindTicks = Tunable.ILLUSIONIST_CLONE_KILL_BLIND_SECONDS.ticks();
+        if (blindTicks <= 0) return;
+        ServerPlayNetworking.send(serverPlayer, new BlindFlashS2CPacket(blindTicks));
     }
 
     private void spawnBodyProxy() {

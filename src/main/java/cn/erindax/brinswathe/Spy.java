@@ -2,6 +2,7 @@ package cn.erindax.brinswathe;
 
 import cn.erindax.brinswathe.component.RoundRecapComponent;
 import cn.erindax.brinswathe.component.SpyComponent;
+import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -17,9 +18,6 @@ import org.BsXinQin.kinswathe.component.GameSafeComponent;
 import org.agmas.harpymodloader.Harpymodloader;
 
 public final class Spy {
-    public static final int CORRECT_COOLDOWN_SECONDS = 25;
-    public static final int WRONG_COOLDOWN_SECONDS = 120;
-
     private Spy() {
     }
 
@@ -52,18 +50,25 @@ public final class Spy {
         );
         if (!actual.identifier().equals(guessed.identifier())) {
             spy.recordWrong();
-            if (spy.wrong() >= SpyComponent.MAX_WRONG) {
-                player.displayClientMessage(Component.translatable("message.brinswathe.spy.dead", label), false);
+            int maxWrong = Tunable.SPY_MAX_WRONG_GUESSES.intValue();
+            if (spy.wrong() >= maxWrong) {
+                player.displayClientMessage(
+                    Component.translatable("message.brinswathe.spy.dead", label, spy.wrong()),
+                    false
+                );
                 Subversion.punish(player);
                 return false;
             }
-            ability.setAbilityCooldown(WRONG_COOLDOWN_SECONDS);
+            ability.setAbilityCooldown(Tunable.SPY_WRONG_COOLDOWN_SECONDS.intValue());
             player.playNotifySound(SoundEvents.VILLAGER_NO, SoundSource.PLAYERS, 1.0F, 1.0F);
-            player.displayClientMessage(Component.translatable("message.brinswathe.spy.wrong", label), false);
+            player.displayClientMessage(
+                Component.translatable("message.brinswathe.spy.wrong", label, maxWrong - spy.wrong()),
+                false
+            );
             return false;
         }
         spy.recordCorrect(targetId);
-        ability.setAbilityCooldown(CORRECT_COOLDOWN_SECONDS);
+        ability.setAbilityCooldown(Tunable.SPY_CORRECT_COOLDOWN_SECONDS.intValue());
         for (ServerPlayer listener : player.serverLevel().players()) {
             listener.playNotifySound(SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 1.0F, 1.0F);
         }

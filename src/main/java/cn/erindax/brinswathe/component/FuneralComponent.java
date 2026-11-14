@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.component;
 
 import cn.erindax.brinswathe.Funeral;
+import cn.erindax.brinswathe.config.Tunable;
 import java.util.UUID;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -29,7 +30,6 @@ public final class FuneralComponent implements AutoSyncedComponent, ServerTickin
     private static final ResourceLocation SLOWDOWN_ID = ResourceLocation.fromNamespaceAndPath(
         "brinswathe", "funeral_carry"
     );
-    public static final double SLOWDOWN = -0.5D;
 
     private final Player player;
     @Nullable
@@ -90,12 +90,16 @@ public final class FuneralComponent implements AutoSyncedComponent, ServerTickin
         return level.getEntity(this.carriedBody);
     }
 
+    public static double slowdown() {
+        return -Tunable.FUNERAL_SLOWDOWN_PERCENT.intValue() / 100.0D;
+    }
+
     private void applySlowdown() {
         AttributeInstance attribute = this.player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (attribute == null || attribute.hasModifier(SLOWDOWN_ID)) return;
         attribute.addTransientModifier(new AttributeModifier(
             SLOWDOWN_ID,
-            SLOWDOWN,
+            slowdown(),
             AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
         ));
     }

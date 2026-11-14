@@ -4,6 +4,7 @@ import cn.erindax.brinswathe.component.BombComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.config.ModConfig;
+import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.entity.ZhuimuBoat;
 import dev.doctor4t.wathe.game.GameFunctions;
 import java.util.List;
@@ -26,7 +27,6 @@ import org.BsXinQin.kinswathe.component.PlayerEffectComponent;
 import org.jetbrains.annotations.Nullable;
 
 public final class Grappler {
-    public static final double RANGE = 16.0D;
     private static final double AIM_TOLERANCE = 2.5D;
     private static final double STOP_DISTANCE = 1.25D;
     private static final double STOP_HEIGHT = 1.25D;
@@ -46,11 +46,12 @@ public final class Grappler {
     }
 
     public static boolean canHook(ServerPlayer hooker, @Nullable ServerPlayer target) {
+        int range = Tunable.GRAPPLER_HOOK_RANGE.intValue();
         Vec3 eye = hooker.getEyePosition();
-        Vec3 reach = eye.add(hooker.getViewVector(1.0F).scale(RANGE));
+        Vec3 reach = eye.add(hooker.getViewVector(1.0F).scale(range));
         if (target == null || target.level() != hooker.level() || !canTarget(hooker, target)
             || !isAimedAt(eye, reach, target.getBoundingBox())) {
-            return refuse(hooker, Component.translatable("message.brinswathe.grappler.no_target", (int) RANGE));
+            return refuse(hooker, Component.translatable("message.brinswathe.grappler.no_target", range));
         }
         if (!hasClearLine(hooker, eye, reach, target.getBoundingBox())) {
             return refuse(hooker, Component.translatable("message.brinswathe.grappler.blocked"));
