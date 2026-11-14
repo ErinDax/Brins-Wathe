@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import cn.erindax.brinswathe.client.BrinsWatheClient;
+import cn.erindax.brinswathe.client.AimClient;
 import dev.doctor4t.wathe.item.KnifeItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,6 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class IllusionistKnifeTargetMixin {
     @Inject(method = "getKnifeTarget", at = @At("HEAD"), cancellable = true, remap = false)
     private static void brinIncludeIllusionModels(Player attacker, CallbackInfoReturnable<HitResult> cir) {
-        cir.setReturnValue(BrinsWatheClient.findWeaponTarget(attacker, 3.0D));
+        cir.setReturnValue(AimClient.findWeaponTarget(attacker, 3.0D));
     }
 }

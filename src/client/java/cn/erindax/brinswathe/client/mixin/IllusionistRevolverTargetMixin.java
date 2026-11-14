@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import cn.erindax.brinswathe.client.BrinsWatheClient;
+import cn.erindax.brinswathe.client.AimClient;
 import dev.doctor4t.wathe.item.RevolverItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -23,6 +23,6 @@ public abstract class IllusionistRevolverTargetMixin {
     private static void brinIncludeIllusionModels(Player shooter, CallbackInfoReturnable<HitResult> cir) {
         ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(shooter.getMainHandItem().getItem());
         if (FAKE_REVOLVER_ID.equals(itemId)) return;
-        cir.setReturnValue(BrinsWatheClient.findWeaponTarget(shooter, 15.0D));
+        cir.setReturnValue(AimClient.findWeaponTarget(shooter, 15.0D));
     }
 }

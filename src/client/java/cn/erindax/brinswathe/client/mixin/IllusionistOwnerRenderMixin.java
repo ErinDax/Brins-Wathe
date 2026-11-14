@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import cn.erindax.brinswathe.client.BrinsWatheClient;
+import cn.erindax.brinswathe.client.IllusionistClient;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
@@ -24,7 +24,7 @@ public abstract class IllusionistOwnerRenderMixin {
     private void brinHideOwnerWhileControlling(AbstractClientPlayer player, float entityYaw, float tickDelta,
                                                 PoseStack matrices, MultiBufferSource vertexConsumers,
                                                 int light, CallbackInfo ci) {
-        if (BrinsWatheClient.isRenderingIllusionModel()) return;
+        if (IllusionistClient.isRenderingIllusionModel()) return;
         IllusionistComponent component = IllusionistComponent.KEY.get(player);
         if (component.controlledCloneId != null) {
             ci.cancel();

@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import cn.erindax.brinswathe.client.BrinsWatheClient;
+import cn.erindax.brinswathe.client.PuppetClient;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.doctor4t.wathe.client.render.entity.PlayerBodyEntityRenderer;
@@ -29,14 +29,14 @@ public abstract class PuppetRenderMixin {
         if (!PuppeteerControlComponent.isPuppetModel(entity)) return;
 
         EntityRendererAccessor bodyRenderer = (EntityRendererAccessor) this;
-        if (BrinsWatheClient.isControllingPuppet(entity.getUUID())) {
+        if (PuppetClient.isControllingPuppet(entity.getUUID())) {
             bodyRenderer.brinSetShadowRadius(0.0F);
             ci.cancel();
             return;
         }
 
-        AbstractClientPlayer carrier = BrinsWatheClient.puppetRenderCarrier(entity);
-        PlayerSkin skin = BrinsWatheClient.puppetRenderSkin(entity);
+        AbstractClientPlayer carrier = PuppetClient.puppetRenderCarrier(entity);
+        PlayerSkin skin = PuppetClient.puppetRenderSkin(entity);
         if (carrier == null || skin == null) {
             bodyRenderer.brinSetShadowRadius(0.0F);
             return;
@@ -55,7 +55,7 @@ public abstract class PuppetRenderMixin {
         float carrierHeadRotOld = carrier.yHeadRotO;
         float carrierXRot = carrier.getXRot();
         float carrierXRotOld = carrier.xRotO;
-        AbstractClientPlayer controller = BrinsWatheClient.puppetController(entity);
+        AbstractClientPlayer controller = PuppetClient.puppetController(entity);
 
         matrices.pushPose();
         try {
@@ -96,13 +96,13 @@ public abstract class PuppetRenderMixin {
                 carrier.xRotO = entity.xRotO;
                 renderYaw = Mth.rotLerp(tickDelta, entity.yRotO, entity.getYRot());
             }
-            BrinsWatheClient.beginPuppetModelRender(carrier, skin);
+            PuppetClient.beginPuppetModelRender(carrier, skin);
             EntityRenderer<? super AbstractClientPlayer> renderer = Minecraft.getInstance()
                 .getEntityRenderDispatcher().getRenderer(carrier);
             renderer.render(carrier, renderYaw, tickDelta, matrices, vertexConsumers, light);
         } finally {
             matrices.popPose();
-            BrinsWatheClient.endPuppetModelRender();
+            PuppetClient.endPuppetModelRender();
             carrierAnimation.brinSetSpeedOld(speedOld);
             carrierAnimation.brinSetSpeed(speed);
             carrierAnimation.brinSetPosition(position);

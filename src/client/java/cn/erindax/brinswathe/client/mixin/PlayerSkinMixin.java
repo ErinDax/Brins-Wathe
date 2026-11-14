@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.client.mixin;
 
 import cn.erindax.brinswathe.client.MorphlingClient;
-import cn.erindax.brinswathe.client.BrinsWatheClient;
+import cn.erindax.brinswathe.client.PuppetClient;
 import cn.erindax.brinswathe.component.StuntDoubleComponent;
 
 import net.fabricmc.api.EnvType;
@@ -24,7 +24,7 @@ public abstract class PlayerSkinMixin {
     @Inject(method = "getSkin", at = @At("HEAD"), cancellable = true)
     private void brinOverrideSkin(CallbackInfoReturnable<PlayerSkin> cir) {
         AbstractClientPlayer self = (AbstractClientPlayer)(Object)this;
-        PlayerSkin puppetSkin = BrinsWatheClient.puppetSkinOverride(self);
+        PlayerSkin puppetSkin = PuppetClient.puppetSkinOverride(self);
         if (puppetSkin != null) {
             cir.setReturnValue(puppetSkin);
             return;

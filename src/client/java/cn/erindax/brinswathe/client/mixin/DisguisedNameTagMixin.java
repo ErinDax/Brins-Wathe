@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import cn.erindax.brinswathe.client.BrinsWatheClient;
+import cn.erindax.brinswathe.client.DisguiseClient;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.doctor4t.wathe.client.gui.RoleNameRenderer;
@@ -22,7 +22,7 @@ public abstract class DisguisedNameTagMixin {
         )
     )
     private static Component brinDisguisedName(Player player, Operation<Component> original) {
-        Component disguised = BrinsWatheClient.disguisedName(player);
+        Component disguised = DisguiseClient.disguisedName(player);
         return disguised == null ? original.call(player) : disguised;
     }
 }

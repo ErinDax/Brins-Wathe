@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import cn.erindax.brinswathe.client.BrinsWatheClient;
+import cn.erindax.brinswathe.client.IllusionistClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class IllusionistHudMixin {
     @Inject(method = "getCameraPlayer", at = @At("RETURN"), cancellable = true)
     private void brinUseOwnerInventoryForCloneCamera(CallbackInfoReturnable<Player> cir) {
-        if (cir.getReturnValue() == null && BrinsWatheClient.isControllingClone()) {
+        if (cir.getReturnValue() == null && IllusionistClient.isControllingClone()) {
             cir.setReturnValue(Minecraft.getInstance().player);
         }
     }

@@ -1,39 +1,16 @@
 package cn.erindax.brinswathe.client;
 
 import cn.erindax.brinswathe.ModRoles;
-import cn.erindax.brinswathe.Grappler;
 import cn.erindax.brinswathe.ModItems;
-import cn.erindax.brinswathe.NoelleAccess;
 import cn.erindax.brinswathe.ModSounds;
-import cn.erindax.brinswathe.WatchmanRescue;
-import cn.erindax.brinswathe.BrinsWathe;
-import cn.erindax.brinswathe.RpsManager;
 import cn.erindax.brinswathe.KnifeSkins;
-import cn.erindax.brinswathe.component.CowboyComponent;
-import cn.erindax.brinswathe.component.ConspiratorComponent;
-import cn.erindax.brinswathe.component.GamblerComponent;
-import cn.erindax.brinswathe.component.IllusionistComponent;
-import cn.erindax.brinswathe.component.InspectorComponent;
-import cn.erindax.brinswathe.component.MorticianComponent;
-import cn.erindax.brinswathe.component.PuppeteerControlComponent;
-import cn.erindax.brinswathe.component.SniperComponent;
-import cn.erindax.brinswathe.component.SpyComponent;
-import cn.erindax.brinswathe.component.StalkerComponent;
-import cn.erindax.brinswathe.component.SubverterComponent;
-import cn.erindax.brinswathe.component.ValentinaComponent;
-import cn.erindax.brinswathe.component.ZhuimuComponent;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.client.gui.EventLogScreen;
-import cn.erindax.brinswathe.client.gui.FactionScreen;
-import cn.erindax.brinswathe.client.gui.SpyGuessScreen;
 import cn.erindax.brinswathe.client.musicbox.MusicBoxClient;
-import cn.erindax.brinswathe.entity.PuppetEntity;
 import cn.erindax.brinswathe.network.ArchivistWitnessS2CPacket;
 import cn.erindax.brinswathe.network.BlindFlashS2CPacket;
-import cn.erindax.brinswathe.network.AbilityC2SPacket;
 import cn.erindax.brinswathe.network.ConfigS2CPacket;
 import cn.erindax.brinswathe.IcFlags;
-import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.network.IcNightVisionS2CPacket;
 import cn.erindax.brinswathe.network.InstinctC2SPacket;
 import cn.erindax.brinswathe.network.InstinctSnapshotS2CPacket;
@@ -43,14 +20,10 @@ import cn.erindax.brinswathe.network.CowboyShowdownMusicS2CPacket;
 import cn.erindax.brinswathe.network.CowboyDuelHideS2CPacket;
 import cn.erindax.brinswathe.network.CowboyDuelIdentityS2CPacket;
 import cn.erindax.brinswathe.network.CowboyDuelLookLockS2CPacket;
-import cn.erindax.brinswathe.network.RpsActionC2SPacket;
 import cn.erindax.brinswathe.network.RpsStateS2CPacket;
 
-import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
-import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;
-import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheItems;
 import dev.doctor4t.wathe.item.RevolverItem;
@@ -64,41 +37,23 @@ import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
-import net.minecraft.client.CameraType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.client.gui.screens.PauseScreen;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.resources.DefaultPlayerSkin;
-import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import org.BsXinQin.kinswathe.client.KinsWatheInitializeClient;
-import org.BsXinQin.kinswathe.component.AbilityPlayerComponent;
-import org.BsXinQin.kinswathe.component.GameSafeComponent;
-import org.aussiebox.starexpress.StarryExpressRoles;
 import org.aussiebox.starexpress.client.StarryExpressClient;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -111,21 +66,6 @@ import java.util.UUID;
 
 public class BrinsWatheClient implements ClientModInitializer {
     private static boolean abilityKeyWasDown;
-    @Nullable
-    private static UUID controlledCloneId;
-    @Nullable
-    private static CameraType previousCameraType;
-    @Nullable
-    private static int illusionModelRenderDepth;
-    @Nullable
-    private static UUID controlledPuppetId;
-    @Nullable
-    private static CameraType previousPuppetCameraType;
-    private static int puppetModelRenderDepth;
-    @Nullable
-    private static AbstractClientPlayer puppetSkinCarrier;
-    @Nullable
-    private static PlayerSkin puppetSkinValue;
     private static int blindFlashTotal;
     private static int blindFlashRemaining;
     private static final Set<UUID> hiddenDuelists = new HashSet<>();
@@ -133,7 +73,6 @@ public class BrinsWatheClient implements ClientModInitializer {
     private static boolean cowboyDuelHidesIdentities;
     private static boolean cowboyDuelLookLocked;
     private static boolean suppressSpectatorRoleHud;
-    private static boolean sniperCancelSent;
     private static KeyMapping rpsBind;
     private static boolean appliedInstinctNightVision;
     private static final int INSTINCT_NIGHT_VISION_DURATION = 220;
@@ -206,7 +145,7 @@ public class BrinsWatheClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(ResourceReloadS2CPacket.TYPE, (payload, context) ->
             context.client().execute(() -> {
                 if (context.client().player == null || context.client().level == null) return;
-                reloadClientResources(context.client());
+                ResourceReloadClient.reloadClientResources(context.client());
             }));
         ClientPlayNetworking.registerGlobalReceiver(CowboyShowdownMusicS2CPacket.TYPE, (payload, context) ->
             context.client().execute(() -> handleShowdownMusic(payload.play(), payload.volume())));
@@ -254,7 +193,7 @@ public class BrinsWatheClient implements ClientModInitializer {
             context.client().execute(() -> archivistWitnesses.put(payload.target(), Math.max(1, payload.durationTicks()))));
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) ->
             client.execute(archivistWitnesses::clear));
-        registerClientStaminaDiagnostic();
+        StaminaDiagnosticClient.registerClientStaminaDiagnostic();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (blindFlashRemaining > 0) {
@@ -265,7 +204,7 @@ public class BrinsWatheClient implements ClientModInitializer {
                 archivistWitnesses.values().removeIf(ticks -> ticks <= 0);
             }
             if (rpsBind != null && rpsBind.consumeClick() && client.screen == null) {
-                tryInviteRps(client);
+                RpsClient.tryInviteRps(client);
             }
             if (RpsHud.locksMovement() && client.player != null) {
                 client.player.setDeltaMovement(Vec3.ZERO);
@@ -287,130 +226,20 @@ public class BrinsWatheClient implements ClientModInitializer {
             if (abilityKeyDown && !abilityKeyWasDown && client.screen == null) {
                 client.execute(() -> {
                     if (Minecraft.getInstance().player != null) {
-                        handleAbilityKeyPress();
+                        AbilityKeyClient.handleAbilityKeyPress();
                     }
                 });
             }
             abilityKeyWasDown = abilityKeyDown;
-            tickIllusionistControl(client);
-            tickPuppetControl(client);
-            tickSniperAiming(client);
-            tickMorticianDisguiseSkins(client);
+            IllusionistClient.tickIllusionistControl(client);
+            PuppetClient.tickPuppetControl(client);
+            SniperClient.tickSniperAiming(client);
+            DisguiseClient.tickMorticianDisguiseSkins(client);
             tickInstinctNightVision(client);
             tickInstinctSnapshot(client);
         });
     }
 
-    private static void registerClientStaminaDiagnostic() {
-        net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback.EVENT.register(
-            (dispatcher, registryAccess) -> dispatcher.register(
-                net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal("brinstamina")
-                    .executes(context -> {
-                        LocalPlayer player = Minecraft.getInstance().player;
-                        if (player == null) return 0;
-                        GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.level());
-                        var role = gameWorld.getRole(player);
-
-                        int mixedMaxSprint = role == null ? -999 : role.getMaxSprintTime();
-                        cn.erindax.brinswathe.component.StaminaComponent stamina =
-                            cn.erindax.brinswathe.component.StaminaComponent.KEY.get(player);
-                        float sprintTicks = player
-                            .saveWithoutId(new net.minecraft.nbt.CompoundTag())
-                            .getFloat("sprintingTicks");
-                        String ratio = mixedMaxSprint > 0
-                            ? String.format("%.2f", Math.max(0.0F, Math.min(1.0F, sprintTicks / mixedMaxSprint)))
-                            : "-";
-                        context.getSource().sendFeedback(Component.literal(
-                            "CLIENT role=" + (role == null ? "null" : role.identifier())
-                                + " maxSprint(mixed)=" + mixedMaxSprint
-                                + " | stamina=" + (stamina == null
-                                    ? "-"
-                                    : stamina.currentStamina + "/" + stamina.maxStamina)
-                                + " | sprintTicks=" + String.format("%.1f", sprintTicks)
-                                + " | barFill=" + ratio
-                        ));
-                        return 1;
-                    })
-            )
-        );
-    }
-    private static final float ILLUSION_AIM_TOLERANCE = 0.5F;
-    private static void reloadClientResources(Minecraft client) {
-        if (client.player == null || client.level == null) return;
-        client.getLanguageManager().onResourceManagerReload(client.getResourceManager());
-        reloadStarryGuidebook(client);
-    }
-    private static void reloadStarryGuidebook(Minecraft client) {
-        if (client.player == null || client.level == null) return;
-        try {
-            Class<?> collectorClass = Class.forName(
-                "org.aussiebox.starexpress.client.guidebook.GuidebookEntryCollector"
-            );
-            Object collector = collectorClass.getField("INSTANCE").get(null);
-            for (java.lang.reflect.Method method : collectorClass.getMethods()) {
-                if (!method.getName().equals("reload") || method.getParameterCount() != 1) continue;
-                method.invoke(collector, client.getResourceManager());
-                return;
-            }
-            BrinsWathe.LOGGER.warn("Could not find Starry Express guidebook reload method");
-        } catch (ClassNotFoundException ignored) {
-        } catch (ReflectiveOperationException | IllegalArgumentException exception) {
-            BrinsWathe.LOGGER.warn("Failed to reload Starry Express guidebook: {}", exception.getMessage());
-        }
-    }
-    public static Entity weaponAimOrigin(Player attacker) {
-        return attacker;
-    }
-
-    public static boolean isWeaponTarget(Player attacker, Entity entity) {
-        if (entity == attacker) return false;
-        if (entity instanceof Player player) {
-            return GameFunctions.isPlayerAliveAndSurvival(player);
-        }
-        if (!(entity instanceof PlayerBodyEntity body)) return false;
-        if (PuppeteerControlComponent.isPuppetBodyProxy(body)) {
-            return !attacker.getUUID().equals(((PuppetEntity) body).brin$getPuppeteer());
-        }
-        if (attacker.getUUID().equals(body.getPlayerUuid())) return false;
-        return IllusionistComponent.isIllusionModel(body);
-    }
-    public static HitResult findWeaponTarget(Player attacker, double range) {
-        Entity origin = weaponAimOrigin(attacker);
-        Vec3 eye = origin.getEyePosition();
-        Vec3 end = eye.add(origin.getViewVector(1.0F).scale(range));
-        HitResult blockHit = origin.level().clip(new ClipContext(
-            eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, origin));
-        double bestDistSqr = blockHit.getType() == HitResult.Type.MISS
-            ? range * range
-            : blockHit.getLocation().distanceToSqr(eye);
-        Entity bestEntity = null;
-        Vec3 bestPos = null;
-        AABB searchBox = origin.getBoundingBox().expandTowards(end.subtract(eye)).inflate(1.0);
-        for (Entity candidate : origin.level().getEntities(origin, searchBox,
-                entity -> isWeaponTarget(attacker, entity))) {
-            float tolerance = candidate instanceof PlayerBodyEntity body
-                && (IllusionistComponent.isIllusionModel(body)
-                    || PuppeteerControlComponent.isPuppetModel(body))
-                ? ILLUSION_AIM_TOLERANCE
-                : 0.0F;
-            AABB box = candidate.getBoundingBox().inflate(tolerance);
-            if (box.contains(eye)) {
-                bestEntity = candidate;
-                bestPos = eye;
-                bestDistSqr = 0.0D;
-                continue;
-            }
-            var clip = box.clip(eye, end);
-            if (clip.isEmpty()) continue;
-            double distSqr = eye.distanceToSqr(clip.get());
-            if (distSqr < bestDistSqr) {
-                bestEntity = candidate;
-                bestPos = clip.get();
-                bestDistSqr = distSqr;
-            }
-        }
-        return bestEntity != null ? new EntityHitResult(bestEntity, bestPos) : blockHit;
-    }
     public static void startBlindFlash(int durationTicks) {
         blindFlashTotal = Math.max(durationTicks, 1);
         blindFlashRemaining = blindFlashTotal;
@@ -499,281 +328,6 @@ public class BrinsWatheClient implements ClientModInitializer {
         return shared;
     }
 
-    private static void tryInviteRps(Minecraft client) {
-        LocalPlayer player = client.player;
-        if (player == null || !RpsManager.canPlay(player)) return;
-        HitResult hit = findRpsTarget(player, Tunable.RPS_RANGE.doubleValue());
-        if (!(hit instanceof EntityHitResult entityHit)
-            || !(entityHit.getEntity() instanceof Player target)
-            || !RpsManager.canPlayTogether(player, target)) {
-            player.displayClientMessage(Component.translatable("message.brinswathe.rps.no_target"), true);
-            return;
-        }
-        ClientPlayNetworking.send(RpsActionC2SPacket.invite(target.getUUID()));
-    }
-    private static HitResult findRpsTarget(Player attacker, double range) {
-        Vec3 eye = attacker.getEyePosition();
-        Vec3 end = eye.add(attacker.getViewVector(1.0F).scale(range));
-        HitResult blockHit = attacker.isSpectator()
-            ? BlockHitResult.miss(end, Direction.UP, BlockPos.containing(end))
-            : attacker.level().clip(new ClipContext(
-                eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, attacker));
-        double bestDistSqr = blockHit.getType() == HitResult.Type.MISS
-            ? range * range
-            : blockHit.getLocation().distanceToSqr(eye);
-        Entity bestEntity = null;
-        Vec3 bestPos = null;
-        AABB searchBox = attacker.getBoundingBox().expandTowards(end.subtract(eye)).inflate(1.0);
-        for (Entity candidate : attacker.level().getEntities(attacker, searchBox,
-                entity -> entity instanceof Player other && RpsManager.canPlayTogether(attacker, other))) {
-            AABB box = candidate.getBoundingBox();
-            if (box.contains(eye)) {
-                bestEntity = candidate;
-                bestPos = eye;
-                bestDistSqr = 0.0D;
-                continue;
-            }
-            var clip = box.clip(eye, end);
-            if (clip.isEmpty()) continue;
-            double distSqr = eye.distanceToSqr(clip.get());
-            if (distSqr < bestDistSqr) {
-                bestEntity = candidate;
-                bestPos = clip.get();
-                bestDistSqr = distSqr;
-            }
-        }
-        return bestEntity != null ? new EntityHitResult(bestEntity, bestPos) : blockHit;
-    }
-    public static void handleAbilityKeyPress() {
-        var player = Minecraft.getInstance().player;
-        if (player == null) return;
-
-        PlayerBodyEntity touchedBody = getInspectableBodyInCrosshair(player);
-        if (touchedBody != null) {
-            ClientPlayNetworking.send(new AbilityC2SPacket(
-                AbilityC2SPacket.ABILITY_CORPSE_TOUCH,
-                touchedBody.getUUID()
-            ));
-        }
-        GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.level());
-        if (gameWorld.isRole(player, StarryExpressRoles.MUZZLER)) {
-            ClientPlayNetworking.send(new AbilityC2SPacket(
-                AbilityC2SPacket.ABILITY_MUZZLER_SILENCE,
-                null
-            ));
-            return;
-        }
-        if (GameSafeComponent.KEY.get(player.level()).isGameSafe
-            && !ModRoles.ignoresOpeningSafeTime(gameWorld, player)) {
-            return;
-        }
-        if (NoelleAccess.isRole(gameWorld, player, NoelleAccess.CONDUCTOR_ID)) {
-            ClientPlayNetworking.send(new AbilityC2SPacket(
-                AbilityC2SPacket.ABILITY_CONDUCTOR_ARMOR, null));
-            return;
-        }
-        if (gameWorld.isRole(player, WatheRoles.VIGILANTE)) {
-            AbilityPlayerComponent vigilanteAbility = AbilityPlayerComponent.KEY.get(player);
-            if (vigilanteAbility != null && vigilanteAbility.cooldown > 0) return;
-            UUID targetId = findPlayerInCrosshair(player);
-            if (targetId != null) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_VIGILANTE_DETECT, targetId));
-            }
-            return;
-        }
-        if (NoelleAccess.isRole(gameWorld, player, NoelleAccess.NOISEMAKER_ID)) {
-            if (NoelleAccess.noelleAbilityCooldown(player) > 0) return;
-            UUID targetId = findAimedAnyPlayer(player);
-            if (targetId != null) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_NOISEMAKER_MARK, targetId));
-            }
-            return;
-        }
-        if (NoelleAccess.isRole(gameWorld, player, NoelleAccess.INSANE_KILLER_ID)) {
-            if (NoelleAccess.noelleAbilityCooldown(player) > 0) return;
-            UUID targetId = findAimedAnyPlayer(player);
-            if (targetId != null) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_INSANE_REVIVE, targetId));
-            }
-            return;
-        }
-        AbilityPlayerComponent ability = AbilityPlayerComponent.KEY.get(player);
-        if (gameWorld.isRole(player, ModRoles.SNIPER)) {
-            SniperComponent component = SniperComponent.KEY.get(player);
-            if (component != null && (component.isAiming() || component.getCooldownTicks() <= 0)) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_SNIPER_TOGGLE_OR_FIRE,
-                    null
-                ));
-            }
-            return;
-        }
-        if (gameWorld.isRole(player, ModRoles.PUPPETEER)) {
-            PuppeteerControlComponent component = PuppeteerControlComponent.KEY.get(player);
-            if (component == null) return;
-            if (component.isControlling()) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_PUPPETEER_RETURN,
-                    null
-                ));
-                return;
-            }
-            if (component.craftCooldownTicks > 0) return;
-            UUID corpseId = findPlayerBodyInCrosshair(player);
-            if (corpseId != null) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_PUPPETEER_CRAFT,
-                    corpseId
-                ));
-            }
-            return;
-        }
-        if (gameWorld.isRole(player, ModRoles.ILLUSIONIST)) {
-            IllusionistComponent component = IllusionistComponent.KEY.get(player);
-            if (component != null && !component.cloneEntityIds.isEmpty()) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_ILLUSIONIST_SWITCH_CONTROL,
-                    getNextControlTarget(component)
-                ));
-            } else if (ability.cooldown <= 0) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_ILLUSIONIST_CLONES,
-                    null
-                ));
-            }
-            return;
-        }
-        if (gameWorld.isRole(player, ModRoles.CONSPIRATOR)) {
-            ConspiratorComponent channel = ConspiratorComponent.KEY.get(player);
-            if (GameFunctions.isPlayerAliveAndSurvival(player)
-                && ability.cooldown <= 0
-                && (channel == null || !channel.isInTemporaryChannel())) {
-                Minecraft.getInstance().setScreen(new LimitedInventoryScreen(player));
-            }
-            return;
-        }
-        if (gameWorld.isRole(player, ModRoles.COWBOY)) {
-            CowboyComponent cowboy = CowboyComponent.KEY.get(player);
-            if (GameFunctions.isPlayerAliveAndSurvival(player)
-                && cowboy != null
-                && !cowboy.duelUsed()) {
-                Minecraft.getInstance().setScreen(new LimitedInventoryScreen(player));
-            }
-            return;
-        }
-        if (gameWorld.isRole(player, ModRoles.STALKER)) {
-            StalkerComponent stalker = StalkerComponent.KEY.get(player);
-            if (stalker == null || stalker.cooldownTicks() > 0) return;
-            UUID targetId = findStalkerAimTarget(player);
-            if (targetId != null) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_STALKER_TRACK, targetId));
-            }
-            return;
-        }
-        if (gameWorld.isRole(player, ModRoles.VALENTINA)) {
-            ValentinaComponent valentina = ValentinaComponent.KEY.get(player);
-            if (valentina != null && valentina.canForesee()) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_VALENTINA_FORESIGHT, null));
-            }
-            return;
-        }
-        if (gameWorld.isRole(player, ModRoles.SUBVERTER)) {
-            SubverterComponent subverter = SubverterComponent.KEY.get(player);
-            UUID targetId = subverter != null && subverter.isPending() ? findPlayerInCrosshair(player) : null;
-            Player target = targetId == null ? null : player.level().getPlayerByUUID(targetId);
-            if (target != null) {
-                Minecraft.getInstance().setScreen(FactionScreen.subvert(targetId, target.getDisplayName()));
-            }
-            return;
-        }
-        if (gameWorld.isRole(player, ModRoles.INSPECTOR)) {
-            InspectorComponent inspector = InspectorComponent.KEY.get(player);
-            if (GameFunctions.isPlayerAliveAndSurvival(player) && inspector != null && !inspector.used()) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_INSPECTOR_DISARM, null));
-            }
-            return;
-        }
-        if (gameWorld.isRole(player, ModRoles.ZHUIMU)) {
-            ZhuimuComponent zhuimu = ZhuimuComponent.KEY.get(player);
-            if (GameFunctions.isPlayerAliveAndSurvival(player) && zhuimu != null && !zhuimu.used()) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_ZHUIMU_BOAT, null));
-            }
-            return;
-        }
-        if (gameWorld.isRole(player, ModRoles.SPY)) {
-            SpyComponent spy = SpyComponent.KEY.get(player);
-            if (GameFunctions.isPlayerAliveAndSurvival(player)
-                && ability.cooldown <= 0
-                && spy != null
-                && spy.required() > 0
-                && !spy.completed()) {
-                Minecraft.getInstance().setScreen(new SpyGuessScreen());
-            }
-            return;
-        }
-        if (gameWorld.isRole(player, ModRoles.GRAPPLER)) {
-            if (!GameFunctions.isPlayerAliveAndSurvival(player) || ability.cooldown > 0) return;
-            UUID targetId = findGrapplerTarget(player);
-            if (targetId != null) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_GRAPPLER_HOOK, targetId));
-            } else {
-                player.displayClientMessage(
-                    Component.translatable(
-                        "message.brinswathe.grappler.no_target",
-                        Tunable.GRAPPLER_HOOK_RANGE.intValue()
-                    ),
-                    true
-                );
-            }
-            return;
-        }
-        if (ability.cooldown > 0) return;
-        if (gameWorld.isRole(player, ModRoles.TRAPPER)) {
-            ClientPlayNetworking.send(new AbilityC2SPacket(AbilityC2SPacket.ABILITY_TRAPPER_PLACE_TRAP, null));
-        } else if (gameWorld.isRole(player, ModRoles.WATCHMAN)) {
-            UUID targetId = findWatchmanTarget(player);
-            if (targetId != null) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_WATCHMAN_RESCUE, targetId));
-            }
-        } else if (gameWorld.isRole(player, ModRoles.NIGHTMARE)) {
-            UUID targetId = findSleepingPlayerInCrosshair(player);
-            if (targetId != null) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_NIGHTMARE_PLANT, targetId));
-            }
-        } else if (gameWorld.isRole(player, ModRoles.ARCHIVIST)) {
-            PlayerBodyEntity corpse = getInspectableBodyInCrosshair(player);
-            if (corpse != null) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_ARCHIVIST_SEAL, corpse.getUUID()));
-            }
-        } else if (gameWorld.isRole(player, ModRoles.GAMBLER)) {
-            GamblerComponent gambler = GamblerComponent.KEY.get(player);
-            UUID targetId = gambler != null && gambler.betTarget() == null ? findPlayerInCrosshair(player) : null;
-            if (targetId != null) {
-                ClientPlayNetworking.send(new AbilityC2SPacket(
-                    AbilityC2SPacket.ABILITY_GAMBLER_BET, targetId));
-            }
-        } else if (gameWorld.isRole(player, ModRoles.ZHANGSHI)) {
-            ClientPlayNetworking.send(new AbilityC2SPacket(
-                AbilityC2SPacket.ABILITY_ZHANGSHI_SPEED, null));
-        } else if (gameWorld.isRole(player, ModRoles.MEDIUM)) {
-            ClientPlayNetworking.send(new AbilityC2SPacket(
-                AbilityC2SPacket.ABILITY_MEDIUM_JOIN_VOICE, null));
-        } else if (gameWorld.isRole(player, ModRoles.HALF_SPIRIT)) {
-            ClientPlayNetworking.send(new AbilityC2SPacket(
-                AbilityC2SPacket.ABILITY_HALF_SPIRIT_PHASE, null));
-        }
-    }
     private static void tickInstinctSnapshot(Minecraft client) {
         if (client.player == null || client.getConnection() == null) {
             lastInstinctReported = false;
@@ -816,404 +370,5 @@ public class BrinsWatheClient implements ClientModInitializer {
             player.removeEffect(MobEffects.NIGHT_VISION);
         }
         appliedInstinctNightVision = false;
-    }
-    @Nullable
-    private static UUID getNextControlTarget(IllusionistComponent component) {
-        if (component.controlledCloneId == null) return component.cloneEntityIds.getFirst();
-        int currentIndex = component.cloneEntityIds.indexOf(component.controlledCloneId);
-        if (currentIndex < 0 || currentIndex + 1 >= component.cloneEntityIds.size()) return null;
-        return component.cloneEntityIds.get(currentIndex + 1);
-    }
-    private static void tickMorticianDisguiseSkins(Minecraft client) {
-        if (client.level == null) return;
-        ClientPacketListener connection = client.getConnection();
-        if (connection == null) return;
-        for (Entity entity : client.level.entitiesForRendering()) {
-            if (!(entity instanceof PlayerBodyEntity body)) continue;
-            if (!MorticianComponent.isDisguiseBody(body)) continue;
-            UUID skinId = body.getPlayerUuid();
-            if (skinId == null || WatheClient.PLAYER_ENTRIES_CACHE.get(skinId) != null) continue;
-            PlayerInfo info = connection.getPlayerInfo(skinId);
-            if (info != null) WatheClient.PLAYER_ENTRIES_CACHE.put(skinId, info);
-        }
-    }
-
-    private static void tickIllusionistControl(Minecraft client) {
-        if (client.player == null || client.level == null) {
-            stopClientControl(client);
-            return;
-        }
-        IllusionistComponent component = IllusionistComponent.KEY.get(client.player);
-        UUID targetId = component == null ? null : component.controlledCloneId;
-        Entity target = findClientEntity(client, targetId);
-        if (!(target instanceof PlayerBodyEntity clone) || !IllusionistComponent.isClone(clone)) {
-            stopClientControl(client);
-            return;
-        }
-
-        if (controlledCloneId == null) {
-            previousCameraType = client.options.getCameraType();
-        }
-        controlledCloneId = targetId;
-        client.options.setCameraType(CameraType.FIRST_PERSON);
-        if (client.getCameraEntity() == clone) {
-            client.setCameraEntity(client.player);
-        }
-    }
-    private static void tickPuppetControl(Minecraft client) {
-        if (client.player == null || client.level == null) {
-            stopPuppetControl(client);
-            return;
-        }
-        PuppeteerControlComponent component = PuppeteerControlComponent.KEY.get(client.player);
-        UUID targetId = component == null ? null : component.puppetEntityId;
-        if (targetId == null || !(findClientEntity(client, targetId) instanceof PlayerBodyEntity puppet)
-            || !PuppeteerControlComponent.isPuppet(puppet)) {
-            stopPuppetControl(client);
-            return;
-        }
-        if (controlledPuppetId == null) {
-            previousPuppetCameraType = client.options.getCameraType();
-        }
-        controlledPuppetId = targetId;
-        client.options.setCameraType(CameraType.FIRST_PERSON);
-    }
-    private static void stopPuppetControl(Minecraft client) {
-        if (controlledPuppetId == null) return;
-        controlledPuppetId = null;
-        if (previousPuppetCameraType != null) {
-            client.options.setCameraType(previousPuppetCameraType);
-            previousPuppetCameraType = null;
-        }
-    }
-    public static boolean isControllingPuppet() {
-        return controlledPuppetId != null;
-    }
-    public static boolean isControllingPuppet(UUID puppetId) {
-        return puppetId.equals(controlledPuppetId);
-    }
-    public static void beginPuppetModelRender(AbstractClientPlayer carrier, @Nullable PlayerSkin skin) {
-        puppetModelRenderDepth++;
-        puppetSkinCarrier = carrier;
-        puppetSkinValue = skin;
-    }
-
-    public static void endPuppetModelRender() {
-        puppetModelRenderDepth = Math.max(0, puppetModelRenderDepth - 1);
-        if (puppetModelRenderDepth == 0) {
-            puppetSkinCarrier = null;
-            puppetSkinValue = null;
-        }
-    }
-    public static boolean isRenderingPuppetModel() {
-        return puppetModelRenderDepth > 0;
-    }
-    @Nullable
-    public static PlayerSkin puppetSkinOverride(AbstractClientPlayer player) {
-        return puppetModelRenderDepth > 0 && player == puppetSkinCarrier ? puppetSkinValue : null;
-    }
-    @Nullable
-    public static AbstractClientPlayer puppetController(PlayerBodyEntity entity) {
-        UUID puppeteerId = ((PuppetEntity) entity).brin$getPuppeteer();
-        if (puppeteerId != null
-            && entity.level().getPlayerByUUID(puppeteerId) instanceof AbstractClientPlayer puppeteer
-            && !puppeteer.isSpectator()) {
-            return puppeteer;
-        }
-        return null;
-    }
-    @Nullable
-    public static AbstractClientPlayer puppetRenderCarrier(PlayerBodyEntity entity) {
-        UUID skinId = entity.getPlayerUuid();
-        if (skinId != null && entity.level().getPlayerByUUID(skinId) instanceof AbstractClientPlayer direct
-            && !direct.isSpectator()) {
-            return direct;
-        }
-        UUID puppeteerId = ((PuppetEntity) entity).brin$getPuppeteer();
-        if (puppeteerId != null
-            && entity.level().getPlayerByUUID(puppeteerId) instanceof AbstractClientPlayer puppeteer
-            && !puppeteer.isSpectator()) {
-            return puppeteer;
-        }
-        AbstractClientPlayer local = Minecraft.getInstance().player;
-        return local == null || local.isSpectator() ? null : local;
-    }
-    @Nullable
-    public static Component disguisedName(Player player) {
-        MorticianComponent mortician = MorticianComponent.KEY.get(player);
-        if (mortician != null && mortician.isDisguised()) {
-            return borrowedBodyName(player, mortician.disguiseBodyId);
-        }
-        PuppeteerControlComponent puppeteer = PuppeteerControlComponent.KEY.get(player);
-        if (puppeteer != null && puppeteer.isControlling()) {
-            return borrowedBodyName(player, puppeteer.puppetEntityId);
-        }
-        Component morphName = MorphlingClient.disguiseName(player);
-        if (morphName != null) return morphName;
-        return null;
-    }
-    private static Component borrowedBodyName(Player player, @Nullable UUID bodyId) {
-        Entity body = findClientEntity(Minecraft.getInstance(), bodyId);
-        UUID skinId = body instanceof PlayerBodyEntity playerBody ? playerBody.getPlayerUuid() : null;
-        if (skinId == null) return Component.empty();
-        if (player.level().getPlayerByUUID(skinId) instanceof Player skinOwner) {
-            return skinOwner.getDisplayName();
-        }
-
-        ClientPacketListener connection = Minecraft.getInstance().getConnection();
-        PlayerInfo info = connection == null ? null : connection.getPlayerInfo(skinId);
-        return info == null ? Component.empty() : Component.literal(info.getProfile().getName());
-    }
-    @Nullable
-    public static PlayerSkin puppetRenderSkin(PlayerBodyEntity entity) {
-        UUID skinId = entity.getPlayerUuid();
-        if (skinId == null) return null;
-        ClientPacketListener connection = Minecraft.getInstance().getConnection();
-        PlayerInfo info = connection == null ? null : connection.getPlayerInfo(skinId);
-        return info == null ? DefaultPlayerSkin.get(skinId) : info.getSkin();
-    }
-    private static void tickSniperAiming(Minecraft client) {
-        if (client.player == null || client.level == null) {
-            sniperCancelSent = false;
-            return;
-        }
-
-        SniperComponent component = SniperComponent.KEY.get(client.player);
-        if (component == null || !component.isAiming()) {
-            sniperCancelSent = false;
-            return;
-        }
-        client.player.setDeltaMovement(Vec3.ZERO);
-        if (client.screen instanceof PauseScreen && !sniperCancelSent) {
-            sniperCancelSent = true;
-            ClientPlayNetworking.send(new AbilityC2SPacket(
-                AbilityC2SPacket.ABILITY_SNIPER_CANCEL,
-                null
-            ));
-            client.setScreen(null);
-        }
-    }
-    public static boolean isSniperAiming() {
-        Minecraft client = Minecraft.getInstance();
-        if (client.player == null) return false;
-        SniperComponent component = SniperComponent.KEY.get(client.player);
-        return component != null && component.isAiming();
-    }
-    @Nullable
-    private static Entity findClientEntity(Minecraft client, @Nullable UUID entityId) {
-        if (client.level == null || entityId == null) return null;
-        for (Entity entity : client.level.entitiesForRendering()) {
-            if (entityId.equals(entity.getUUID())) return entity;
-        }
-        return null;
-    }
-
-    private static void stopClientControl(Minecraft client) {
-        if (controlledCloneId == null) return;
-        controlledCloneId = null;
-        if (client.player != null && client.getCameraEntity() instanceof PlayerBodyEntity body
-            && IllusionistComponent.isClone(body)) {
-            client.setCameraEntity(client.player);
-        }
-        if (previousCameraType != null) {
-            client.options.setCameraType(previousCameraType);
-            previousCameraType = null;
-        }
-    }
-    public static boolean isControllingClone() {
-        return controlledCloneId != null;
-    }
-    public static boolean isControllingClone(UUID cloneId) {
-        return cloneId.equals(controlledCloneId);
-    }
-    public static void beginIllusionModelRender() {
-        illusionModelRenderDepth++;
-    }
-    public static void endIllusionModelRender() {
-        illusionModelRenderDepth = Math.max(0, illusionModelRenderDepth - 1);
-    }
-    public static boolean isRenderingIllusionModel() {
-        return illusionModelRenderDepth > 0;
-    }
-    @Nullable
-    private static UUID findSleepingPlayerInCrosshair(Player localPlayer) {
-        if (Minecraft.getInstance().getConnection() == null) return null;
-        Vec3 eyePos = localPlayer.getEyePosition();
-        Vec3 look = localPlayer.getLookAngle();
-        double bestDot = -2.0;
-        UUID bestTarget = null;
-        for (PlayerInfo info : Minecraft.getInstance().getConnection().getListedOnlinePlayers()) {
-            if (info.getProfile().getId().equals(localPlayer.getUUID())) continue;
-            Player targetPlayer = localPlayer.level().getPlayerByUUID(info.getProfile().getId());
-            if (targetPlayer == null || !targetPlayer.isSleeping()) continue;
-            Vec3 toTarget = targetPlayer.getEyePosition().subtract(eyePos).normalize();
-            double dot = toTarget.dot(look);
-            if (dot > bestDot && dot > 0.5) {
-                bestDot = dot;
-                bestTarget = targetPlayer.getUUID();
-            }
-        }
-        return bestTarget;
-    }
-    @Nullable
-    private static UUID findPlayerInCrosshair(Player localPlayer) {
-        HitResult hitResult = ProjectileUtil.getHitResultOnViewVector(
-            localPlayer,
-            entity -> entity instanceof Player target
-                && target != localPlayer
-                && GameFunctions.isPlayerAliveAndSurvival(target),
-            64.0D
-        );
-        if (hitResult instanceof EntityHitResult entityHit
-            && entityHit.getEntity() instanceof Player targetPlayer) {
-            return targetPlayer.getUUID();
-        }
-        return null;
-    }
-    @Nullable
-    private static UUID findStalkerAimTarget(Player localPlayer) {
-        HitResult hitResult = ProjectileUtil.getHitResultOnViewVector(
-            localPlayer,
-            entity -> entity instanceof Player target
-                && target != localPlayer
-                && GameFunctions.isPlayerAliveAndSurvival(target),
-            Tunable.STALKER_AIM_RANGE.doubleValue()
-        );
-        if (hitResult instanceof EntityHitResult entityHit
-            && entityHit.getEntity() instanceof Player targetPlayer
-            && StalkerComponent.isAimedAt(localPlayer, targetPlayer)) {
-            return targetPlayer.getUUID();
-        }
-        return null;
-    }
-    @Nullable
-    private static UUID findGrapplerTarget(Player localPlayer) {
-        HitResult hitResult = ProjectileUtil.getHitResultOnViewVector(
-            localPlayer,
-            entity -> entity instanceof Player target && Grappler.canTarget(localPlayer, target),
-            Tunable.GRAPPLER_HOOK_RANGE.doubleValue()
-        );
-        if (hitResult instanceof EntityHitResult entityHit
-            && entityHit.getEntity() instanceof Player targetPlayer) {
-            return targetPlayer.getUUID();
-        }
-        return null;
-    }
-    @Nullable
-    private static UUID findWatchmanTarget(Player localPlayer) {
-        UUID raycast = findPlayerInCrosshair(localPlayer);
-        if (raycast != null && WatchmanRescue.canRescue(localPlayer.level().getPlayerByUUID(raycast))) {
-            return raycast;
-        }
-        Vec3 eyePos = localPlayer.getEyePosition();
-        Vec3 look = localPlayer.getLookAngle();
-        double bestDot = 0.5;
-        UUID bestTarget = null;
-        for (Player target : localPlayer.level().players()) {
-            if (target == localPlayer || !WatchmanRescue.canRescue(target)) continue;
-            if (eyePos.distanceToSqr(target.position()) > 64.0D * 64.0D) continue;
-            Vec3 toTarget = target.getBoundingBox().getCenter().subtract(eyePos);
-            if (toTarget.lengthSqr() < 1.0E-6) continue;
-            double dot = toTarget.normalize().dot(look);
-            if (dot > bestDot) {
-                bestDot = dot;
-                bestTarget = target.getUUID();
-            }
-        }
-        if (bestTarget != null) return bestTarget;
-        if (WatchmanRescue.canRescue(localPlayer)) return localPlayer.getUUID();
-        return findAimedLivingPlayer(localPlayer);
-    }
-    @Nullable
-    private static UUID findAimedLivingPlayer(Player localPlayer) {
-        UUID raycast = findPlayerInCrosshair(localPlayer);
-        if (raycast != null) return raycast;
-        Vec3 eyePos = localPlayer.getEyePosition();
-        Vec3 look = localPlayer.getLookAngle();
-        double bestDot = -2.0;
-        UUID bestTarget = null;
-        for (Player target : localPlayer.level().players()) {
-            if (target == localPlayer || !GameFunctions.isPlayerAliveAndSurvival(target)) continue;
-            if (eyePos.distanceToSqr(target.position()) > 64.0D * 64.0D) continue;
-            Vec3 toTarget = target.getBoundingBox().getCenter().subtract(eyePos);
-            if (toTarget.lengthSqr() < 1.0E-6) continue;
-            double dot = toTarget.normalize().dot(look);
-            if (dot > bestDot && dot > 0.5) {
-                bestDot = dot;
-                bestTarget = target.getUUID();
-            }
-        }
-        return bestTarget;
-    }
-    @Nullable
-    private static UUID findAimedAnyPlayer(Player localPlayer) {
-        HitResult hitResult = ProjectileUtil.getHitResultOnViewVector(
-            localPlayer,
-            entity -> entity instanceof Player target && target != localPlayer,
-            64.0D
-        );
-        if (hitResult instanceof EntityHitResult entityHit
-            && entityHit.getEntity() instanceof Player targetPlayer) {
-            return targetPlayer.getUUID();
-        }
-        Vec3 eyePos = localPlayer.getEyePosition();
-        Vec3 look = localPlayer.getLookAngle();
-        double bestDot = -2.0;
-        UUID bestTarget = null;
-        for (Player target : localPlayer.level().players()) {
-            if (target == localPlayer) continue;
-            if (eyePos.distanceToSqr(target.position()) > 64.0D * 64.0D) continue;
-            Vec3 toTarget = target.getBoundingBox().getCenter().subtract(eyePos);
-            if (toTarget.lengthSqr() < 1.0E-6) continue;
-            double dot = toTarget.normalize().dot(look);
-            if (dot > bestDot && dot > 0.5) {
-                bestDot = dot;
-                bestTarget = target.getUUID();
-            }
-        }
-        return bestTarget;
-    }
-    @Nullable
-    private static UUID findPlayerBodyInCrosshair(Player localPlayer) {
-        PlayerBodyEntity body = getPlayerBodyInCrosshair(localPlayer);
-        return body == null ? null : body.getUUID();
-    }
-    @Nullable
-    public static PlayerBodyEntity getPlayerBodyInCrosshair(Player localPlayer) {
-        return brinBodyInCrosshair(localPlayer, false);
-    }
-    @Nullable
-    public static PlayerBodyEntity getInspectableBodyInCrosshair(Player localPlayer) {
-        return brinBodyInCrosshair(localPlayer, true);
-    }
-    @Nullable
-    private static PlayerBodyEntity brinBodyInCrosshair(Player localPlayer, boolean includeDisguises) {
-        Vec3 eye = localPlayer.getEyePosition();
-        Vec3 look = localPlayer.getLookAngle();
-        double range = 8.0D;
-        Vec3 end = eye.add(look.scale(range));
-        HitResult blockHit = localPlayer.level().clip(new ClipContext(
-            eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, localPlayer));
-        double bestDistanceSqr = blockHit.getType() == HitResult.Type.MISS
-            ? range * range
-            : eye.distanceToSqr(blockHit.getLocation());
-        PlayerBodyEntity bestBody = null;
-        AABB searchBox = localPlayer.getBoundingBox().expandTowards(look.scale(range)).inflate(1.0D);
-        for (PlayerBodyEntity body : localPlayer.level().getEntitiesOfClass(
-            PlayerBodyEntity.class,
-            searchBox,
-            candidate -> !candidate.isInvisible()
-                && !IllusionistComponent.isIllusionModel(candidate)
-                && !PuppeteerControlComponent.isPuppetModel(candidate)
-                && (includeDisguises || !MorticianComponent.isDisguiseBody(candidate)))) {
-            var hit = body.getBoundingBox().inflate(0.25D).clip(eye, end);
-            if (hit.isEmpty()) continue;
-            double distanceSqr = eye.distanceToSqr(hit.get());
-            if (distanceSqr <= bestDistanceSqr) {
-                bestDistanceSqr = distanceSqr;
-                bestBody = body;
-            }
-        }
-        return bestBody;
     }
 }

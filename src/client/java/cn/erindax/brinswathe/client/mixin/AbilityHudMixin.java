@@ -4,6 +4,7 @@ import cn.erindax.brinswathe.Faction;
 import cn.erindax.brinswathe.MorphlingAccess;
 import cn.erindax.brinswathe.NoelleAccess;
 import cn.erindax.brinswathe.ModRoles;
+import cn.erindax.brinswathe.client.AimClient;
 import cn.erindax.brinswathe.client.BrinsWatheClient;
 import cn.erindax.brinswathe.component.CowboyComponent;
 import cn.erindax.brinswathe.component.GamblerComponent;
@@ -415,7 +416,7 @@ public abstract class AbilityHudMixin {
         context.drawString(font, line, (width - textWidth) / 2, height - font.lineHeight - 2, color);
     }
     private void renderArchivistCorpseInfo(GuiGraphics context, Font font, LocalPlayer player) {
-        PlayerBodyEntity body = BrinsWatheClient.getInspectableBodyInCrosshair(player);
+        PlayerBodyEntity body = AimClient.getInspectableBodyInCrosshair(player);
         if (body == null) return;
         if (!((ArchivistSealedCorpse) body).brin$isBodymakerForged()) return;
         Component line = Component.translatable(

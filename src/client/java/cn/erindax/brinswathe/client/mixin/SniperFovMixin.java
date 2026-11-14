@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import cn.erindax.brinswathe.client.BrinsWatheClient;
+import cn.erindax.brinswathe.client.SniperClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Camera;
@@ -16,7 +16,7 @@ public abstract class SniperFovMixin {
     @Inject(method = "getFov", at = @At("RETURN"), cancellable = true)
     private void brinApplySniperZoom(Camera camera, float tickDelta, boolean changingFov,
                                      CallbackInfoReturnable<Double> cir) {
-        if (BrinsWatheClient.isSniperAiming()) {
+        if (SniperClient.isSniperAiming()) {
             cir.setReturnValue(cir.getReturnValue() * 0.35D);
         }
     }

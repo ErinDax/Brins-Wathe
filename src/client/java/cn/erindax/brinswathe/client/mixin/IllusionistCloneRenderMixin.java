@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.client.mixin;
 
 import cn.erindax.brinswathe.component.IllusionistComponent;
-import cn.erindax.brinswathe.client.BrinsWatheClient;
+import cn.erindax.brinswathe.client.IllusionistClient;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import net.fabricmc.api.EnvType;
@@ -29,7 +29,7 @@ public abstract class IllusionistCloneRenderMixin {
             bodyRenderer.brinSetShadowRadius(0.0F);
             return;
         }
-        if (BrinsWatheClient.isControllingClone(entity.getUUID())) {
+        if (IllusionistClient.isControllingClone(entity.getUUID())) {
             bodyRenderer.brinSetShadowRadius(0.0F);
             ci.cancel();
             return;
@@ -73,10 +73,10 @@ public abstract class IllusionistCloneRenderMixin {
             owner.yHeadRotO = cloneYaw;
             owner.setXRot(entity.getXRot());
             owner.xRotO = entity.xRotO;
-            BrinsWatheClient.beginIllusionModelRender();
+            IllusionistClient.beginIllusionModelRender();
             renderer.render(owner, cloneYaw, tickDelta, matrices, vertexConsumers, light);
         } finally {
-            BrinsWatheClient.endIllusionModelRender();
+            IllusionistClient.endIllusionModelRender();
             animationAccessor.brinSetSpeedOld(speedOld);
             animationAccessor.brinSetSpeed(speed);
             animationAccessor.brinSetPosition(position);

@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import cn.erindax.brinswathe.client.BrinsWatheClient;
+import cn.erindax.brinswathe.client.PuppetClient;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -27,7 +27,7 @@ public abstract class MorticianOwnerRenderMixin {
     private void brinHideDisguisedMortician(AbstractClientPlayer player, float entityYaw, float tickDelta,
                                             PoseStack matrices, MultiBufferSource vertexConsumers,
                                             int light, CallbackInfo ci) {
-        if (BrinsWatheClient.isRenderingPuppetModel()) return;
+        if (PuppetClient.isRenderingPuppetModel()) return;
 
         Player localPlayer = Minecraft.getInstance().player;
         if (localPlayer != null && GameFunctions.isPlayerSpectatingOrCreative(localPlayer)) return;
