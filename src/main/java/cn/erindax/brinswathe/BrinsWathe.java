@@ -2,35 +2,22 @@ package cn.erindax.brinswathe;
 
 import cn.erindax.brinswathe.admin.AdminPanel;
 import cn.erindax.brinswathe.command.ConfigCommands;
-import cn.erindax.brinswathe.component.ArchivistComponent;
 import cn.erindax.brinswathe.component.BerserkerComponent;
-import cn.erindax.brinswathe.component.BombComponent;
 import cn.erindax.brinswathe.component.BoneharvesterComponent;
 import cn.erindax.brinswathe.component.ModCustomWinnerComponent;
 import cn.erindax.brinswathe.component.RoundRecapComponent;
-import cn.erindax.brinswathe.component.CowboyComponent;
-import cn.erindax.brinswathe.component.GamblerComponent;
 import cn.erindax.brinswathe.component.ConspiratorComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
-import cn.erindax.brinswathe.component.InspectorComponent;
-import cn.erindax.brinswathe.component.MediumComponent;
-import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.MuzzlerAbilityComponent;
 import cn.erindax.brinswathe.component.NightmareComponent;
 import cn.erindax.brinswathe.component.PenitentComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
-import cn.erindax.brinswathe.component.ResurrectedComponent;
-import cn.erindax.brinswathe.component.SniperComponent;
-import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.StaminaComponent;
-import cn.erindax.brinswathe.component.StuntDoubleComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.ZhangshiComponent;
-import cn.erindax.brinswathe.component.ZhuimuComponent;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.config.Tunable;
-import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 import cn.erindax.brinswathe.musicbox.MusicBox;
 import cn.erindax.brinswathe.network.ArchivistWitnessS2CPacket;
 import cn.erindax.brinswathe.network.BlindFlashS2CPacket;
@@ -75,8 +62,6 @@ import cn.erindax.brinswathe.network.RpsActionC2SPacket;
 import cn.erindax.brinswathe.network.RpsStateS2CPacket;
 import cn.erindax.brinswathe.voice.ModVoiceChatPlugin;
 
-import dev.doctor4t.wathe.api.Role;
-import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameRoundEndComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
@@ -112,9 +97,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -125,7 +107,6 @@ import org.BsXinQin.kinswathe.component.PlayerEffectComponent;
 import org.agmas.harpymodloader.events.ResetPlayerEvent;
 import org.aussiebox.starexpress.StarryExpress;
 import org.aussiebox.starexpress.StarryExpressRoles;
-import org.aussiebox.starexpress.cca.AbilityComponent;
 import org.aussiebox.starexpress.item.StarryExpressItems;
 
 import org.jetbrains.annotations.Nullable;
@@ -717,51 +698,51 @@ public class BrinsWathe implements ModInitializer {
 					&& payload.abilityType() != AbilityC2SPacket.ABILITY_SNIPER_CANCEL) return;
 				player.resetLastActionTime();
 				if (payload.abilityType() == AbilityC2SPacket.ABILITY_MUZZLER_SILENCE) {
-					handleMuzzlerSilence(player);
+					Muzzler.handleSilence(player);
 					return;
 				}
 				GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.level());
 				AbilityPlayerComponent ability = AbilityPlayerComponent.KEY.get(player);
                 switch (payload.abilityType()) {
-                    case AbilityC2SPacket.ABILITY_PUPPETEER_CRAFT -> handlePuppeteerCraft(player, gameWorld, payload);
-                    case AbilityC2SPacket.ABILITY_PUPPETEER_SUMMON -> handlePuppeteerSummon(player, gameWorld, ability, payload);
-                    case AbilityC2SPacket.ABILITY_PUPPETEER_RETURN -> handlePuppeteerReturn(player, gameWorld);
-                    case AbilityC2SPacket.ABILITY_STUNT_DOUBLE_MIMIC -> handleStuntDoubleMimic(player, gameWorld, ability, payload);
-                    case AbilityC2SPacket.ABILITY_MEDIUM_JOIN_VOICE -> handleMediumJoinVoice(player, gameWorld, ability);
-                    case AbilityC2SPacket.ABILITY_TRAPPER_PLACE_TRAP -> handleTrapperPlaceTrap(player, gameWorld, ability);
-                    case AbilityC2SPacket.ABILITY_NIGHTMARE_PLANT -> handleNightmarePlant(player, gameWorld, ability, payload);
-                    case AbilityC2SPacket.ABILITY_NIGHTMARE_FORCE_SLEEP -> handleNightmareForceSleep(player, gameWorld, payload);
-                    case AbilityC2SPacket.ABILITY_ILLUSIONIST_CLONES -> handleIllusionistClones(player, gameWorld, ability);
-                    case AbilityC2SPacket.ABILITY_ILLUSIONIST_SWITCH_CONTROL -> handleIllusionistSwitchControl(player, gameWorld, payload);
-                    case AbilityC2SPacket.ABILITY_ARCHIVIST_SEAL -> handleArchivistSeal(player, gameWorld, ability, payload);
-                    case AbilityC2SPacket.ABILITY_CONSPIRATOR_CHANNEL -> handleConspiratorChannel(player, gameWorld, ability, payload);
-                    case AbilityC2SPacket.ABILITY_SNIPER_TOGGLE_OR_FIRE -> handleSniperAbility(player, gameWorld);
-                    case AbilityC2SPacket.ABILITY_SNIPER_CANCEL -> handleSniperCancel(player, gameWorld);
-                    case AbilityC2SPacket.ABILITY_WATCHMAN_RESCUE -> handleWatchmanRescue(player, gameWorld, ability, payload);
-                    case AbilityC2SPacket.ABILITY_ZHANGSHI_SPEED -> handleZhangshiSpeed(player, gameWorld, ability);
-                    case AbilityC2SPacket.ABILITY_MORTICIAN_DISGUISE -> handleMorticianDisguise(player, gameWorld, ability, payload);
-                    case AbilityC2SPacket.ABILITY_COWBOY_DUEL -> handleCowboyDuel(player, gameWorld, payload);
-                    case AbilityC2SPacket.ABILITY_STALKER_TRACK -> handleStalkerTrack(player, gameWorld, payload);
-                    case AbilityC2SPacket.ABILITY_CONDUCTOR_ARMOR -> handleConductorArmor(player, gameWorld);
-                    case AbilityC2SPacket.ABILITY_NOISEMAKER_MARK -> handleNoisemakerMark(player, gameWorld, payload);
-                    case AbilityC2SPacket.ABILITY_INSANE_REVIVE -> handleInsaneRevive(player, gameWorld, payload);
-                    case AbilityC2SPacket.ABILITY_MORPHLING_MORPH -> handleMorphlingMorph(player, gameWorld, payload);
-                    case AbilityC2SPacket.ABILITY_VIGILANTE_DETECT -> handleVigilanteDetect(player, gameWorld, ability, payload);
-                    case AbilityC2SPacket.ABILITY_CORPSE_TOUCH -> handleCorpseTouch(player, payload);
-                    case AbilityC2SPacket.ABILITY_VALENTINA_FORESIGHT -> handleValentinaForesight(player, gameWorld);
+                    case AbilityC2SPacket.ABILITY_PUPPETEER_CRAFT -> Puppeteer.handleCraft(player, gameWorld, payload);
+                    case AbilityC2SPacket.ABILITY_PUPPETEER_SUMMON -> Puppeteer.handleSummon(player, gameWorld, ability, payload);
+                    case AbilityC2SPacket.ABILITY_PUPPETEER_RETURN -> Puppeteer.handleReturn(player, gameWorld);
+                    case AbilityC2SPacket.ABILITY_STUNT_DOUBLE_MIMIC -> StuntDouble.handleMimic(player, gameWorld, ability, payload);
+                    case AbilityC2SPacket.ABILITY_MEDIUM_JOIN_VOICE -> Medium.handleJoinVoice(player, gameWorld, ability);
+                    case AbilityC2SPacket.ABILITY_TRAPPER_PLACE_TRAP -> Trapper.handlePlaceTrap(player, gameWorld, ability);
+                    case AbilityC2SPacket.ABILITY_NIGHTMARE_PLANT -> Nightmare.handlePlant(player, gameWorld, ability, payload);
+                    case AbilityC2SPacket.ABILITY_NIGHTMARE_FORCE_SLEEP -> Nightmare.handleForceSleep(player, gameWorld, payload);
+                    case AbilityC2SPacket.ABILITY_ILLUSIONIST_CLONES -> Illusionist.handleClones(player, gameWorld, ability);
+                    case AbilityC2SPacket.ABILITY_ILLUSIONIST_SWITCH_CONTROL -> Illusionist.handleSwitchControl(player, gameWorld, payload);
+                    case AbilityC2SPacket.ABILITY_ARCHIVIST_SEAL -> Archivist.handleSeal(player, gameWorld, ability, payload);
+                    case AbilityC2SPacket.ABILITY_CONSPIRATOR_CHANNEL -> Conspirator.handleChannel(player, gameWorld, ability, payload);
+                    case AbilityC2SPacket.ABILITY_SNIPER_TOGGLE_OR_FIRE -> Sniper.handleAbility(player, gameWorld);
+                    case AbilityC2SPacket.ABILITY_SNIPER_CANCEL -> Sniper.handleCancel(player, gameWorld);
+                    case AbilityC2SPacket.ABILITY_WATCHMAN_RESCUE -> Watchman.handleRescue(player, gameWorld, ability, payload);
+                    case AbilityC2SPacket.ABILITY_ZHANGSHI_SPEED -> Zhangshi.handleSpeed(player, gameWorld, ability);
+                    case AbilityC2SPacket.ABILITY_MORTICIAN_DISGUISE -> Mortician.handleDisguise(player, gameWorld, ability, payload);
+                    case AbilityC2SPacket.ABILITY_COWBOY_DUEL -> Cowboy.handleDuel(player, gameWorld, payload);
+                    case AbilityC2SPacket.ABILITY_STALKER_TRACK -> Stalker.handleTrack(player, gameWorld, payload);
+                    case AbilityC2SPacket.ABILITY_CONDUCTOR_ARMOR -> Conductor.handleArmor(player, gameWorld);
+                    case AbilityC2SPacket.ABILITY_NOISEMAKER_MARK -> Noisemaker.handleMark(player, gameWorld, payload);
+                    case AbilityC2SPacket.ABILITY_INSANE_REVIVE -> InsaneKiller.handleRevive(player, gameWorld, payload);
+                    case AbilityC2SPacket.ABILITY_MORPHLING_MORPH -> Morphling.handleMorph(player, gameWorld, payload);
+                    case AbilityC2SPacket.ABILITY_VIGILANTE_DETECT -> Vigilante.handleDetect(player, gameWorld, ability, payload);
+                    case AbilityC2SPacket.ABILITY_CORPSE_TOUCH -> ArchivistWitness.handleCorpseTouch(player, payload);
+                    case AbilityC2SPacket.ABILITY_VALENTINA_FORESIGHT -> Valentina.handleForesight(player, gameWorld);
                     case AbilityC2SPacket.ABILITY_FUNERAL_PICK_UP -> Funeral.pickUp(player, payload.targetId());
                     case AbilityC2SPacket.ABILITY_FUNERAL_PUT_DOWN -> Funeral.putDown(player);
                     case AbilityC2SPacket.ABILITY_SUBVERT_KILLER ->
                         Subversion.subvert(player, gameWorld, payload.targetId(), Faction.KILLER);
                     case AbilityC2SPacket.ABILITY_SUBVERT_CIVILIAN ->
                         Subversion.subvert(player, gameWorld, payload.targetId(), Faction.CIVILIAN);
-                    case AbilityC2SPacket.ABILITY_GAMBLER_BET -> handleGamblerBet(player, gameWorld, payload);
-                    case AbilityC2SPacket.ABILITY_INSPECTOR_DISARM -> handleInspectorDisarm(player, gameWorld);
-                    case AbilityC2SPacket.ABILITY_ZHUIMU_BOAT -> handleZhuimuBoat(player, gameWorld);
+                    case AbilityC2SPacket.ABILITY_GAMBLER_BET -> Gambler.handleBet(player, gameWorld, payload);
+                    case AbilityC2SPacket.ABILITY_INSPECTOR_DISARM -> Inspector.handleDisarm(player, gameWorld);
+                    case AbilityC2SPacket.ABILITY_ZHUIMU_BOAT -> Zhuimu.handleBoat(player, gameWorld);
                     case AbilityC2SPacket.ABILITY_ZHUIMU_STRUGGLE_LEFT -> Zhuimu.struggle(player, false);
                     case AbilityC2SPacket.ABILITY_ZHUIMU_STRUGGLE_RIGHT -> Zhuimu.struggle(player, true);
-                    case AbilityC2SPacket.ABILITY_GRAPPLER_HOOK -> handleGrapplerHook(player, gameWorld, ability, payload);
-                    case AbilityC2SPacket.ABILITY_HALF_SPIRIT_PHASE -> handleHalfSpiritPhase(player, gameWorld, ability);
+                    case AbilityC2SPacket.ABILITY_GRAPPLER_HOOK -> Grappler.handleHook(player, gameWorld, ability, payload);
+                    case AbilityC2SPacket.ABILITY_HALF_SPIRIT_PHASE -> HalfSpirit.handlePhase(player, gameWorld, ability);
                 }
 			}
 		);
@@ -838,370 +819,6 @@ public class BrinsWathe implements ModInitializer {
 			}
 		);
 	}
-	private void handlePuppeteerCraft(ServerPlayer player, GameWorldComponent gameWorld,
-	                                  AbilityC2SPacket payload) {
-		if (!gameWorld.isRole(player, ModRoles.PUPPETEER)) return;
-		if (payload.targetId() == null) return;
-		PuppeteerControlComponent comp = PuppeteerControlComponent.KEY.get(player);
-		if (comp == null || comp.isControlling() || comp.craftCooldownTicks > 0) return;
-		Entity targetEntity = player.serverLevel().getEntity(payload.targetId());
-		if (!(targetEntity instanceof PlayerBodyEntity body)) return;
-		if (PuppeteerControlComponent.isPuppetModel(body)
-			|| IllusionistComponent.isIllusionModel(body)
-			|| MorticianComponent.isDisguiseBody(body)) return;
-		if (player.distanceToSqr(body) > 64.0D) return;
-		if (!spendAbilityCost(player, "puppeteer")) return;
-		if (!comp.craftPuppet(body)) return;
-		player.playNotifySound(SoundEvents.EVOKER_PREPARE_ATTACK, SoundSource.PLAYERS, 1.0f, 0.8f);
-	}
-	private void handlePuppeteerSummon(ServerPlayer player, GameWorldComponent gameWorld,
-	                                   AbilityPlayerComponent ability,
-	                                   AbilityC2SPacket payload) {
-		if (!gameWorld.isRole(player, ModRoles.PUPPETEER)) return;
-		if (ability.cooldown > 0) return;
-		if (payload.targetId() == null) return;
-
-		PuppeteerControlComponent comp = PuppeteerControlComponent.KEY.get(player);
-		if (comp == null || !comp.summonPuppet(player, payload.targetId())) return;
-		player.playNotifySound(SoundEvents.EVOKER_CAST_SPELL, SoundSource.PLAYERS, 1.0f, 0.5f);
-	}
-	private void handlePuppeteerReturn(ServerPlayer player, GameWorldComponent gameWorld) {
-		if (!gameWorld.isRole(player, ModRoles.PUPPETEER)) return;
-		PuppeteerControlComponent comp = PuppeteerControlComponent.KEY.get(player);
-		if (comp == null) return;
-		comp.returnToBody(player);
-	}
-	private void handleMorticianDisguise(ServerPlayer player, GameWorldComponent gameWorld,
-	                                     AbilityPlayerComponent ability,
-	                                     AbilityC2SPacket payload) {
-		if (!gameWorld.isRole(player, ModRoles.MORTICIAN)) return;
-		if (ability.cooldown > 0) return;
-		if (payload.targetId() == null) return;
-
-		MorticianComponent comp = MorticianComponent.KEY.get(player);
-		if (comp == null || comp.isDisguised()) return;
-		if (!player.onGround()) return;
-
-		ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-		if (target == null) return;
-		if (!spendAbilityCost(player, "mortician")) return;
-		comp.startDisguise(player, target.getUUID());
-	}
-    private void handleZhangshiSpeed(ServerPlayer player, GameWorldComponent gameWorld,
-                                      AbilityPlayerComponent ability) {
-        if (!gameWorld.isRole(player, ModRoles.ZHANGSHI)) return;
-        if (ability.cooldown > 0) return;
-        ZhangshiComponent component = ZhangshiComponent.KEY.get(player);
-        if (component == null || !component.activateNormal()) return;
-        ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("zhangshi"));
-        player.playNotifySound(SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0F, 1.0F);
-    }
-	private void handleStuntDoubleMimic(ServerPlayer player, GameWorldComponent gameWorld,
-	                                    AbilityPlayerComponent ability,
-	                                    AbilityC2SPacket payload) {
-		if (!gameWorld.isRole(player, ModRoles.STUNT_DOUBLE)) return;
-		if (ability.cooldown > 0) return;
-		if (payload.targetId() == null) return;
-
-		ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-		if (target == null || !target.isAlive()) return;
-		if (player.equals(target)) return;
-		if (!GameFunctions.isPlayerAliveAndSurvival(target)) return;
-		StuntDoubleComponent comp = StuntDoubleComponent.KEY.get(player);
-		if (comp == null) return;
-		if (!spendAbilityCost(player, "stunt_double")) return;
-		comp.startMimic(target.getUUID());
-		ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("stunt_double"));
-
-		player.level().playSound(null, player.blockPosition(), SoundEvents.ILLUSIONER_MIRROR_MOVE, SoundSource.PLAYERS, 1.0f, 1.0f);
-	}
-	private void handleMediumJoinVoice(ServerPlayer player, GameWorldComponent gameWorld,
-	                                   AbilityPlayerComponent ability) {
-		if (!gameWorld.isRole(player, ModRoles.MEDIUM)) return;
-		if (ability.cooldown > 0) return;
-		MediumComponent medium = MediumComponent.KEY.get(player);
-		if (medium == null) return;
-		ConspiratorComponent conspirator = ConspiratorComponent.KEY.get(player);
-		if (conspirator != null && conspirator.isInTemporaryChannel()) return;
-
-		if (!medium.startChannelling(ModConfig.skillDurationSeconds("medium"))) return;
-		if (!spendAbilityCost(player, "medium")) {
-			medium.reset();
-			return;
-		}
-		ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("medium"));
-		player.playNotifySound(SoundEvents.SOUL_ESCAPE.value(), SoundSource.PLAYERS, 1.0F, 0.8F);
-	}
-	private void handleStalkerTrack(ServerPlayer player, GameWorldComponent gameWorld,
-	                                AbilityC2SPacket payload) {
-		if (!gameWorld.isRole(player, ModRoles.STALKER)) return;
-		if (payload.targetId() == null) return;
-		ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-		if (target == null || target.level() != player.level()) return;
-		StalkerComponent.tryTrack(player, target);
-	}
-	private void handleCowboyDuel(ServerPlayer player, GameWorldComponent gameWorld,
-	                              AbilityC2SPacket payload) {
-		if (!gameWorld.isRole(player, ModRoles.COWBOY)) return;
-		if (gameWorld.getGameStatus() != GameWorldComponent.GameStatus.ACTIVE) return;
-		if (payload.targetId() == null) return;
-		ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-		if (target == null || target.equals(player) || target.level() != player.level()) return;
-		if (!GameFunctions.isPlayerAliveAndSurvival(target)) {
-			player.displayClientMessage(
-				Component.translatable("message.brinswathe.cowboy.target_dead")
-					.withStyle(net.minecraft.ChatFormatting.RED),
-				true
-			);
-			return;
-		}
-		CowboyComponent cowboy = CowboyComponent.KEY.get(player);
-		if (cowboy == null) return;
-		if (cowboy.duelUsed()) {
-			player.displayClientMessage(
-				Component.translatable("message.brinswathe.cowboy.already_used")
-					.withStyle(net.minecraft.ChatFormatting.RED),
-				true
-			);
-			return;
-		}
-		if (CowboyDuel.isActive()) return;
-		net.minecraft.core.BlockPos posA = ModConfig.cowboyArenaA();
-		net.minecraft.core.BlockPos posB = ModConfig.cowboyArenaB();
-		net.minecraft.core.BlockPos posSpectator = ModConfig.cowboyArenaSpectator();
-		if (posA == null || posB == null || posSpectator == null) {
-			player.displayClientMessage(
-				Component.translatable("message.brinswathe.cowboy.arena_unset")
-					.withStyle(net.minecraft.ChatFormatting.RED),
-				false
-			);
-			return;
-		}
-		if (!spendAbilityCost(player, "cowboy")) return;
-		cowboy.markDuelUsed();
-		CowboyDuel.start(player, target, posA, posB, posSpectator);
-	}
-	private void handleConspiratorChannel(ServerPlayer player, GameWorldComponent gameWorld,
-	                                       AbilityPlayerComponent ability,
-	                                       AbilityC2SPacket payload) {
-		if (!gameWorld.isRole(player, ModRoles.CONSPIRATOR)) return;
-		ConspiratorComponent ownerChannel = ConspiratorComponent.KEY.get(player);
-		if (ownerChannel != null && ownerChannel.isInTemporaryChannel()) return;
-		if (ability.cooldown > 0 || payload.targetId() == null) return;
-		ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-		if (target == null || target.equals(player) || target.level() != player.level()) return;
-		if (!GameFunctions.isPlayerAliveAndSurvival(target)) return;
-		if (!gameWorld.canUseKillerFeatures(target)) return;
-		if (!ModVoiceChatPlugin.canStartTemporaryChannel(player, target)) return;
-		if (!spendAbilityCost(player, "conspirator")) return;
-		int durationSeconds = Math.min(
-			ModConfig.skillDurationSeconds("conspirator"),
-			Integer.MAX_VALUE / 20
-		);
-		if (!ModVoiceChatPlugin.startTemporaryChannel(player, target, durationSeconds * 20)) return;
-		ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("conspirator"));
-		player.playSound(SoundEvents.NOTE_BLOCK_BELL.value(), 1.0F, 1.0F);
-	}
-	private void handleTrapperPlaceTrap(ServerPlayer player, GameWorldComponent gameWorld,
-	                                   AbilityPlayerComponent ability) {
-		if (!gameWorld.isRole(player, ModRoles.TRAPPER)) return;
-		if (ability.cooldown > 0) return;
-		TrapperComponent comp = TrapperComponent.KEY.get(player);
-		if (comp == null) return;
-		if (!comp.canPlaceTrap()) return;
-        if (!spendAbilityCost(player, "beast_trapper")) return;
-		if (!TrapperTraps.place(player, false)) return;
-        ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("beast_trapper"));
-	}
-	private void handleWatchmanRescue(ServerPlayer player, GameWorldComponent gameWorld,
-	                                  AbilityPlayerComponent ability,
-	                                  AbilityC2SPacket payload) {
-		if (!gameWorld.isRole(player, ModRoles.WATCHMAN)) return;
-		if (ability.cooldown > 0) return;
-		ServerPlayer target = null;
-		if (payload.targetId() != null) {
-			ServerPlayer aimed = player.server.getPlayerList().getPlayer(payload.targetId());
-			if (aimed != null && aimed.level() == player.level() && WatchmanRescue.canRescue(aimed)) target = aimed;
-		}
-		if (target == null && WatchmanRescue.canRescue(player)) target = player;
-		if (target == null) return;
-		TrapperComponent trappedBy = WatchmanRescue.trapperOf(target);
-		BombComponent bomb = BombComponent.KEY.get(target);
-		boolean hasBombToDefuse = WatchmanRescue.hasBombToDefuse(target);
-		boolean leftoverTrapStun = trappedBy == null && WatchmanRescue.hasLeftoverStun(target);
-		if (trappedBy == null && !hasBombToDefuse && !leftoverTrapStun) return;
-		if (!spendAbilityCost(player, "watchman")) return;
-		boolean rescued = trappedBy != null && trappedBy.rescuePlayer(target.getUUID());
-		if (hasBombToDefuse) bomb.reset();
-		if (leftoverTrapStun) BomberBombs.releaseStun(target);
-		if (!rescued && !hasBombToDefuse && !leftoverTrapStun) return;
-		ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("watchman"));
-		player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0F, 1.25F);
-	}
-	private void handleNightmarePlant(ServerPlayer player, GameWorldComponent gameWorld,
-	                                  AbilityPlayerComponent ability,
-	                                  AbilityC2SPacket payload) {
-		if (!gameWorld.isRole(player, ModRoles.NIGHTMARE)) return;
-		if (ability.cooldown > 0) return;
-		if (payload.targetId() == null) return;
-
-		ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-		if (target == null || !target.isAlive()) return;
-		if (player.equals(target)) return;
-		if (!target.isSleeping()) return;
-		if (!GameFunctions.isPlayerAliveAndSurvival(target)) return;
-		NightmareComponent comp = NightmareComponent.KEY.get(player);
-		if (comp == null) return;
-		if (comp.isMarked(target.getUUID())) return;
-		if (!spendAbilityCost(player, "nightmare")) return;
-		comp.markPlayer(target.getUUID());
-		comp.addShieldLayer();
-		PlayerMoodComponent moodComponent = PlayerMoodComponent.KEY.get(target);
-		moodComponent.setMood(0.19F);
-		ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("nightmare"));
-		player.playNotifySound(SoundEvents.SCULK_CLICKING, SoundSource.PLAYERS, 1.0f, 0.5f);
-		player.displayClientMessage(
-			Component.literal("已播种 " + target.getName().getString() + "  护盾 " + comp.getShieldLayers() + "/" + Tunable.NIGHTMARE_MAX_SHIELD_LAYERS.intValue()),
-			true);
-	}
-	private void handleIllusionistClones(ServerPlayer player, GameWorldComponent gameWorld,
-	                                     AbilityPlayerComponent ability) {
-		if (!gameWorld.isRole(player, ModRoles.ILLUSIONIST)) return;
-		if (ability.cooldown > 0) return;
-		IllusionistComponent comp = IllusionistComponent.KEY.get(player);
-		if (comp == null) return;
-		if (!spendAbilityCost(player, "illusionist")) return;
-		comp.spawnClones();
-		ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("illusionist"));
-		player.level().playSound(null, player.blockPosition(), SoundEvents.ILLUSIONER_MIRROR_MOVE, SoundSource.PLAYERS, 1.0f, 1.0f);
-	}
-	private void handleIllusionistSwitchControl(ServerPlayer player, GameWorldComponent gameWorld,
-	                                            AbilityC2SPacket payload) {
-		if (!gameWorld.isRole(player, ModRoles.ILLUSIONIST)) return;
-		IllusionistComponent component = IllusionistComponent.KEY.get(player);
-		if (component == null || component.cloneEntityIds.isEmpty()) return;
-		component.setControlledClone(payload.targetId());
-	}
-    private void handleSniperAbility(ServerPlayer player, GameWorldComponent gameWorld) {
-        if (!gameWorld.isRole(player, ModRoles.SNIPER)) return;
-        if (GameSafeComponent.KEY.get(player.level()).isGameSafe) return;
-        SniperComponent component = SniperComponent.KEY.get(player);
-        if (component == null) return;
-
-        if (component.isAiming()) {
-            component.startShotCooldown(ModConfig.skillCooldownSeconds("sniper"));
-            component.fire(player.getEyePosition(), player.getLookAngle());
-            player.level().playSound(
-                null,
-                player.blockPosition(),
-                SoundEvents.CROSSBOW_SHOOT,
-                SoundSource.PLAYERS,
-                2.0F,
-                0.55F
-            );
-            return;
-        }
-        if (component.getCooldownTicks() > 0 || component.isAbilityActive()) return;
-        if (!spendAbilityCost(player, "sniper")) return;
-        component.startAiming();
-        player.playNotifySound(SoundEvents.SPYGLASS_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
-    }
-    private void handleSniperCancel(ServerPlayer player, GameWorldComponent gameWorld) {
-        if (!gameWorld.isRole(player, ModRoles.SNIPER)) return;
-        SniperComponent component = SniperComponent.KEY.get(player);
-        if (component == null || !component.isAiming()) return;
-        component.cancelAiming();
-        player.playNotifySound(SoundEvents.SPYGLASS_STOP_USING, SoundSource.PLAYERS, 1.0F, 1.0F);
-    }
-    private void handleArchivistSeal(ServerPlayer player, GameWorldComponent gameWorld,
-                                     AbilityPlayerComponent ability,
-                                     AbilityC2SPacket payload) {
-        if (!gameWorld.isRole(player, ModRoles.ARCHIVIST)) return;
-        if (ability.cooldown > 0) return;
-        if (payload.targetId() == null) return;
-
-        Entity targetEntity = player.serverLevel().getEntity(payload.targetId());
-        if (!(targetEntity instanceof PlayerBodyEntity body)) return;
-        if (player.distanceToSqr(body) > 64.0D) return;
-        if (((ArchivistSealedCorpse) body).brin$isArchivistSealed()) return;
-        if (!spendAbilityCost(player, "archivist")) return;
-        ((ArchivistSealedCorpse) body).brin$setArchivistSealed(true);
-        ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("archivist"));
-        ArchivistComponent comp = ArchivistComponent.KEY.get(player);
-        if (comp != null) {
-            comp.sealedCorpses.add(body.getUUID());
-            comp.sync();
-        }
-        player.level().playSound(null, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1.0f, 1.5f);
-    }
-    private static void handleCorpseTouch(ServerPlayer player, AbilityC2SPacket payload) {
-        if (payload.targetId() == null) return;
-        Entity target = player.serverLevel().getEntity(payload.targetId());
-        if (target == null || player.distanceToSqr(target) > 64.0D) return;
-        ArchivistWitness.onCorpseInteract(player, target);
-    }
-    private static void handleValentinaForesight(ServerPlayer player, GameWorldComponent gameWorld) {
-        if (!gameWorld.isRole(player, ModRoles.VALENTINA)) return;
-        ValentinaComponent valentina = ValentinaComponent.KEY.get(player);
-        if (valentina == null || !valentina.foresee()) return;
-        player.playNotifySound(SoundEvents.ENDER_EYE_LAUNCH, SoundSource.PLAYERS, 1.0F, 1.0F);
-    }
-    private static void handleGamblerBet(ServerPlayer player, GameWorldComponent gameWorld, AbilityC2SPacket payload) {
-        if (!gameWorld.isRole(player, ModRoles.GAMBLER) || payload.targetId() == null) return;
-        GamblerComponent gambler = GamblerComponent.KEY.get(player);
-        if (gambler == null || gambler.betTarget() != null) return;
-        ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-        if (target == null || target == player || target.level() != player.level()) return;
-        if (!GameFunctions.isPlayerAliveAndSurvival(target) || gameWorld.getRole(target) == null) return;
-        if (!spendAbilityCost(player, "gambler")) return;
-        gambler.placeBet(target.getUUID(), target.getName().getString());
-        player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0F, 1.0F);
-    }
-    private static void handleInspectorDisarm(ServerPlayer player, GameWorldComponent gameWorld) {
-        if (!gameWorld.isRole(player, ModRoles.INSPECTOR) || !GameFunctions.isPlayerAliveAndSurvival(player)) return;
-        InspectorComponent inspector = InspectorComponent.KEY.get(player);
-        if (inspector == null || inspector.used()) return;
-        if (!spendAbilityCost(player, "inspector")) return;
-        inspector.markUsed();
-        Disarm.start(player.serverLevel(), ModConfig.skillDurationSeconds("inspector"));
-    }
-    private static void handleZhuimuBoat(ServerPlayer player, GameWorldComponent gameWorld) {
-        if (!gameWorld.isRole(player, ModRoles.ZHUIMU) || !GameFunctions.isPlayerAliveAndSurvival(player)) return;
-        ZhuimuComponent zhuimu = ZhuimuComponent.KEY.get(player);
-        if (zhuimu == null || zhuimu.used()) return;
-        if (!Zhuimu.hasFreeHotbarSlot(player)) {
-            player.displayClientMessage(Component.translatable("message.brinswathe.zhuimu.hotbar_full"), true);
-            return;
-        }
-        if (!spendAbilityCost(player, "zhuimu")) return;
-        zhuimu.markUsed();
-        BuySlots.beginPurchase(player);
-        try {
-            ShopEntry.insertStackInFreeSlot(player, ModItems.ZHUIMU_BOAT.getDefaultInstance());
-        } finally {
-            BuySlots.endPurchase();
-        }
-        player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0F, 1.0F);
-    }
-    private static void handleGrapplerHook(ServerPlayer player, GameWorldComponent gameWorld,
-                                           AbilityPlayerComponent ability, AbilityC2SPacket payload) {
-        if (!gameWorld.isRole(player, ModRoles.GRAPPLER)) return;
-        if (ability.cooldown > 0 || payload.targetId() == null) return;
-        ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-        if (!Grappler.canHook(player, target)) return;
-        if (!spendAbilityCost(player, "grappler")) return;
-        Grappler.hook(player, target);
-        ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("grappler"));
-    }
-    private static void handleHalfSpiritPhase(ServerPlayer player, GameWorldComponent gameWorld,
-                                              AbilityPlayerComponent ability) {
-        if (!gameWorld.isRole(player, ModRoles.HALF_SPIRIT) || ability.cooldown > 0) return;
-        var landing = HalfSpirit.findLanding(player);
-        if (landing == null) return;
-        if (!spendAbilityCost(player, "half_spirit")) return;
-        HalfSpirit.phase(player, landing);
-        ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("half_spirit"));
-    }
     private static void brinPayTrapperCatchReward(ServerPlayer trapper) {
         int reward = ModConfig.trapperCatchReward();
         if (reward <= 0) return;
@@ -1214,128 +831,6 @@ public class BrinsWathe implements ModInitializer {
             true
         );
     }
-    private static void handleMuzzlerSilence(ServerPlayer player) {
-        GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.level());
-        if (!gameWorld.isRole(player, StarryExpressRoles.MUZZLER)) return;
-        AbilityComponent ability = AbilityComponent.KEY.get(player);
-        if (ability == null || ability.cooldown > 0) return;
-        MuzzlerAbilityComponent muzzler = MuzzlerAbilityComponent.KEY.get(player);
-        if (muzzler == null || muzzler.getTicks() > 0) return;
-        PlayerShopComponent shop = PlayerShopComponent.KEY.get(player);
-        int cost = Tunable.MUZZLER_SILENCE_COST.intValue();
-        if (shop == null || shop.balance < cost) return;
-        shop.balance -= cost;
-        shop.sync();
-        ability.setCooldown(Tunable.MUZZLER_SILENCE_COOLDOWN_SECONDS.ticks());
-        muzzler.setTicks(Tunable.MUZZLER_SILENCE_DURATION_SECONDS.ticks());
-    }
-    private static void handleVigilanteDetect(ServerPlayer player, GameWorldComponent gameWorld,
-                                              AbilityPlayerComponent ability, AbilityC2SPacket payload) {
-        if (!gameWorld.isRole(player, WatheRoles.VIGILANTE)) return;
-        if (!GameFunctions.isPlayerAliveAndSurvival(player)) return;
-        if (ability == null || ability.cooldown > 0 || payload.targetId() == null) return;
-        ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-        if (target == null || target == player || !GameFunctions.isPlayerAliveAndSurvival(target)) return;
-        if (target.distanceTo(player) > Tunable.VIGILANTE_DETECT_RANGE.doubleValue()) return;
-        Role targetRole = gameWorld.getRole(target);
-        if (targetRole == null) return;
-        if (!spendAbilityCost(player, "vigilante")) return;
-        if (targetRole.isInnocent() || ModRoles.SPY.equals(targetRole)) {
-            player.displayClientMessage(
-                Component.translatable("tip.kinswathe.detective.innocent", target.getName().getString())
-                    .withColor(WatheRoles.CIVILIAN.color()),
-                true
-            );
-            player.playNotifySound(SoundEvents.VILLAGER_YES, SoundSource.PLAYERS, 1.0F, 1.0F);
-        } else {
-            player.displayClientMessage(
-                Component.translatable("tip.kinswathe.detective.notinnocent", target.getName().getString())
-                    .withColor(WatheRoles.KILLER.color()),
-                true
-            );
-            player.playNotifySound(SoundEvents.VILLAGER_NO, SoundSource.PLAYERS, 1.0F, 1.0F);
-        }
-        ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("vigilante"));
-    }
-    private static void handleConductorArmor(ServerPlayer player, GameWorldComponent gameWorld) {
-        if (!NoelleAccess.isRole(gameWorld, player, NoelleAccess.CONDUCTOR_ID)) return;
-        if (NoelleAccess.noelleAbilityCooldown(player) > 0) return;
-        PlayerShopComponent shop = PlayerShopComponent.KEY.get(player);
-        int cost = Tunable.CONDUCTOR_ARMOR_COST.intValue();
-        if (shop == null || shop.balance < cost) return;
-        if (!NoelleAccess.addBartenderArmor(player)) return;
-        shop.balance -= cost;
-        shop.sync();
-        NoelleAccess.setNoelleAbilityCooldown(player, Tunable.CONDUCTOR_ARMOR_COOLDOWN_SECONDS.ticks());
-    }
-    private static void handleMorphlingMorph(ServerPlayer player, GameWorldComponent gameWorld, AbilityC2SPacket payload) {
-        if (!NoelleAccess.isRole(gameWorld, player, NoelleAccess.MORPHLING_ID)) return;
-        if (payload.targetId() == null) return;
-        if (MorphlingAccess.morphTicks(player) != 0) return;
-        ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-        if (target != null && GameFunctions.isPlayerAliveAndSurvival(target)) {
-            player.displayClientMessage(Component.literal("你要变身的对象还没死哦"), false);
-            return;
-        }
-        var role = gameWorld.getRole(payload.targetId());
-        if (role == null || !role.canUseKiller()) return;
-        MorphlingAccess.startMorph(player, payload.targetId());
-    }
-    private static void handleNoisemakerMark(ServerPlayer player, GameWorldComponent gameWorld, AbilityC2SPacket payload) {
-        if (!NoelleAccess.isRole(gameWorld, player, NoelleAccess.NOISEMAKER_ID)) return;
-        if (payload.targetId() == null) return;
-        if (NoelleAccess.noelleAbilityCooldown(player) > 0) return;
-        ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-        if (target == null || target.equals(player) || target.level() != player.level()) return;
-        if (!GameFunctions.isPlayerAliveAndSurvival(target)) return;
-        if (!NoelleAccess.setVoodooTarget(player, target.getUUID())) return;
-        NoelleAccess.setNoelleAbilityCooldown(player, Tunable.NOISEMAKER_MARK_COOLDOWN_SECONDS.ticks());
-    }
-
-    private static void handleInsaneRevive(ServerPlayer player, GameWorldComponent gameWorld, AbilityC2SPacket payload) {
-        if (!NoelleAccess.isRole(gameWorld, player, NoelleAccess.INSANE_KILLER_ID)) return;
-        int glowTicks = Tunable.INSANE_KILLER_REVIVE_GLOW_SECONDS.ticks();
-        if (glowTicks > 0) player.addEffect(new MobEffectInstance(MobEffects.GLOWING, glowTicks, 0, false, false));
-        if (payload.targetId() == null) return;
-        if (NoelleAccess.noelleAbilityCooldown(player) > 0) return;
-        ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-        if (target == null) return;
-        if (!target.isSpectator()) {
-            player.displayClientMessage(Component.literal("他还没有死"), true);
-            return;
-        }
-        ResurrectedComponent resurrected = ResurrectedComponent.KEY.get(target);
-        if (resurrected == null || !resurrected.resurrect(player.getUUID())) return;
-        NoelleAccess.setNoelleAbilityCooldown(player, Tunable.INSANE_KILLER_REVIVE_COOLDOWN_SECONDS.ticks());
-    }
-    private static boolean spendAbilityCost(ServerPlayer player, String roleId) {
-        int cost = ModConfig.skillCost(roleId);
-        if (cost == 0) return true;
-        PlayerShopComponent shop = PlayerShopComponent.KEY.get(player);
-        if (shop == null || shop.balance < cost) return false;
-        shop.balance -= cost;
-        shop.sync();
-        return true;
-    }
-	private void handleNightmareForceSleep(ServerPlayer player, GameWorldComponent gameWorld,
-	                                       AbilityC2SPacket payload) {
-		if (!gameWorld.isRole(player, ModRoles.NIGHTMARE)) return;
-		if (payload.targetId() == null) return;
-		NightmareComponent nightmare = NightmareComponent.KEY.get(player);
-		if (nightmare == null || nightmare.forcedSleepTaskCooldown > 0) return;
-		ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
-		if (target == null || target.equals(player) || target.level() != player.level()) return;
-		if (!GameFunctions.isPlayerAliveAndSurvival(target)) return;
-		PlayerMoodComponent mood = PlayerMoodComponent.KEY.get(target);
-		if (mood == null) return;
-		mood.tasks.clear();
-		mood.tasks.put(
-			PlayerMoodComponent.Task.SLEEP,
-			new PlayerMoodComponent.SleepTask(GameConstants.SLEEP_TASK_DURATION)
-		);
-		mood.sync();
-		nightmare.startForcedSleepTaskCooldown();
-	}
 
     public static boolean checkPenitentWin(MinecraftServer server, GameWorldComponent gameWorld) {
         for (ServerPlayer sp : server.getPlayerList().getPlayers()) {

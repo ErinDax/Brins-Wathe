@@ -72,6 +72,25 @@ public final class Zhuimu {
         return false;
     }
 
+    public static void handleBoat(ServerPlayer player, GameWorldComponent gameWorld) {
+        if (!gameWorld.isRole(player, ModRoles.ZHUIMU) || !GameFunctions.isPlayerAliveAndSurvival(player)) return;
+        ZhuimuComponent zhuimu = ZhuimuComponent.KEY.get(player);
+        if (zhuimu == null || zhuimu.used()) return;
+        if (!Zhuimu.hasFreeHotbarSlot(player)) {
+            player.displayClientMessage(Component.translatable("message.brinswathe.zhuimu.hotbar_full"), true);
+            return;
+        }
+        if (!AbilityCost.spend(player, "zhuimu")) return;
+        zhuimu.markUsed();
+        BuySlots.beginPurchase(player);
+        try {
+            ShopEntry.insertStackInFreeSlot(player, ModItems.ZHUIMU_BOAT.getDefaultInstance());
+        } finally {
+            BuySlots.endPurchase();
+        }
+        player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0F, 1.0F);
+    }
+
     public static boolean placeBoat(ServerPlayer player, BlockHitResult hitResult) {
         ZhuimuComponent component = ZhuimuComponent.KEY.get(player);
         GameWorldComponent game = GameWorldComponent.KEY.get(player.level());

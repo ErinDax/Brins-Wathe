@@ -1,5 +1,7 @@
 package cn.erindax.brinswathe;
 
+import cn.erindax.brinswathe.config.ModConfig;
+import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.MapVariablesWorldComponent;
 import java.util.List;
 import net.minecraft.core.Direction;
@@ -13,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.BsXinQin.kinswathe.component.AbilityPlayerComponent;
 import org.BsXinQin.kinswathe.component.PlayerEffectComponent;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,6 +73,16 @@ public final class HalfSpirit {
             level.playSound(null, spot.x, spot.y, spot.z,
                 SoundEvents.SOUL_ESCAPE.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
         }
+    }
+
+    public static void handlePhase(ServerPlayer player, GameWorldComponent gameWorld,
+                                   AbilityPlayerComponent ability) {
+        if (!gameWorld.isRole(player, ModRoles.HALF_SPIRIT) || ability.cooldown > 0) return;
+        var landing = HalfSpirit.findLanding(player);
+        if (landing == null) return;
+        if (!AbilityCost.spend(player, "half_spirit")) return;
+        HalfSpirit.phase(player, landing);
+        ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("half_spirit"));
     }
 
     private static Search search(ServerPlayer player, AABB box, Vec3 forward) {

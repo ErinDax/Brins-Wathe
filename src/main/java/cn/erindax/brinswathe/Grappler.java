@@ -6,6 +6,8 @@ import cn.erindax.brinswathe.component.SniperComponent;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.entity.ZhuimuBoat;
+import cn.erindax.brinswathe.network.AbilityC2SPacket;
+import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import java.util.List;
 import net.minecraft.core.particles.ParticleTypes;
@@ -23,6 +25,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.BsXinQin.kinswathe.component.AbilityPlayerComponent;
 import org.BsXinQin.kinswathe.component.PlayerEffectComponent;
 import org.jetbrains.annotations.Nullable;
 
@@ -89,6 +92,17 @@ public final class Grappler {
             SoundEvents.FISHING_BOBBER_THROW, SoundSource.PLAYERS, 1.0F, 0.6F);
         level.playSound(null, destination.x, destination.y, destination.z,
             SoundEvents.CHAIN_HIT, SoundSource.PLAYERS, 1.0F, 0.8F);
+    }
+
+    public static void handleHook(ServerPlayer player, GameWorldComponent gameWorld,
+                                  AbilityPlayerComponent ability, AbilityC2SPacket payload) {
+        if (!gameWorld.isRole(player, ModRoles.GRAPPLER)) return;
+        if (ability.cooldown > 0 || payload.targetId() == null) return;
+        ServerPlayer target = player.server.getPlayerList().getPlayer(payload.targetId());
+        if (!Grappler.canHook(player, target)) return;
+        if (!AbilityCost.spend(player, "grappler")) return;
+        Grappler.hook(player, target);
+        ability.setAbilityCooldown(ModConfig.skillCooldownSeconds("grappler"));
     }
 
     private static boolean refuse(ServerPlayer hooker, Component reason) {

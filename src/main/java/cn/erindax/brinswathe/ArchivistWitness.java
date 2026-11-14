@@ -4,6 +4,7 @@ import cn.erindax.brinswathe.component.ArchivistComponent;
 import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 import cn.erindax.brinswathe.network.ArchivistWitnessS2CPacket;
+import cn.erindax.brinswathe.network.AbilityC2SPacket;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -59,5 +60,12 @@ public final class ArchivistWitness {
                 ServerPlayNetworking.send(archivist, new ArchivistWitnessS2CPacket(player.getUUID(), glowTicks));
             }
         }
+    }
+
+    public static void handleCorpseTouch(ServerPlayer player, AbilityC2SPacket payload) {
+        if (payload.targetId() == null) return;
+        Entity target = player.serverLevel().getEntity(payload.targetId());
+        if (target == null || player.distanceToSqr(target) > 64.0D) return;
+        ArchivistWitness.onCorpseInteract(player, target);
     }
 }
