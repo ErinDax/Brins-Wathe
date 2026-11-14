@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe.config;
 
+import cn.erindax.brinswathe.RoleTraits;
 import cn.erindax.brinswathe.BrinsWathe;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -480,12 +481,7 @@ public final class ModConfig {
     }
 
     private static boolean skilledCivilian(@Nullable String roleId) {
-        if (roleId == null) return false;
-        return switch (roleId) {
-            case "archivist", "avenger", "conspirator", "cowboy", "inspector", "medium", "stalker", "stunt_double",
-                "valentina", "vigilante", "watchman", "zhuimu" -> true;
-            default -> false;
-        };
+        return RoleTraits.byConfigId(roleId).isSkilledCivilian();
     }
 
     static double number(Tunable tunable) {

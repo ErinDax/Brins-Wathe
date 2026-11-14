@@ -13,7 +13,6 @@ import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
-import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.index.WatheItems;
 import dev.doctor4t.wathe.util.ShopEntry;
 import org.BsXinQin.kinswathe.KinsWatheItems;
@@ -41,44 +40,26 @@ import org.ladysnake.cca.api.v3.component.ComponentKey;
 public final class ShopAccess {
     private static final ResourceLocation MASTER_KEY_ID =
         ResourceLocation.fromNamespaceAndPath("noellesroles", "master_key");
-    private static final ResourceLocation STUPID_EXPRESS_THIEF_ID =
+    static final ResourceLocation STUPID_EXPRESS_THIEF_ID =
         ResourceLocation.fromNamespaceAndPath("stupid_express", "thief");
-    private static final ResourceLocation STUPID_EXPRESS_ARSONIST_ID =
+    static final ResourceLocation STUPID_EXPRESS_ARSONIST_ID =
         ResourceLocation.fromNamespaceAndPath("stupid_express", "arsonist");
-    private static final ResourceLocation STUPID_EXPRESS_NECROMANCER_ID =
+    static final ResourceLocation STUPID_EXPRESS_NECROMANCER_ID =
         ResourceLocation.fromNamespaceAndPath("stupid_express", "necromancer");
 
     private ShopAccess() {
     }
 
     public static boolean canUseShopAndEconomy(GameWorldComponent game, Player player) {
-        return game.isRole(player, ModRoles.MEDIUM)
-            || game.isRole(player, ModRoles.CONSPIRATOR)
-            || game.isRole(player, ModRoles.WATCHMAN)
-            || game.isRole(player, ModRoles.ARCHIVIST)
-            || game.isRole(player, ModRoles.BERSERKER)
-            || game.isRole(player, ModRoles.GAMBLER)
-            || game.isRole(player, ModRoles.PENITENT)
-            || game.isRole(player, ModRoles.COWBOY)
-            || game.isRole(player, WatheRoles.CIVILIAN)
-            || NightmareComponent.isNightmareHour(game, player)
-            || isRole(game, player, STUPID_EXPRESS_THIEF_ID)
-            || isRole(game, player, STUPID_EXPRESS_NECROMANCER_ID)
-            || isRole(game, player, NoelleAccess.MIMIC_ID)
-            || isRole(game, player, NoelleAccess.NOISEMAKER_ID)
-            || isRole(game, player, NoelleAccess.VOODOO_ID);
+        return RoleTraits.of(game, player).hasEconomy(game, player);
     }
 
     public static boolean showsBalanceHud(GameWorldComponent game, Player player) {
-        return canUseShopAndEconomy(game, player)
-            || isRole(game, player, NoelleAccess.CONDUCTOR_ID)
-            || game.isRole(player, WatheRoles.VIGILANTE)
-            || game.isRole(player, ModRoles.INSPECTOR)
-            || game.isRole(player, ModRoles.ZHUIMU);
+        RoleTraits traits = RoleTraits.of(game, player);
+        return traits.hasEconomy(game, player) || traits.showsBalanceHud();
     }
     public static boolean hasNoShop(GameWorldComponent game, Player player) {
-        return isRole(game, player, STUPID_EXPRESS_ARSONIST_ID)
-            || isThief(game, player)
+        return RoleTraits.of(game, player).isShopClosed()
             || ResurrectedComponent.isResurrected(player);
     }
     public static boolean isThief(GameWorldComponent game, Player player) {
@@ -90,113 +71,132 @@ public final class ShopAccess {
     }
     public static List<ShopEntry> getShopEntries(GameWorldComponent game, Player player) {
         if (hasNoShop(game, player)) return List.of();
-        if (isRole(game, player, STUPID_EXPRESS_NECROMANCER_ID)) return necromancerShop();
-        if (isRole(game, player, NoelleAccess.MIMIC_ID)) return mimicShop();
-        if (isRole(game, player, NoelleAccess.NOISEMAKER_ID)) return noisemakerShop();
-        if (isRole(game, player, NoelleAccess.VOODOO_ID)) return voodooShop();
-        String roleId = ModRoles.getRoleId(game, player);
-        if (roleId == null && game.isRole(player, WatheRoles.CIVILIAN)) {
-            roleId = "civilian";
-        }
-        if (roleId == null && game.isRole(player, WatheRoles.VIGILANTE)) {
-            roleId = "vigilante";
-        }
-        if (roleId == null) return null;
-
-        List<ShopEntry> entries = switch (roleId) {
-            case "civilian", "conspirator", "watchman", "archivist" ->
-                civilianRevolverShop(roleId);
-            case "vigilante" -> List.of();
-            case "nightmare" -> NightmareComponent.isNightmareHour(game, player)
-                ? GameConstants.SHOP_ENTRIES.stream()
-                    .filter(entry -> !isFirearm(entry.stack()))
-                    .toList()
-                : List.of();
-            case "puppeteer" -> Stream.concat(
-                GameConstants.SHOP_ENTRIES.stream()
-                    .filter(entry -> !isFirearm(entry.stack())
-                        && !entry.stack().is(WatheItems.PSYCHO_MODE)),
-                Stream.of(new PuppeteerSelfDestructShopEntry())
-            ).toList();
-            case "sniper" -> GameConstants.SHOP_ENTRIES.stream()
-                .filter(entry -> !entry.stack().is(WatheItems.KNIFE)
-                    && !entry.stack().is(WatheItems.PSYCHO_MODE))
-                .toList();
-            case "beast_trapper" -> Stream.concat(
-                Stream.of(new TrapperExtraTrapShopEntry()),
-                GameConstants.SHOP_ENTRIES.stream()
-                    .filter(entry -> !entry.stack().is(WatheItems.PSYCHO_MODE))
-            ).toList();
-            case "gambler" -> GameConstants.SHOP_ENTRIES.stream()
-                .filter(entry -> entry.stack().is(WatheItems.FIRECRACKER)
-                    || entry.stack().is(WatheItems.LOCKPICK))
-                .map(entry -> entry.stack().is(WatheItems.LOCKPICK)
-                    ? new RepricedShopEntry(entry, Tunable.GAMBLER_LOCKPICK_PRICE.intValue())
-                    : entry)
-                .toList();
-            case "penitent" -> Stream.concat(
-                GameConstants.SHOP_ENTRIES.stream()
-                    .filter(entry -> !entry.stack().is(WatheItems.PSYCHO_MODE)
-                        && !entry.stack().is(WatheItems.GRENADE)
-                        && !entry.stack().is(WatheItems.BLACKOUT)
-                        && !entry.stack().is(WatheItems.CROWBAR)),
-                Stream.of(new PenitentIdentityHintShopEntry(), new PenitentAntidoteShopEntry())
-            ).toList();
-            case "berserker" -> List.of(
-                new ShopEntry(
-                    WatheItems.PSYCHO_MODE.getDefaultInstance(),
-                    ModConfig.shopPrice(roleId, ShopItem.PSYCHO_MODE),
-                    ShopEntry.Type.TOOL
-                ),
-                new ShopEntry(
-                    WatheItems.LOCKPICK.getDefaultInstance(),
-                    Tunable.BERSERKER_LOCKPICK_PRICE.intValue(),
-                    ShopEntry.Type.TOOL
-                ),
-                new ShopEntry(
-                    WatheItems.CROWBAR.getDefaultInstance(),
-                    Tunable.BERSERKER_CROWBAR_PRICE.intValue(),
-                    ShopEntry.Type.TOOL
-                )
-            );
-            case "illusionist", "mortician", "grappler", "half_spirit" -> GameConstants.SHOP_ENTRIES;
-            case "zhangshi" -> Stream.concat(
-                GameConstants.SHOP_ENTRIES.stream(),
-                Stream.of(new ShopEntry(
-                    ModItems.XUEZI.getDefaultInstance(),
-                    ModConfig.xueziPrice(),
-                    ShopEntry.Type.TOOL
-                ))
-            ).toList();
-            case "bomber" -> Stream.concat(
-                Stream.of(new BomberBombShopEntry(), new BomberMineShopEntry()),
-                GameConstants.SHOP_ENTRIES.stream()
-                    .filter(entry -> !isFirearm(entry.stack())
-                        && !entry.stack().is(WatheItems.PSYCHO_MODE)
-                        && !entry.stack().is(WatheItems.KNIFE))
-                    .map(entry -> entry.stack().is(WatheItems.GRENADE)
-                        ? new RepricedShopEntry(entry, ModConfig.bomberGrenadePrice())
-                        : entry)
-            ).toList();
-            case "boneharvester" -> java.util.stream.Stream.concat(
-                GameConstants.SHOP_ENTRIES.stream(),
-                java.util.stream.Stream.of(new ShopEntry(
-                    ModItems.BONE_KNIFE.getDefaultInstance(),
-                    ModConfig.boneKnifePrice(),
-                    ShopEntry.Type.TOOL
-                ))
-            ).toList();
-            case "avenger", "medium", "stalker", "terrorist", "cowboy", "valentina", "subverter", "inspector", "zhuimu", "spy" -> List.of();
-            default -> null;
-        };
-        if (entries == null) return null;
+        RoleTraits traits = RoleTraits.of(game, player);
+        String roleId = traits.configId();
+        List<ShopEntry> entries = traits.shopEntries(game, player);
+        if (entries == null || roleId == null) return entries;
         if (game.isRole(player, ModRoles.WATCHMAN)) {
             entries = entries.stream()
                 .filter(entry -> !isSurvivalExpertExcludedItem(entry.stack()))
                 .toList();
         }
-        String resolvedRoleId = roleId;
-        return entries.stream().map(entry -> reprice(entry, resolvedRoleId)).toList();
+        return entries.stream().map(entry -> reprice(entry, roleId)).toList();
+    }
+
+    static List<ShopEntry> emptyShop(GameWorldComponent game, Player player, String roleId) {
+        return List.of();
+    }
+
+    static List<ShopEntry> standardShop(GameWorldComponent game, Player player, String roleId) {
+        return GameConstants.SHOP_ENTRIES;
+    }
+
+    static List<ShopEntry> nightmareShop(GameWorldComponent game, Player player, String roleId) {
+        return NightmareComponent.isNightmareHour(game, player)
+            ? GameConstants.SHOP_ENTRIES.stream()
+                .filter(entry -> !isFirearm(entry.stack()))
+                .toList()
+            : List.of();
+    }
+
+    static List<ShopEntry> puppeteerShop(GameWorldComponent game, Player player, String roleId) {
+        return Stream.concat(
+            GameConstants.SHOP_ENTRIES.stream()
+                .filter(entry -> !isFirearm(entry.stack())
+                    && !entry.stack().is(WatheItems.PSYCHO_MODE)),
+            Stream.of(new PuppeteerSelfDestructShopEntry())
+        ).toList();
+    }
+
+    static List<ShopEntry> sniperShop(GameWorldComponent game, Player player, String roleId) {
+        return GameConstants.SHOP_ENTRIES.stream()
+            .filter(entry -> !entry.stack().is(WatheItems.KNIFE)
+                && !entry.stack().is(WatheItems.PSYCHO_MODE))
+            .toList();
+    }
+
+    static List<ShopEntry> trapperShop(GameWorldComponent game, Player player, String roleId) {
+        return Stream.concat(
+            Stream.of(new TrapperExtraTrapShopEntry()),
+            GameConstants.SHOP_ENTRIES.stream()
+                .filter(entry -> !entry.stack().is(WatheItems.PSYCHO_MODE))
+        ).toList();
+    }
+
+    static List<ShopEntry> gamblerShop(GameWorldComponent game, Player player, String roleId) {
+        return GameConstants.SHOP_ENTRIES.stream()
+            .filter(entry -> entry.stack().is(WatheItems.FIRECRACKER)
+                || entry.stack().is(WatheItems.LOCKPICK))
+            .map(entry -> entry.stack().is(WatheItems.LOCKPICK)
+                ? new RepricedShopEntry(entry, Tunable.GAMBLER_LOCKPICK_PRICE.intValue())
+                : entry)
+            .toList();
+    }
+
+    static List<ShopEntry> penitentShop(GameWorldComponent game, Player player, String roleId) {
+        return Stream.concat(
+            GameConstants.SHOP_ENTRIES.stream()
+                .filter(entry -> !entry.stack().is(WatheItems.PSYCHO_MODE)
+                    && !entry.stack().is(WatheItems.GRENADE)
+                    && !entry.stack().is(WatheItems.BLACKOUT)
+                    && !entry.stack().is(WatheItems.CROWBAR)),
+            Stream.of(new PenitentIdentityHintShopEntry(), new PenitentAntidoteShopEntry())
+        ).toList();
+    }
+
+    static List<ShopEntry> berserkerShop(GameWorldComponent game, Player player, String roleId) {
+        return List.of(
+            new ShopEntry(
+                WatheItems.PSYCHO_MODE.getDefaultInstance(),
+                ModConfig.shopPrice(roleId, ShopItem.PSYCHO_MODE),
+                ShopEntry.Type.TOOL
+            ),
+            new ShopEntry(
+                WatheItems.LOCKPICK.getDefaultInstance(),
+                Tunable.BERSERKER_LOCKPICK_PRICE.intValue(),
+                ShopEntry.Type.TOOL
+            ),
+            new ShopEntry(
+                WatheItems.CROWBAR.getDefaultInstance(),
+                Tunable.BERSERKER_CROWBAR_PRICE.intValue(),
+                ShopEntry.Type.TOOL
+            )
+        );
+    }
+
+    static List<ShopEntry> zhangshiShop(GameWorldComponent game, Player player, String roleId) {
+        return Stream.concat(
+            GameConstants.SHOP_ENTRIES.stream(),
+            Stream.of(new ShopEntry(
+                ModItems.XUEZI.getDefaultInstance(),
+                ModConfig.xueziPrice(),
+                ShopEntry.Type.TOOL
+            ))
+        ).toList();
+    }
+
+    static List<ShopEntry> bomberShop(GameWorldComponent game, Player player, String roleId) {
+        return Stream.concat(
+            Stream.of(new BomberBombShopEntry(), new BomberMineShopEntry()),
+            GameConstants.SHOP_ENTRIES.stream()
+                .filter(entry -> !isFirearm(entry.stack())
+                    && !entry.stack().is(WatheItems.PSYCHO_MODE)
+                    && !entry.stack().is(WatheItems.KNIFE))
+                .map(entry -> entry.stack().is(WatheItems.GRENADE)
+                    ? new RepricedShopEntry(entry, ModConfig.bomberGrenadePrice())
+                    : entry)
+        ).toList();
+    }
+
+    static List<ShopEntry> boneharvesterShop(GameWorldComponent game, Player player, String roleId) {
+        return java.util.stream.Stream.concat(
+            GameConstants.SHOP_ENTRIES.stream(),
+            java.util.stream.Stream.of(new ShopEntry(
+                ModItems.BONE_KNIFE.getDefaultInstance(),
+                ModConfig.boneKnifePrice(),
+                ShopEntry.Type.TOOL
+            ))
+        ).toList();
     }
     public static boolean ignoresOwnedCheck(ShopEntry entry) {
         return entry instanceof NecromancerRefreshShopEntry
@@ -239,7 +239,7 @@ public final class ShopAccess {
         }
         return entry;
     }
-    private static List<ShopEntry> civilianRevolverShop(String roleId) {
+    static List<ShopEntry> civilianRevolverShop(GameWorldComponent game, Player player, String roleId) {
         if (!ModConfig.revolverShopEnabled(roleId)) return List.of();
         return List.of(new ShopEntry(
             WatheItems.REVOLVER.getDefaultInstance(),
@@ -375,7 +375,7 @@ public final class ShopAccess {
         stack.set(DataComponents.CUSTOM_NAME, Component.translatable("item.brinswathe.extra_trap"));
         return stack;
     }
-    private static List<ShopEntry> voodooShop() {
+    static List<ShopEntry> voodooShop(GameWorldComponent game, Player player, String roleId) {
         return List.of(new ShopEntry(
             voodooNightVisionStack(),
             Tunable.VOODOO_NIGHT_VISION_PRICE.intValue(),
@@ -399,7 +399,7 @@ public final class ShopAccess {
         stack.set(DataComponents.CUSTOM_NAME, Component.literal("夜视药水瓶"));
         return stack;
     }
-    private static List<ShopEntry> mimicShop() {
+    static List<ShopEntry> mimicShop(GameWorldComponent game, Player player, String roleId) {
         return List.of(
             entry(WatheItems.LOCKPICK.getDefaultInstance(), Tunable.MIMIC_LOCKPICK_PRICE, ShopEntry.Type.TOOL),
             entry(delusionVialStack(), Tunable.MIMIC_DELUSION_VIAL_PRICE, ShopEntry.Type.POISON),
@@ -412,7 +412,7 @@ public final class ShopAccess {
     private static ShopEntry entry(ItemStack stack, Tunable price, ShopEntry.Type type) {
         return new ShopEntry(stack, price.intValue(), type);
     }
-    private static List<ShopEntry> noisemakerShop() {
+    static List<ShopEntry> noisemakerShop(GameWorldComponent game, Player player, String roleId) {
         return List.of(
             new NoisemakerFirecrackerShopEntry(),
             new NoisemakerShoutShopEntry()
@@ -443,7 +443,7 @@ public final class ShopAccess {
         )));
         return stack;
     }
-    private static List<ShopEntry> necromancerShop() {
+    static List<ShopEntry> necromancerShop(GameWorldComponent game, Player player, String roleId) {
         return List.of(
             new NecromancerRefreshShopEntry(),
             entry(WatheItems.KNIFE.getDefaultInstance(), Tunable.NECROMANCER_KNIFE_PRICE, ShopEntry.Type.WEAPON),
