@@ -14,10 +14,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
@@ -26,8 +28,9 @@ public final class ModConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 55;
+    private static final int CONFIG_VERSION = 56;
     private static final int AFK_DEFAULT_ON_MIGRATION_VERSION = 43;
+    private static final int STARTS_BROKE_MIGRATION_VERSION = 56;
     private static final Tunable[] STARTS_BROKE = {
         Tunable.BERSERKER_INITIAL_BALANCE,
         Tunable.COMPENSATOR_INITIAL_BALANCE,
@@ -523,8 +526,10 @@ public final class ModConfig {
                 numbers[tunable.ordinal()] = tunable.read(element);
             }
         }
-        for (Tunable balance : STARTS_BROKE) {
-            if (numbers[balance.ordinal()] == 100.0D) numbers[balance.ordinal()] = 0.0D;
+        if (sourceVersion < STARTS_BROKE_MIGRATION_VERSION) {
+            for (Tunable balance : STARTS_BROKE) {
+                if (numbers[balance.ordinal()] == 100.0D) numbers[balance.ordinal()] = 0.0D;
+            }
         }
         for (Migration migration : MIGRATIONS) {
             int index = migration.tunable().ordinal();
@@ -707,7 +712,7 @@ public final class ModConfig {
     private static LinkedHashMap<String, List<String>> copyBlacklist(Map<String, List<String>> source) {
         LinkedHashMap<String, List<String>> copy = new LinkedHashMap<>();
         for (Map.Entry<String, List<String>> entry : source.entrySet()) {
-            copy.put(entry.getKey(), List.copyOf(entry.getValue()));
+            copy.put(Objects.requireNonNull(entry.getKey()), List.copyOf(entry.getValue()));
         }
         return copy;
     }
@@ -863,7 +868,7 @@ public final class ModConfig {
             this.neutral_role_count = neutralRoleCount;
             this.killer_role_count = killerRoleCount;
             this.vigilante_role_count = vigilanteRoleCount;
-            this.role_modifier_blacklist = Map.copyOf(roleModifierBlacklist);
+            this.role_modifier_blacklist = Collections.unmodifiableMap(copyBlacklist(roleModifierBlacklist));
         }
         private static HarpyAssignmentSettings defaults() {
             return new HarpyAssignmentSettings(-6, 0, 0, Map.of());
