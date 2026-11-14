@@ -11,6 +11,7 @@ import dev.doctor4t.wathe.client.gui.RoleAnnouncementTexts;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheItems;
 import dev.doctor4t.wathe.util.AnnounceWelcomePayload;
+import java.util.List;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -25,7 +26,7 @@ import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 public final class PlayerCommands {
     private static final ResourceLocation VOODOO_DEATH =
         ResourceLocation.fromNamespaceAndPath("noellesroles", "voodoo");
-    private static final String[] WANT_BE_ROLES = {"vulture", "executioner", "jester"};
+    private static final List<String> WANT_BE_ROLES = List.of("vulture", "executioner", "jester");
 
     private PlayerCommands() {
     }
@@ -61,13 +62,19 @@ public final class PlayerCommands {
         }
         String value = rawValue.toLowerCase();
         GameWorldComponent game = GameWorldComponent.KEY.get(player.level());
-        if (NoelleAccess.initiateCount(game, player) > 1) {
-            source.sendFailure(Component.literal("场上 Initiate 多于 1 人，无法自选职业"));
+        if (!game.isRunning()
+            || !NoelleAccess.isInitiate(game, player)
+            || !GameFunctions.isPlayerAliveAndSurvival(player)) {
+            source.sendFailure(Component.literal("只有对局中存活的初学者才能自选职业"));
             return 0;
         }
-        Role targetRole = NoelleAccess.findRole(
-            ResourceLocation.fromNamespaceAndPath("noellesroles", value)
-        );
+        if (NoelleAccess.initiateCount(game, player) > 1) {
+            source.sendFailure(Component.literal("场上初学者多于 1 人，无法自选职业"));
+            return 0;
+        }
+        Role targetRole = WANT_BE_ROLES.contains(value)
+            ? NoelleAccess.findRole(ResourceLocation.fromNamespaceAndPath("noellesroles", value))
+            : null;
         if (targetRole == null) {
             source.sendFailure(Component.literal("无效角色: " + value + "(可选 vulture/executioner/jester)"));
             return 0;
