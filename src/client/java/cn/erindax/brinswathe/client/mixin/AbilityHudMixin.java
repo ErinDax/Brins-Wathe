@@ -349,7 +349,9 @@ public abstract class AbilityHudMixin {
             ? Component.literal("G")
             : abilityBind.getTranslatedKeyMessage();
         Component line = Component.translatable(
-            "tip.brinswathe.puppeteer.controlling",
+            component.selfDestructArmed
+                ? "tip.brinswathe.puppeteer.detonate"
+                : "tip.brinswathe.puppeteer.controlling",
             keyName,
             (component.puppetTicks + 19) / 20
         );

@@ -180,7 +180,8 @@ public enum Tunable {
     PUPPETEER_PARTICLE_DELAY_SECONDS("roles.puppeteer.particle_delay_seconds", Kind.COUNT_OR_OFF, 45),
     PUPPETEER_EXPOSED_GLOW_SECONDS("roles.puppeteer.exposed_glow_seconds", 10),
     PUPPETEER_KILLED_SLOWNESS_SECONDS("roles.puppeteer.killed_slowness_seconds", 15),
-    PUPPETEER_SHOP_KNIFE("roles.puppeteer.shop_prices.knife", Kind.COUNT, 150),
+    PUPPETEER_SHOP_KNIFE("roles.puppeteer.shop_prices.knife", Kind.COUNT, 100),
+    PUPPETEER_SHOP_PSYCHO_MODE("roles.puppeteer.shop_prices.psycho_mode", Kind.COUNT, 300),
 
     SNIPER_SKILL_COOLDOWN_SECONDS("roles.sniper.skill_cooldown_seconds", Kind.COUNT, 100000),
     SNIPER_KILLS_TO_RESET("roles.sniper.kills_to_reset", Kind.POSITIVE_OR_OFF, -1),

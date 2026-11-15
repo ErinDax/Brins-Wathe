@@ -103,8 +103,7 @@ public final class ShopAccess {
     static List<ShopEntry> puppeteerShop(GameWorldComponent game, Player player, String roleId) {
         return Stream.concat(
             GameConstants.SHOP_ENTRIES.stream()
-                .filter(entry -> !isFirearm(entry.stack())
-                    && !entry.stack().is(WatheItems.PSYCHO_MODE)),
+                .filter(entry -> !isFirearm(entry.stack())),
             Stream.of(new PuppeteerSelfDestructShopEntry())
         ).toList();
     }

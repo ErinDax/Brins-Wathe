@@ -14,7 +14,9 @@ import dev.doctor4t.wathe.index.WatheParticles;
 import dev.doctor4t.wathe.index.WatheSounds;
 import dev.doctor4t.wathe.util.ShopEntry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
@@ -72,6 +74,7 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
     private final Player player;
 
     public List<UUID> storedPuppets = new ArrayList<>();
+    private final Map<UUID, Integer> storedPuppetTicks = new HashMap<>();
     public int craftCooldownTicks;
     public int puppetTicks;
     public boolean selfDestructArmed;
@@ -176,7 +179,8 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
         }
         this.puppetEntityId = puppet.getUUID();
         this.controlAnchor = anchor;
-        this.puppetTicks = Math.max(1, ModConfig.skillDurationSeconds("puppeteer")) * 20;
+        this.puppetTicks = this.remainingTicks(skinId);
+        this.storedPuppetTicks.remove(skinId);
         this.controlAgeTicks = 0;
         this.spawnBodyProxy();
         this.teleportOwnerToPuppet(serverPlayer, puppet);
@@ -200,6 +204,7 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
         boolean hadPuppet = this.isControlling();
         PlayerBodyEntity puppet = this.puppetEntity(serverPlayer);
         Vec3 puppetPosition = puppet == null ? serverPlayer.position() : puppet.position();
+        boolean recalled = reason == ControlEnd.RETURNED && !this.selfDestructArmed && this.storePuppet(puppet);
         if (puppet != null) puppet.discard();
         this.puppetEntityId = null;
         this.puppetTicks = 0;
@@ -219,7 +224,7 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
             }
         }
         if (hadPuppet && survives) {
-            this.startGlow(serverPlayer);
+            if (!recalled) this.startGlow(serverPlayer);
             int slownessTicks = Tunable.PUPPETEER_KILLED_SLOWNESS_SECONDS.ticks();
             if (reason == ControlEnd.KILLED && slownessTicks > 0) {
                 serverPlayer.addEffect(new MobEffectInstance(
@@ -234,6 +239,20 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
             this.clearGlow(serverPlayer);
         }
         this.sync();
+    }
+    private boolean storePuppet(@Nullable PlayerBodyEntity puppet) {
+        if (puppet == null || this.puppetTicks <= 0) return false;
+        UUID skinId = puppet.getPlayerUuid();
+        if (skinId == null || this.storedPuppets.contains(skinId)) return false;
+        this.storedPuppets.add(skinId);
+        this.storedPuppetTicks.put(skinId, this.puppetTicks);
+        return true;
+    }
+    public int remainingTicks(UUID skinId) {
+        Integer remainingTicks = this.storedPuppetTicks.get(skinId);
+        return remainingTicks != null
+            ? remainingTicks
+            : Math.max(1, ModConfig.skillDurationSeconds("puppeteer")) * 20;
     }
     private static Vec3 summonPosition(ServerPlayer serverPlayer, Vec3 anchor) {
         Vec3 look = serverPlayer.getLookAngle();
@@ -482,6 +501,7 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
             this.endControl(serverPlayer, ControlEnd.RESET);
         }
         this.storedPuppets.clear();
+        this.storedPuppetTicks.clear();
         this.craftCooldownTicks = 0;
         this.selfDestructArmed = false;
         this.sync();
@@ -506,10 +526,14 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
             )
             : null;
         this.storedPuppets.clear();
+        this.storedPuppetTicks.clear();
         ListTag stored = tag.getList("storedPuppets", Tag.TAG_COMPOUND);
         for (int index = 0; index < stored.size(); index++) {
             CompoundTag entry = stored.getCompound(index);
-            if (entry.hasUUID("uuid")) this.storedPuppets.add(entry.getUUID("uuid"));
+            if (!entry.hasUUID("uuid")) continue;
+            UUID puppetId = entry.getUUID("uuid");
+            this.storedPuppets.add(puppetId);
+            if (entry.contains("puppetTicks")) this.storedPuppetTicks.put(puppetId, entry.getInt("puppetTicks"));
         }
     }
     @Override
@@ -529,6 +553,8 @@ public class PuppeteerControlComponent implements AutoSyncedComponent, ServerTic
         for (UUID puppetId : this.storedPuppets) {
             CompoundTag entry = new CompoundTag();
             entry.putUUID("uuid", puppetId);
+            Integer remainingTicks = this.storedPuppetTicks.get(puppetId);
+            if (remainingTicks != null) entry.putInt("puppetTicks", remainingTicks);
             stored.add(entry);
         }
         tag.put("storedPuppets", stored);

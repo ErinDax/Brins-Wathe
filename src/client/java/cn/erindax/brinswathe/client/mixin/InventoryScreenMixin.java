@@ -145,8 +145,8 @@ public abstract class InventoryScreenMixin extends LimitedHandledScreen<Inventor
         if (connection == null) return;
 
         List<UUID> targets = new ArrayList<>();
+        PuppeteerControlComponent puppeteer = isPuppeteer ? PuppeteerControlComponent.KEY.get(this.player) : null;
         if (isPuppeteer) {
-            PuppeteerControlComponent puppeteer = PuppeteerControlComponent.KEY.get(this.player);
             if (puppeteer == null || puppeteer.isControlling()) return;
             targets.addAll(puppeteer.storedPuppets);
         } else {
@@ -254,11 +254,23 @@ public abstract class InventoryScreenMixin extends LimitedHandledScreen<Inventor
                             this.getX(), this.getY(), 0xFFFF5555, true);
                     }
 
+                    String puppetSeconds = puppeteer == null
+                        ? null
+                        : String.valueOf((puppeteer.remainingTicks(targetUUID) + 19) / 20);
+                    if (puppetSeconds != null) {
+                        context.drawString(Minecraft.getInstance().font,
+                            puppetSeconds,
+                            this.getX() + 17 - Minecraft.getInstance().font.width(puppetSeconds),
+                            this.getY() + 9, 0xFFFFFFFF, true);
+                    }
+
                     if (this.isHovered()) {
                         this.drawSlotHighlight(context);
                         Component tooltip = onCooldown
                             ? Component.translatable("tip.kinswathe.cooldown", (cooldown + 19) / 20)
-                            : Component.literal(targetName);
+                            : puppetSeconds != null
+                                ? Component.translatable("tip.brinswathe.puppeteer.stored", targetName, puppetSeconds)
+                                : Component.literal(targetName);
                         context.renderTooltip(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
                     }
                 }
