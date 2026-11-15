@@ -5,6 +5,7 @@ import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
+import cn.erindax.brinswathe.entity.ArchivistSealedCorpse;
 import cn.erindax.brinswathe.network.AbilityC2SPacket;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
@@ -29,6 +30,7 @@ public final class Puppeteer {
         if (PuppeteerControlComponent.isPuppetModel(body)
             || IllusionistComponent.isIllusionModel(body)
             || MorticianComponent.isDisguiseBody(body)) return;
+        if (((ArchivistSealedCorpse) body).brin$isArchivistSealed()) return;
         if (player.distanceToSqr(body) > 64.0D) return;
         if (!AbilityCost.spend(player, "puppeteer")) return;
         if (!comp.craftPuppet(body)) return;
