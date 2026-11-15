@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.mixin;
 
-import cn.erindax.brinswathe.Conspirator;
+import cn.erindax.brinswathe.role.Conspirator;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.doctor4t.wathe.cca.GameWorldComponent;

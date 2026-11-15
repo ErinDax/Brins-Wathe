@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.client.mixin;
 
 import cn.erindax.brinswathe.Faction;
-import cn.erindax.brinswathe.MorphlingAccess;
+import cn.erindax.brinswathe.role.MorphlingAccess;
 import cn.erindax.brinswathe.NoelleAccess;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.client.AimClient;

@@ -2,7 +2,7 @@ package cn.erindax.brinswathe.component;
 
 import cn.erindax.brinswathe.ModModifiers;
 import cn.erindax.brinswathe.ModRoles;
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.config.Tunable;
 import dev.doctor4t.wathe.cca.GameWorldComponent;

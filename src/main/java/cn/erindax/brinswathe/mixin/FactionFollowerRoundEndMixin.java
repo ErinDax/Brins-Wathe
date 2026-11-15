@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.Faction;
-import cn.erindax.brinswathe.GamblerSettlement;
+import cn.erindax.brinswathe.role.GamblerSettlement;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.component.ModCustomWinnerComponent;
 import cn.erindax.brinswathe.component.CoWinnerComponent;

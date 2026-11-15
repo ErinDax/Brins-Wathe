@@ -2,6 +2,7 @@ package cn.erindax.brinswathe;
 
 import cn.erindax.brinswathe.network.BuySlotC2SPacket;
 import cn.erindax.brinswathe.network.ItemSlotsC2SPacket;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import dev.doctor4t.wathe.index.WatheItems;
 import java.util.HashMap;
 import java.util.Map;

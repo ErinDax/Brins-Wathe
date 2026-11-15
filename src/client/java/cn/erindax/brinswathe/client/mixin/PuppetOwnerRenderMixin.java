@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import cn.erindax.brinswathe.client.PuppetClient;
+import cn.erindax.brinswathe.client.role.PuppetClient;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;

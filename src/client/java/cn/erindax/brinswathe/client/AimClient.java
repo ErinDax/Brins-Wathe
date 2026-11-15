@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.client;
 
-import cn.erindax.brinswathe.Grappler;
-import cn.erindax.brinswathe.WatchmanRescue;
+import cn.erindax.brinswathe.role.Grappler;
+import cn.erindax.brinswathe.role.WatchmanRescue;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
@@ -85,7 +85,7 @@ public final class AimClient {
     }
 
     @Nullable
-    static Entity findClientEntity(Minecraft client, @Nullable UUID entityId) {
+    public static Entity findClientEntity(Minecraft client, @Nullable UUID entityId) {
         if (client.level == null || entityId == null) return null;
         for (Entity entity : client.level.entitiesForRendering()) {
             if (entityId.equals(entity.getUUID())) return entity;

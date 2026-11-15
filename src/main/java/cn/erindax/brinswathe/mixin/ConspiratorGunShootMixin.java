@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
-import cn.erindax.brinswathe.Conspirator;
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.Conspirator;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.util.GunShootPayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;

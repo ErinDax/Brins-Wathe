@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import cn.erindax.brinswathe.Conspirator;
+import cn.erindax.brinswathe.role.Conspirator;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.gui.MoodRenderer;
 import net.fabricmc.api.EnvType;

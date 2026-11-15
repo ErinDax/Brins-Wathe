@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.mixin;
 
-import cn.erindax.brinswathe.Executioner;
+import cn.erindax.brinswathe.role.Executioner;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import dev.doctor4t.wathe.game.GameFunctions;

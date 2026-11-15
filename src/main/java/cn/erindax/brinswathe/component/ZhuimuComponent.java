@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.component;
 
-import cn.erindax.brinswathe.Zhuimu;
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.Zhuimu;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import cn.erindax.brinswathe.entity.ZhuimuBoat;
 import java.util.UUID;
 import net.minecraft.core.HolderLookup;

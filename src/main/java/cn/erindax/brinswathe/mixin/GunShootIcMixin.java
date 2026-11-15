@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.mixin;
 
-import cn.erindax.brinswathe.Conspirator;
+import cn.erindax.brinswathe.role.Conspirator;
 import cn.erindax.brinswathe.ModModifiers;
 import cn.erindax.brinswathe.NoelleAccess;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;

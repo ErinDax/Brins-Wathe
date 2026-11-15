@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import cn.erindax.brinswathe.MorphlingAccess;
-import cn.erindax.brinswathe.client.MorphlingClient;
+import cn.erindax.brinswathe.role.MorphlingAccess;
+import cn.erindax.brinswathe.client.role.MorphlingClient;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedHandledScreen;
 import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;

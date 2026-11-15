@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.component;
 
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import cn.erindax.brinswathe.voice.ModVoiceChatPlugin;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;

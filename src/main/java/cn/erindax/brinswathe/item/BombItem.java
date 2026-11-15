@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.item;
 
-import cn.erindax.brinswathe.BomberBombs;
+import cn.erindax.brinswathe.role.BomberBombs;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;

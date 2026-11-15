@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.mixin;
 
-import cn.erindax.brinswathe.Disarm;
+import cn.erindax.brinswathe.role.Disarm;
 import dev.doctor4t.wathe.util.GunShootPayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import org.spongepowered.asm.mixin.Mixin;

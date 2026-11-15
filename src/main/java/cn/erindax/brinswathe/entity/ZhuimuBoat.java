@@ -2,8 +2,8 @@ package cn.erindax.brinswathe.entity;
 
 import cn.erindax.brinswathe.Funeral;
 import cn.erindax.brinswathe.ModItems;
-import cn.erindax.brinswathe.Zhuimu;
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.Zhuimu;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import cn.erindax.brinswathe.config.ModConfig;
 import dev.doctor4t.wathe.game.GameFunctions;
 import java.util.List;

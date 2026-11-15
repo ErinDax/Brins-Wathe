@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.component;
 
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import cn.erindax.brinswathe.config.ModConfig;
 import java.util.UUID;
 import net.minecraft.core.HolderLookup;

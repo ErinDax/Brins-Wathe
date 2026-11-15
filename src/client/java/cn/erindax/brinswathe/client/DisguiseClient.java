@@ -1,5 +1,6 @@
 package cn.erindax.brinswathe.client;
 
+import cn.erindax.brinswathe.client.role.MorphlingClient;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import dev.doctor4t.wathe.client.WatheClient;

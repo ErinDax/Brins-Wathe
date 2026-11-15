@@ -2,7 +2,7 @@ package cn.erindax.brinswathe.component;
 
 import cn.erindax.brinswathe.Faction;
 import cn.erindax.brinswathe.ModRoles;
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPsychoComponent;

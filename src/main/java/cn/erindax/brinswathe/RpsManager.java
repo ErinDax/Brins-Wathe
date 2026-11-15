@@ -3,6 +3,7 @@ package cn.erindax.brinswathe;
 import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.network.RpsActionC2SPacket;
 import cn.erindax.brinswathe.network.RpsStateS2CPacket;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import dev.doctor4t.wathe.game.GameFunctions;
 import java.util.HashMap;
 import java.util.HashSet;

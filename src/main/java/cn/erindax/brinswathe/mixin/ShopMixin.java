@@ -4,7 +4,7 @@ import cn.erindax.brinswathe.BuySlots;
 import cn.erindax.brinswathe.KnifeSkins;
 import cn.erindax.brinswathe.ModRoles;
 import cn.erindax.brinswathe.ShopAccess;
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import cn.erindax.brinswathe.component.BerserkerComponent;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;

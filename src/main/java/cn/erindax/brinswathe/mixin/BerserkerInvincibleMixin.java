@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.ModRoles;
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import cn.erindax.brinswathe.component.BerserkerComponent;
 
 import dev.doctor4t.wathe.cca.GameWorldComponent;

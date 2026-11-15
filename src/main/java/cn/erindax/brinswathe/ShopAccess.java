@@ -8,6 +8,7 @@ import cn.erindax.brinswathe.component.PenitentComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
 import cn.erindax.brinswathe.component.ResurrectedComponent;
 import cn.erindax.brinswathe.config.Tunable;
+import cn.erindax.brinswathe.role.TrapperTraps;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;

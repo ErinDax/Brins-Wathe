@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.client.gui;
 
 import cn.erindax.brinswathe.ModRoles;
-import cn.erindax.brinswathe.Spy;
+import cn.erindax.brinswathe.role.Spy;
 import cn.erindax.brinswathe.client.RoleLabels;
 import cn.erindax.brinswathe.component.RoundRecapComponent;
 import cn.erindax.brinswathe.component.SpyComponent;

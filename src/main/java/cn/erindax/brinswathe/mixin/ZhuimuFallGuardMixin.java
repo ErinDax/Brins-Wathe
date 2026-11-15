@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.mixin;
 
-import cn.erindax.brinswathe.Zhuimu;
+import cn.erindax.brinswathe.role.Zhuimu;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.resources.ResourceLocation;

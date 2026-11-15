@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.mixin;
 
-import cn.erindax.brinswathe.BoneharvesterCorpseManager;
+import cn.erindax.brinswathe.role.BoneharvesterCorpseManager;
 import cn.erindax.brinswathe.ModRoles;
 
 import dev.doctor4t.wathe.cca.GameWorldComponent;

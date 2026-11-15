@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.client.mixin;
 
 import cn.erindax.brinswathe.component.IllusionistComponent;
-import cn.erindax.brinswathe.client.IllusionistClient;
+import cn.erindax.brinswathe.client.role.IllusionistClient;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import net.fabricmc.api.EnvType;

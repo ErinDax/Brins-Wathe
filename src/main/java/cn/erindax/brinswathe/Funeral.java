@@ -4,6 +4,8 @@ import cn.erindax.brinswathe.component.FuneralComponent;
 import cn.erindax.brinswathe.component.IllusionistComponent;
 import cn.erindax.brinswathe.component.MorticianComponent;
 import cn.erindax.brinswathe.component.PuppeteerControlComponent;
+import cn.erindax.brinswathe.role.ArchivistWitness;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import dev.doctor4t.wathe.game.GameFunctions;

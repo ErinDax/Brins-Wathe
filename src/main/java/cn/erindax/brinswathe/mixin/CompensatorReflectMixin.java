@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
-import cn.erindax.brinswathe.CompensatorPassive;
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.CompensatorPassive;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import dev.doctor4t.wathe.game.GameConstants;
 
 import net.minecraft.world.damagesource.DamageSource;

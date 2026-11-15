@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import cn.erindax.brinswathe.client.SniperClient;
+import cn.erindax.brinswathe.client.role.SniperClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Camera;

@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.item;
 
-import cn.erindax.brinswathe.Zhuimu;
+import cn.erindax.brinswathe.role.Zhuimu;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;

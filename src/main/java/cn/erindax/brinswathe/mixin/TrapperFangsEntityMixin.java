@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.mixin;
 
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import cn.erindax.brinswathe.config.Tunable;
 import cn.erindax.brinswathe.entity.TrapperFangs;
 import net.minecraft.nbt.CompoundTag;

@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.voice;
 
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import cn.erindax.brinswathe.component.ConspiratorComponent;
 import cn.erindax.brinswathe.component.MediumComponent;
 import de.maxhenkel.voicechat.api.Group;

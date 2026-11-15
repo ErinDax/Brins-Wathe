@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.component;
 
-import cn.erindax.brinswathe.BomberBombs;
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.BomberBombs;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import java.util.UUID;

@@ -1,6 +1,6 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

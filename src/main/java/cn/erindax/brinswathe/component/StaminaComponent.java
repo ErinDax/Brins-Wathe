@@ -1,7 +1,7 @@
 package cn.erindax.brinswathe.component;
 
 import cn.erindax.brinswathe.BrinsWathe;
-import cn.erindax.brinswathe.CowboyDuel;
+import cn.erindax.brinswathe.role.CowboyDuel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
