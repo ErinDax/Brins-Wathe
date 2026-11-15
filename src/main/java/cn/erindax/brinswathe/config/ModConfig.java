@@ -29,7 +29,7 @@ public final class ModConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "brinswathe.json5";
     private static final String LEGACY_FILE_NAME = "brinswathe.json";
-    private static final int CONFIG_VERSION = 56;
+    private static final int CONFIG_VERSION = 57;
     private static final int AFK_DEFAULT_ON_MIGRATION_VERSION = 43;
     private static final int STARTS_BROKE_MIGRATION_VERSION = 56;
     private static final Tunable[] STARTS_BROKE = {

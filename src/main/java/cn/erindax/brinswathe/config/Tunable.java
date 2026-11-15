@@ -231,6 +231,7 @@ public enum Tunable {
 
     WATCHMAN_SKILL_COST("roles.watchman.skill_cost", Kind.COUNT, 150),
     WATCHMAN_SKILL_COOLDOWN_SECONDS("roles.watchman.skill_cooldown_seconds", Kind.COUNT, 30),
+    WATCHMAN_SURVIVAL_SECONDS("roles.watchman.survival_seconds", 60, 1),
 
     ZHANGSHI_SKILL_COOLDOWN_SECONDS("roles.zhangshi.skill_cooldown_seconds", Kind.COUNT, 90),
     ZHANGSHI_SKILL_DURATION_SECONDS("roles.zhangshi.skill_duration_seconds", Kind.COUNT, 10),

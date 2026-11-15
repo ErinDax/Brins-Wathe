@@ -29,6 +29,7 @@ import cn.erindax.brinswathe.component.StalkerComponent;
 import cn.erindax.brinswathe.component.StaminaComponent;
 import cn.erindax.brinswathe.component.StuntDoubleComponent;
 import cn.erindax.brinswathe.component.SubverterComponent;
+import cn.erindax.brinswathe.component.SurvivalMomentComponent;
 import cn.erindax.brinswathe.component.TrapperComponent;
 import cn.erindax.brinswathe.component.ValentinaComponent;
 import cn.erindax.brinswathe.component.WatchmanComponent;
@@ -142,5 +143,6 @@ public class ModComponents implements EntityComponentInitializer, WorldComponent
         registry.register(RoundRecapComponent.KEY, RoundRecapComponent::new);
         registry.register(CoWinnerComponent.KEY, CoWinnerComponent::new);
         registry.register(DisarmComponent.KEY, DisarmComponent::new);
+        registry.register(SurvivalMomentComponent.KEY, SurvivalMomentComponent::new);
     }
 }

@@ -9,6 +9,7 @@ import cn.erindax.brinswathe.client.role.IllusionistClient;
 import cn.erindax.brinswathe.client.role.PuppetClient;
 import cn.erindax.brinswathe.client.role.SniperClient;
 import cn.erindax.brinswathe.client.role.StalkerTrackerHud;
+import cn.erindax.brinswathe.client.role.SurvivalMomentClient;
 import cn.erindax.brinswathe.client.role.ZhuimuClient;
 import cn.erindax.brinswathe.config.ModConfig;
 import cn.erindax.brinswathe.client.gui.EventLogScreen;
@@ -176,6 +177,7 @@ public class BrinsWatheClient implements ClientModInitializer {
         RpsHud.init();
         FuneralClient.init();
         DisarmClient.init();
+        SurvivalMomentClient.init();
         ZhuimuClient.init();
         VagrantClient.init();
         rpsBind = KeyBindingHelper.registerKeyBinding(new KeyMapping(
