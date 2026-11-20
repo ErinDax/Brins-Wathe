@@ -1,35 +1,20 @@
 package cn.erindax.brinswathe.client.mixin;
 
-import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import dev.doctor4t.wathe.client.gui.CrosshairRenderer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
-import org.BsXinQin.kinswathe.client.mixin.gui.ItemCrosshairMixin;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(value = ItemCrosshairMixin.class, remap = false)
+@Mixin(CrosshairRenderer.class)
 public abstract class KinsCrosshairMixin {
     @Unique
-    private static final ResourceLocation KNIFE_ATTACK =
+    private static final ResourceLocation KNIFE_ATTACK_ICON =
         ResourceLocation.fromNamespaceAndPath("wathe", "hud/knife_attack");
 
-    @WrapWithCondition(
-        method = "renderCrosshair",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V",
-            remap = true
-        )
-    )
-    private static boolean brinSkipKnifeAttackIcon(
-        GuiGraphics graphics,
-        ResourceLocation sprite,
-        int x,
-        int y,
-        int width,
-        int height
-    ) {
-        return !KNIFE_ATTACK.equals(sprite);
+    @Unique
+    private static void brinDrawUnlessKnifeAttack(GuiGraphics graphics, ResourceLocation sprite, int x, int y, int width, int height) {
+        if (KNIFE_ATTACK_ICON.equals(sprite)) return;
+        graphics.blitSprite(sprite, x, y, width, height);
     }
 }
