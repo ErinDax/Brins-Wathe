@@ -1,6 +1,7 @@
 package cn.erindax.brinswathe.mixin;
 
 import cn.erindax.brinswathe.KnifeSkins;
+import cn.erindax.brinswathe.SkinEditors;
 import dev.doctor4t.wathe.index.WatheCosmetics;
 import dev.doctor4t.wathe.item.KnifeItem;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,6 +28,10 @@ public abstract class KnifeCycleMixin {
         CallbackInfoReturnable<Boolean> cir
     ) {
         if (clickType != ClickAction.SECONDARY || !other.isEmpty()) return;
+        if (!SkinEditors.canEdit(player)) {
+            cir.setReturnValue(true);
+            return;
+        }
 
         String current = KnifeSkins.resolveKnifeSkinName(WatheCosmetics.getSkin(stack));
         String next = KnifeSkins.nextName(current);
